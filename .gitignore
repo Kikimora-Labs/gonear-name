@@ -1,0 +1,9 @@
+crawler
+
+**/node_modules
+
+**/neardev
+**/target
+
+# OS X
+.DS_Store
