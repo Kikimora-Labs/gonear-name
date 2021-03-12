@@ -6,7 +6,7 @@ import InfiniteScroll from 'react-infinite-scroller'
 
 const FetchLimit = 25
 
-function DiscoverPage (props) {
+function MarketPage (props) {
   const [feed, setFeed] = useState([])
   const [hasMore, setHasMore] = useState(false)
   const [gkey] = useState(uuid())
@@ -14,7 +14,7 @@ function DiscoverPage (props) {
   const fetchMore = async () => {
     const f = [...feed]
     const lastKey = f.length > 0 ? f[f.length - 1] : null
-    const fetched = await props._near.contract.get_top({
+    const fetched = await props._near.contract.get_top_bet_accounts({
       from_key: lastKey,
       limit: FetchLimit
     })
@@ -66,4 +66,4 @@ function DiscoverPage (props) {
   )
 }
 
-export default DiscoverPage
+export default MarketPage

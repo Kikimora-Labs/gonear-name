@@ -10,7 +10,7 @@ use near_sdk::collections::{TreeMap, UnorderedMap, UnorderedSet, Vector};
 use near_sdk::json_types::{Base58PublicKey, ValidAccountId, WrappedBalance, WrappedTimestamp};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
-    env, ext_contract, near_bindgen, AccountId, Balance, PanicOnDefault, Promise, PromiseResult,
+    env, ext_contract, near_bindgen, log, AccountId, Balance, PanicOnDefault, Promise, PromiseResult,
     PublicKey, Timestamp,
 };
 
@@ -37,6 +37,24 @@ pub struct Contract {
 
 #[near_bindgen]
 impl Contract {
+    #[init]
+    pub fn test_new() -> Self {
+        assert!(!env::state_exists(), "Already initialized");
+        log!("Test init with owner_id = {:?}, owner_pk = {:?}", env::signer_account_id(), env::signer_account_pk());
+        Self {
+            profiles: UnorderedMap::new(b"u".to_vec()),
+            accounts: UnorderedMap::new(b"a".to_vec()),
+            bet_to_account_id: TreeMap::new(b"b".to_vec()),
+            claim_to_account_id: TreeMap::new(b"c".to_vec()),
+            num_offers: 0,
+            num_bets: 0,
+            num_claims: 0,
+            num_acquisitions: 0,
+            owner_id: env::signer_account_id(),
+            owner_pk: env::signer_account_pk(),
+        }
+    }
+
     #[init]
     pub fn new(owner_id: ValidAccountId, owner_pk: Base58PublicKey) -> Self {
         assert!(!env::state_exists(), "Already initialized");

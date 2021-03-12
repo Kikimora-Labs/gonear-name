@@ -18,6 +18,24 @@ near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
 const CONTRACT_ID: &str = "marketplace";
 const ENOUGH_DEPOSIT: u128 = OFFER_ACCOUNT_DEPOSIT * 101 / 100;
 
+fn test_init() -> (UserAccount, ContractAccount<AMContract>) {
+    let master_account = init_simulator(None);
+
+    let deployed_contract = deploy!(
+        // Contract Proxy
+        contract: AMContract,
+        // Contract account id
+        contract_id: CONTRACT_ID,
+        // Bytes of contract
+        bytes: &CONTRACT_WASM_BYTES,
+        // User deploying the contract,
+        signer_account: master_account,
+        // init method
+        init_method: test_new()
+    );
+    (master_account, deployed_contract)
+}
+
 fn init() -> (UserAccount, ContractAccount<AMContract>) {
     let master_account = init_simulator(None);
 
@@ -62,6 +80,11 @@ fn create_bob_sells_alice(
     let result: bool = outcome.unwrap_json();
     assert!(result);
     (alice, bob)
+}
+
+#[test]
+fn simulate_test_init() {
+    let (_, _) = test_init();
 }
 
 #[test]

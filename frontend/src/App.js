@@ -20,7 +20,7 @@ const TestNearConfig = {
   networkId: 'testnet',
   nodeUrl: 'https://rpc.testnet.near.org',
   archivalNodeUrl: 'https://rpc.testnet.internal.near.org',
-  contractName: 'dev-1614796345972-8721304',
+  contractName: 'dev-1615585759345-7550229',
   walletUrl: 'https://wallet.testnet.near.org'
 }
 const MainNearConfig = {
@@ -33,17 +33,17 @@ const MainNearConfig = {
 
 const NearConfig = IsMainnet ? MainNearConfig : TestNearConfig
 
-const FetchLimit = 50
-
-const mapAccount = (a) => {
+const mapProfile = (p) => {
   return {
-    requests: a.requests,
-    numCards: a.num_cards,
-    purchaseVolume: fromNear(a.purchase_volume),
-    numPurchases: a.num_purchases,
-    saleProfit: fromNear(a.sale_profit),
-    numSales: a.num_sales,
-    numVotes: a.num_votes
+    participation: p.participation,
+    acquisitions: p.acquisitions,
+    betsVolume: fromNear(p.bets_volume),
+    availableRewards: fromNear(p.available_rewards),
+    profitTaken: fromNear(p.profit_taken),
+    numOffers: p.num_offers,
+    numBets: p.num_bets,
+    numClaims: p.num_claims,
+    numAcquisitions: p.num_acquisitions
   }
 }
 
@@ -84,8 +84,8 @@ class App extends React.Component {
 
     this._near.account = this._near.walletConnection.account()
     this._near.contract = new nearAPI.Contract(this._near.account, NearConfig.contractName, {
-      viewMethods: ['get_account', 'get_num_accounts', 'get_accounts', 'get_num_cards', 'get_top', 'get_rating', 'get_trade_data', 'get_card_info', 'get_account_cards'],
-      changeMethods: ['register_account', 'vote', 'buy_card']
+      viewMethods: ['get_bet_price', 'get_claim_price', 'get_forfeit', 'get_profile', 'get_num_profiles', 'get_num_active_accounts', 'get_account', 'get_top_bet_accounts', 'get_top_claim_accounts'],
+      changeMethods: ['offer_predecessor_account', 'bet', 'claim', 'register_profile']
     })
 
     this._near.accounts = {}
@@ -95,9 +95,10 @@ class App extends React.Component {
         return this._near.accounts[accountId]
       }
       this._near.accounts[accountId] = Promise.resolve((async () => {
-        const a = await this._near.contract.get_account({ account_id: accountId })
-        const account = a ? mapAccount(a) : null
-        if (account) {
+        const p = await this._near.contract.get_profile({ account_id: accountId })
+        const profile = p ? mapProfile(p) : null
+        console.log(profile)
+        /* if (profile) {
           account.fetchCards = () => {
             if (account.cardFetching) {
               return account.cardFetching
@@ -115,8 +116,8 @@ class App extends React.Component {
             })())
             return account.cardFetching
           }
-        }
-        return account
+        } */
+        return profile
       })())
       return this._near.accounts[accountId]
     }
@@ -124,13 +125,14 @@ class App extends React.Component {
     if (this._near.accountId) {
       let account = await this._near.getAccount(this._near.accountId)
       if (account === null) {
-        await this._near.contract.register_account()
+        await this._near.contract.register_profile()
         delete this._near.accounts[this._near.accountId]
         account = await this._near.getAccount(this._near.accountId)
+        console.log(account)
       }
       this.setState({
-        account,
-        requests: account.requests
+        account
+        // requests: account.requests
       })
     }
   }
