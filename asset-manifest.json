@@ -1,0 +1,28 @@
+{
+  "files": {
+    "main.css": "/static/css/main.1c0cf946.chunk.css",
+    "main.js": "/static/js/main.e5cc8f4d.chunk.js",
+    "main.js.map": "/static/js/main.e5cc8f4d.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.c8a21426.js",
+    "runtime-main.js.map": "/static/js/runtime-main.c8a21426.js.map",
+    "static/css/2.f747b8b9.chunk.css": "/static/css/2.f747b8b9.chunk.css",
+    "static/js/2.bb59509c.chunk.js": "/static/js/2.bb59509c.chunk.js",
+    "static/js/2.bb59509c.chunk.js.map": "/static/js/2.bb59509c.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.3b9af2625c92478a042f56a8ab30c0a4.js": "/precache-manifest.3b9af2625c92478a042f56a8ab30c0a4.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/2.f747b8b9.chunk.css.map": "/static/css/2.f747b8b9.chunk.css.map",
+    "static/css/main.1c0cf946.chunk.css.map": "/static/css/main.1c0cf946.chunk.css.map",
+    "static/js/2.bb59509c.chunk.js.LICENSE.txt": "/static/js/2.bb59509c.chunk.js.LICENSE.txt",
+    "static/media/avocado.gif": "/static/media/avocado.f0698336.gif",
+    "static/media/logo.png": "/static/media/logo.af8e6949.png",
+    "static/media/tomato.png": "/static/media/tomato.9239fac3.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.c8a21426.js",
+    "static/css/2.f747b8b9.chunk.css",
+    "static/js/2.bb59509c.chunk.js",
+    "static/css/main.1c0cf946.chunk.css",
+    "static/js/main.e5cc8f4d.chunk.js"
+  ]
+}
