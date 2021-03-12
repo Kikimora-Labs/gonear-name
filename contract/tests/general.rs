@@ -7,7 +7,7 @@ use accounts_marketplace::ContractContract as AMContract;
 use accounts_marketplace::{ProfileView, INIT_BET_PRICE, OFFER_ACCOUNT_DEPOSIT};
 
 use near_sdk::json_types::WrappedBalance;
-use near_sdk::AccountId;
+use near_sdk::{Balance,AccountId};
 use near_sdk_sim::{call, deploy, init_simulator, to_yocto, view, ContractAccount, UserAccount};
 
 // Load in contract bytes at runtime
@@ -308,3 +308,78 @@ fn double_claim() {
     );
     assert!(!outcome.is_ok(), "Should panic");
 }
+
+#[test]
+fn bet_claim_simple() {
+    let (master_account, contract) = init();
+
+    let (alice, bob) = create_bob_sells_alice(&master_account, &contract);
+
+    for _ in 0..10 {
+        let outcome = call!(
+            bob,
+            contract.claim(alice.account_id().try_into().unwrap()),
+            deposit = OFFER_ACCOUNT_DEPOSIT * 100
+        );
+        outcome.assert_success();
+
+        let outcome = call!(
+            bob,
+            contract.bet(alice.account_id().try_into().unwrap()),
+            deposit = OFFER_ACCOUNT_DEPOSIT * 100
+        );
+        outcome.assert_success();
+    }
+}
+
+#[test]
+fn bet_claim_forfeit() {
+    let (master_account, contract) = init();
+
+    let (alice, bob) = create_bob_sells_alice(&master_account, &contract);
+
+    for _ in 0..10 {
+        let claim_price: Option<WrappedBalance> =
+            view!(contract.get_claim_price(alice.account_id().try_into().unwrap())).unwrap_json();
+        let outcome = call!(
+            bob,
+            contract.claim(alice.account_id().try_into().unwrap()),
+            deposit = claim_price.unwrap().into()
+        );
+        outcome.assert_success();
+
+        let bet_price: Option<WrappedBalance> =
+            view!(contract.get_bet_price(alice.account_id().try_into().unwrap())).unwrap_json();
+        let mut deposit:Balance = bet_price.unwrap().into();
+        let outcome = call!(
+            bob,
+            contract.bet(alice.account_id().try_into().unwrap()),
+            deposit = deposit
+        );
+        assert!(format!("{:?}", outcome.status())
+        .contains("Attached deposit must be no less than bet price plus forfeit"));
+
+        let forfeit: Option<WrappedBalance> =
+            view!(contract.get_forfeit(alice.account_id().try_into().unwrap())).unwrap_json();
+        let forfeit: Balance = forfeit.unwrap().into();
+        assert!(forfeit * 19 < deposit);
+        assert!(forfeit * 20 > deposit);
+        deposit += forfeit;
+        let outcome = call!(
+                bob,
+                contract.bet(alice.account_id().try_into().unwrap()),
+                deposit = deposit - 1
+            );
+        assert!(format!("{:?}", outcome.status())
+        .contains("Attached deposit must be no less than bet price plus forfeit"));
+
+        deposit = deposit * 1001 / 1000;
+        let outcome = call!(
+            bob,
+            contract.bet(alice.account_id().try_into().unwrap()),
+            deposit = deposit
+        );
+        outcome.assert_success();
+    }
+}
+

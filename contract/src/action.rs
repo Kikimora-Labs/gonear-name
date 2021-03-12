@@ -110,10 +110,22 @@ impl Contract {
 
     #[payable]
     pub fn bet(&mut self, account_id: ValidAccountId) {
-        let bet_price = self.get_bet_price(account_id.clone()).unwrap().into();
+        let bet_price: Balance = self.get_bet_price(account_id.clone()).unwrap().into();
+        let forfeit = if let Some(_) = self
+            .claim_to_account_id
+            .remove(&(bet_price * 2, account_id.clone().into()))
+        {
+            let mut account = self.accounts.remove(account_id.as_ref()).unwrap();
+            let forfeit = self.calculate_forfeit(&account.claim.unwrap().1, bet_price);
+            account.claim = None;
+            self.accounts.insert(account_id.as_ref(), &account);
+            forfeit
+        } else {
+            0
+        };
         assert!(
-            env::attached_deposit() >= bet_price,
-            "Attached deposit must be no less than bet price"
+            env::attached_deposit() >= bet_price + forfeit,
+            "Attached deposit must be no less than bet price plus forfeit"
         );
         // 1. Update profile who bet
         let mut profile = self.get_profile_or_create(&env::predecessor_account_id());
@@ -125,8 +137,7 @@ impl Contract {
         // 2. Update account and bet leaders
         self.update_bet_leaders(&env::predecessor_account_id(), &account_id.into());
 
-        // 3. Remove from claim
-        // TODO
+        // 3. account.claim is already None
     }
 
     #[payable]
@@ -153,11 +164,7 @@ impl Contract {
 
     pub fn get_bet_price(&self, account_id: ValidAccountId) -> Option<WrappedBalance> {
         if let Some(account) = self.get_account(account_id) {
-            let mut bet_price = INIT_BET_PRICE;
-            for _ in 1..account.bets.len() {
-                bet_price = bet_price * 6 / 5;
-            }
-            Some(bet_price.into())
+            Some(self.calculate_bet(account.bets.len()).into())
         } else {
             None
         }
@@ -168,11 +175,20 @@ impl Contract {
             if account.claim.is_some() {
                 None
             } else {
-                let mut bet_price = INIT_BET_PRICE * 2;
-                for _ in 1..account.bets.len() {
-                    bet_price = bet_price * 6 / 5;
-                }
-                Some(bet_price.into())
+                Some((self.calculate_bet(account.bets.len()) * 2).into())
+            }
+        } else {
+            None
+        }
+    }
+
+    pub fn get_forfeit(&self, account_id: ValidAccountId) -> Option<WrappedBalance> {
+        if let Some(account) = self.get_account(account_id) {
+            if account.claim.is_none() {
+                None
+            } else {
+                let bet_price = self.calculate_bet(account.bets.len());
+                Some(self.calculate_forfeit(&account.claim.unwrap().1.into(), bet_price).into())
             }
         } else {
             None
@@ -201,5 +217,18 @@ impl Contract {
         self.bet_to_account_id
             .insert(&(bet_price, bet_on_account_id.clone()), &());
         self.accounts.insert(&bet_on_account_id, &account);
+    }
+
+    fn calculate_bet(&self, power: usize) -> Balance {
+        let mut bet_price = INIT_BET_PRICE;
+        for _ in 1..power {
+            bet_price = bet_price * 6 / 5;
+        }
+        bet_price
+    }
+
+    fn calculate_forfeit(&self, timestamp: &Timestamp, bet_price: Balance) -> Balance {
+        // TODO
+        std::cmp::min((env::block_timestamp() - timestamp) as u128 / 48 / 60 / 60, 1_000_000_000) * bet_price / 5_000_000_000 + bet_price / 20
     }
 }
