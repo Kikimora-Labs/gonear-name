@@ -1,34 +1,48 @@
 import React from 'react'
 
-const fromNear = (s) => parseFloat(s) / 1e24
+const fromNear = (s) => parseFloat(s) / 1e24 || 0
 
 function BuyButton (props) {
-  async function buyCard (e) {
+  const betPrice = fromNear(props.bet) + fromNear(props.forfeit)
+  const claimPrice = fromNear(props.claim)
+  async function betBid (e) {
     e.preventDefault()
-    await props._near.contract.buy_card({ card_id: props.cardId }, '200000000000000', props.price)
+    await props._near.contract.bet({ bid_id: props.bidId }, '200000000000000', String(betPrice * 1e9) + '000000000000000')
   }
-
-  const price = fromNear(props.price)
-  const appCommission = price / 100
-  let artDaoProfit = price / 10
-  let ownerPrice = price - appCommission - artDaoProfit
+  async function claimBid (e) {
+    e.preventDefault()
+    await props._near.contract.bet({ bid_id: props.bidId }, '200000000000000', String(claimPrice * 1e9) + '000000000000000')
+  }
+  const appCommission = betPrice / 100
+  let artDaoProfit = betPrice / 10
+  let ownerPrice = betPrice - appCommission - artDaoProfit
   if (!props.ownerId) {
     artDaoProfit += ownerPrice
     ownerPrice = 0
   }
 
-  const newPrice = price * 1.2
-
+  const newPrice = betPrice * 1.2
+  // className='col col-12 col-lg-8 col-xl-8'
   return (
     <div>
-      <button
-        className='btn btn-success'
-        disabled={!props.signedIn}
-        onClick={(e) => buyCard(e)}
-      >
-        Buy for {price.toFixed(2)} NEAR
-      </button>
-      <div className='text-muted text-start'>
+      <div className='row py-3'>
+        <button
+          className='btn btn-primary btn-lg btn-block'
+          disabled={!props.signedIn}
+          onClick={(e) => betBid(e)}
+        >
+        Bet for {betPrice.toFixed(2)} NEAR
+        </button>
+        <div className='row py-1' />
+        <button
+          className='btn btn-success btn-lg btn-block'
+          disabled={!props.signedIn}
+          onClick={(e) => claimBid(e)}
+        >
+        Claim for {claimPrice.toFixed(2)} NEAR
+        </button>
+      </div>
+      <div className='row text-muted text-start'>
         Price breakdown:
         <ul>
           {props.ownerId && (

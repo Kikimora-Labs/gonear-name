@@ -1,24 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { BuyButton, fromNear } from './Helpers'
+import { BuyButton } from './Helpers'
 import TimeAgo from 'timeago-react'
 import { Link } from 'react-router-dom'
-import PriceButton from './PriceButton'
 
-const mapBidInfo = (c) => {
-  return c ? {
-    ownerId: c.owner_id,
-    purchasePrice: fromNear(c.purchase_price),
-    purchaseTime: new Date(parseFloat(c.purchase_time) / 1e6),
-    volume: fromNear(c.volume),
-    artDaoProfit: fromNear(c.art_dao_profit),
-    numTrades: c.num_trades
+const mapBidInfo = (b) => {
+  return b ? {
+    numClaims: b.num_claims,
+    claim: b.claim,
+    bets: b.bets
   } : {
-    ownerId: null,
-    purchasePrice: 0,
-    purchaseTime: null,
-    volume: 0,
-    artDaoProfit: 0,
-    numTrades: 0
+    numClaims: 0,
+    claim: null,
+    bets: null
   }
 }
 
@@ -32,11 +25,19 @@ function Bid (props) {
     const bet = await props._near.contract.get_bet_price({
       bid_id: bidId
     })
+    const claim = await props._near.contract.get_claim_price({
+      bid_id: bidId
+    })
+    const forfeit = await props._near.contract.get_forfeit({
+      bid_id: bidId
+    })
     const bidInfo = mapBidInfo(await props._near.contract.get_bid({
       bid_id: bidId
     }))
     bidInfo.refreshTime = refreshTime
     bidInfo.bet = bet
+    bidInfo.claim = claim
+    bidInfo.forfeit = forfeit
     return bidInfo
   }, [props._near, bidId, refreshTime])
 
@@ -46,37 +47,28 @@ function Bid (props) {
     }
   }, [props.connected, fetchInfo, bidId, hidden])
 
+  console.log(bidInfo)
+
   return bidInfo ? (
     <div className='bid m-2'>
-      <div className='card-body text-start'>
-        <h3>#{bidId}</h3>
-        {bidInfo.ownerId ? (
+      <div className='bid-body text-start'>
+        <h3>{bidId}</h3>
+        {!bidInfo.claim ? (
           <div>
             <p>
-              Owned by {bidInfo.ownerId === props.signedAccountId ? 'you' : (
-                <Link to={`/a/${bidInfo.ownerId}`}>@{bidInfo.ownerId}</Link>
-              )}<br />
-              Purchased <TimeAgo datetime={bidInfo.purchaseTime} /> for {bidInfo.purchasePrice.toFixed(2)} NEAR<br />
-            </p>
-            <p>
-              Total bid volume {bidInfo.volume.toFixed(2)} NEAR<br />
-              Art DAO got {bidInfo.artDaoProfit.toFixed(2)} NEAR<br />
+              Claimed?
             </p>
           </div>
         ) : (
           <div>
             <p>
-              Not owned by anyone.
+              Not claimed by anyone.
             </p>
           </div>
         )}
       </div>
-      <div className='bid-footer text-center'>
-        {bidInfo.ownerId === props.signedAccountId ? (
-          <PriceButton {...props} bidId={bidId} price={bidInfo.bet} />
-        ) : (
-          <BuyButton {...props} bidId={bidId} price={bidInfo.bet} ownerId={bidInfo.ownerId} />
-        )}
+      <div className='text-center'>
+        <BuyButton {...props} bidId={bidId} bet={bidInfo.bet} forfeit={bidInfo.forfeit} claim={bidInfo.claim} ownerId={bidInfo.ownerId} />
       </div>
     </div>
   ) : (
