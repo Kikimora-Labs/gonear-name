@@ -13,7 +13,7 @@ import MarketPage from './pages/Market'
 import ClaimsPage from './pages/Claims'
 import RulesPage from './pages/Rules'
 import ProfilePage from './pages/Profile'
-import AccountPage from './pages/Account'
+import BidPage from './pages/Bid'
 
 const IsMainnet = window.location.hostname === 'berry.cards'
 const TestNearConfig = {
@@ -272,8 +272,8 @@ class App extends React.Component {
             <Route exact path='/profile/:profileId'>
               <ProfilePage {...passProps} />
             </Route>
-            <Route exact path='/account/:accountId'>
-              <AccountPage {...passProps} />
+            <Route exact path='/bid/:bidId'>
+              <BidPage {...passProps} />
             </Route>
           </Switch>
         </Router>

@@ -6,7 +6,7 @@ function PriceButton (props) {
   return (
     <div>
       <Link
-        to={`/c/${props.cardId}`}
+        to={`/bid/${props.bidId}`}
         className='btn btn-success' disabled={!props.signedIn}
       >
         {fromNear(props.price).toFixed(2)} NEAR

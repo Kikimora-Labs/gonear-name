@@ -1,7 +1,7 @@
 import './Claims.scss'
 import React, { useEffect, useState } from 'react'
 import uuid from 'react-uuid'
-import CardPreview from '../components/CardPreview'
+import BidPreview from '../components/BidPreview'
 import InfiniteScroll from 'react-infinite-scroller'
 
 const FetchLimit = 25
@@ -31,10 +31,10 @@ function ClaimPage (props) {
     }
   }, [props.connected])
 
-  const cards = feed.map(([rating, cardId]) => {
-    const key = `${gkey}-${cardId}`
+  const bids = feed.map(([rating, bidId]) => {
+    const key = `${gkey}-${bidId}`
     return (
-      <CardPreview {...props} key={key} cardId={cardId} rating={rating} />
+      <BidPreview {...props} key={key} bidId={bidId} rating={rating} />
     )
   })
 
@@ -57,7 +57,7 @@ function ClaimPage (props) {
               hasMore={hasMore}
               loader={loader}
             >
-              {cards}
+              {bids}
             </InfiniteScroll>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'react-router'
 import uuid from 'react-uuid'
-import CardPreview from '../components/CardPreview'
+import BidPreview from '../components/BidPreview'
 import InfiniteScroll from 'react-infinite-scroller'
 
 const FetchLimit = 25
@@ -39,10 +39,10 @@ function ProfilePage (props) {
     }
   }, [props.connected])
 
-  const cards = feed.map(([rating, cardId]) => {
-    const key = `${gkey}-${cardId}`
+  const bids = feed.map(([rating, bidId]) => {
+    const key = `${gkey}-${bidId}`
     return (
-      <CardPreview {...props} key={key} cardId={cardId} rating={rating} />
+      <BidPreview {...props} key={key} bidId={bidId} rating={rating} />
     )
   })
 
@@ -86,7 +86,7 @@ function ProfilePage (props) {
             hasMore={hasMore}
             loader={loader}
           >
-            {cards}
+            {bids}
           </InfiniteScroll>
         </div>
         <div className='col'>
@@ -97,7 +97,7 @@ function ProfilePage (props) {
             hasMore={hasMore}
             loader={loader}
           >
-            {cards}
+            {bids}
           </InfiniteScroll>
         </div>
       </div>
