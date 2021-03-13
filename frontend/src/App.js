@@ -20,7 +20,7 @@ const TestNearConfig = {
   networkId: 'testnet',
   nodeUrl: 'https://rpc.testnet.near.org',
   archivalNodeUrl: 'https://rpc.testnet.internal.near.org',
-  contractName: 'dev-1615585759345-7550229',
+  contractName: 'dev-1615668901851-6597817',
   walletUrl: 'https://wallet.testnet.near.org'
 }
 const MainNearConfig = {
@@ -44,6 +44,20 @@ const mapProfile = (p) => {
     numBets: p.num_bets,
     numClaims: p.num_claims,
     numAcquisitions: p.num_acquisitions
+  }
+}
+
+const emptyProfile = () => {
+  return {
+    participation: [],
+    acquisitions: [],
+    betsVolume: fromNear(0),
+    availableRewards: fromNear(0),
+    profitTaken: fromNear(0),
+    numOffers: 0,
+    numBets: 0,
+    numClaims: 0,
+    numAcquisitions: 0
   }
 }
 
@@ -89,16 +103,17 @@ class App extends React.Component {
         'get_claim_price',
         'get_forfeit',
         'get_profile',
-        'get_num_profiles',
         'get_bid',
-        'get_num_bids',
         'get_top_bets',
-        'get_top_claims'
+        'get_top_claims',
+        'get_global_stats'
       ],
       changeMethods: [
         'offer',
         'bet',
-        'claim'
+        'claim',
+        'finalize',
+        'acquire'
       ]
     })
 
@@ -110,7 +125,7 @@ class App extends React.Component {
       }
       this._near.profiles[profileId] = Promise.resolve((async () => {
         const p = await this._near.contract.get_profile({ profile_id: profileId })
-        const profile = p ? mapProfile(p) : null
+        const profile = p ? mapProfile(p) : emptyProfile()
         return profile
       })())
       return this._near.profiles[profileId]

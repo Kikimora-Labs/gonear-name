@@ -9,10 +9,12 @@ use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::{TreeMap, UnorderedMap, UnorderedSet, Vector};
 use near_sdk::json_types::{Base58PublicKey, ValidAccountId, WrappedBalance, WrappedTimestamp};
 use near_sdk::serde::{Deserialize, Serialize};
-use near_sdk::{env, log, near_bindgen, AccountId, Balance, PanicOnDefault, PublicKey, Timestamp};
+use near_sdk::{env, log, near_bindgen, AccountId, Balance, PanicOnDefault, PublicKey, Timestamp, Promise};
 
 pub type BidId = AccountId;
 pub type ProfileId = AccountId;
+
+pub const ACQUISITION_TIME: u64 = 48 * 60 * 60; // 48 hours
 
 near_sdk::setup_alloc!();
 
@@ -33,6 +35,8 @@ pub struct Contract {
 
     pub total_commission: Balance,
 
+    pub acquisition_time: u64, // in seconds
+
     pub owner_id: AccountId,
     pub owner_pk: PublicKey,
 }
@@ -40,12 +44,13 @@ pub struct Contract {
 #[near_bindgen]
 impl Contract {
     #[init]
-    pub fn test_new() -> Self {
+    pub fn test_new(acquisition_time: u64) -> Self {
         assert!(!env::state_exists(), "Already initialized");
         log!(
-            "Test init with owner_id = {:?}, owner_pk = {:?}",
+            "Test init with owner_id = {:?}, owner_pk = {:?}, acquisition_time = {:?}",
             env::signer_account_id(),
-            env::signer_account_pk()
+            env::signer_account_pk(),
+            acquisition_time
         );
         Self {
             profiles: UnorderedMap::new(b"u".to_vec()),
@@ -57,6 +62,7 @@ impl Contract {
             num_claims: 0,
             num_acquisitions: 0,
             total_commission: 0,
+            acquisition_time,
             owner_id: env::signer_account_id(),
             owner_pk: env::signer_account_pk(),
         }
@@ -75,8 +81,21 @@ impl Contract {
             num_claims: 0,
             num_acquisitions: 0,
             total_commission: 0,
+            acquisition_time: ACQUISITION_TIME,
             owner_id: owner_id.into(),
             owner_pk: owner_pk.into(),
         }
+    }
+
+    pub fn get_global_stats(&self) -> (u64, u64, WrappedBalance, u64, u64, u64, u64) {
+        (
+            self.profiles.len(),
+            self.bids.len(),
+            self.total_commission.into(),
+            self.num_offers,
+            self.num_bets,
+            self.num_claims,
+            self.num_acquisitions,
+        )
     }
 }

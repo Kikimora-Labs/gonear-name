@@ -1,16 +1,18 @@
 use std::convert::TryInto;
+use std::time::{Duration, Instant};
 // TODO remove
 use bs58;
+use std::thread::sleep;
 
 /// Import the generated proxy contract
 use accounts_marketplace::ContractContract as AMContract;
 use accounts_marketplace::{
-    ProfileView, ERR_ALREADY_CLAIMED, ERR_ALREADY_OFFERED, ERR_BET_FORFEIT_NOT_ENOUGH,
-    ERR_CLAIM_NOT_ENOUGH, ERR_GAINER_SAME_AS_OFFER, ERR_OFFER_DEPOSIT_NOT_ENOUGH, INIT_BET_PRICE,
-    OFFER_DEPOSIT,
+    ProfileView, ERR_ACQUIRE_REJECTED, ERR_ALREADY_CLAIMED, ERR_ALREADY_OFFERED,
+    ERR_BET_FORFEIT_NOT_ENOUGH, ERR_BET_ON_ACQUISITION, ERR_CLAIM_NOT_ENOUGH,
+    ERR_GAINER_SAME_AS_OFFER, ERR_OFFER_DEPOSIT_NOT_ENOUGH, INIT_BET_PRICE, OFFER_DEPOSIT,
 };
 
-use near_sdk::json_types::WrappedBalance;
+use near_sdk::json_types::{Base58PublicKey, WrappedBalance};
 use near_sdk::{AccountId, Balance};
 use near_sdk_sim::{call, deploy, init_simulator, to_yocto, view, ContractAccount, UserAccount};
 
@@ -35,24 +37,13 @@ fn test_init() -> (UserAccount, ContractAccount<AMContract>) {
         // User deploying the contract,
         signer_account: master_account,
         // init method
-        init_method: test_new()
+        init_method: test_new(10) // 10 seconds
     );
     (master_account, deployed_contract)
 }
 
 fn init() -> (UserAccount, ContractAccount<AMContract>) {
     let master_account = init_simulator(None);
-
-    // TODO SIMPLIFY THIS HELL
-    let key = bs58::encode(
-        &master_account
-            .signer
-            .public_key
-            .unwrap_as_ed25519()
-            .0
-            .to_vec(),
-    )
-    .into_string();
     let deployed_contract = deploy!(
         // Contract Proxy
         contract: AMContract,
@@ -63,9 +54,17 @@ fn init() -> (UserAccount, ContractAccount<AMContract>) {
         // User deploying the contract,
         signer_account: master_account,
         // init method
-        init_method: new(master_account.account_id().try_into().unwrap(), key.try_into().unwrap())
+        init_method: new(master_account.account_id().try_into().unwrap(), to_base58_pk(&master_account))
     );
     (master_account, deployed_contract)
+}
+
+fn to_base58_pk(user: &UserAccount) -> Base58PublicKey {
+    // TODO SIMPLIFY THIS HELL
+    bs58::encode(&user.signer.public_key.unwrap_as_ed25519().0.to_vec())
+        .into_string()
+        .try_into()
+        .unwrap()
 }
 
 fn create_carol(master_account: &UserAccount) -> UserAccount {
@@ -88,6 +87,29 @@ fn create_bob_sells_alice(
     let result: bool = outcome.unwrap_json();
     assert!(result);
     (alice, bob)
+}
+
+fn claim(profile: &UserAccount, bid: &UserAccount, contract: &ContractAccount<AMContract>) {
+    let claim_price: Option<WrappedBalance> =
+        view!(contract.get_claim_price(bid.account_id().try_into().unwrap())).unwrap_json();
+    let outcome = call!(
+        profile,
+        contract.claim(bid.account_id().try_into().unwrap()),
+        deposit = claim_price.unwrap().into()
+    );
+    outcome.assert_success();
+}
+
+fn forfeit(bid: &UserAccount, contract: &ContractAccount<AMContract>) -> Balance {
+    let f: Option<WrappedBalance> =
+        view!(contract.get_forfeit(bid.account_id().try_into().unwrap())).unwrap_json();
+    f.unwrap().into()
+}
+
+fn bet_price(bid: &UserAccount, contract: &ContractAccount<AMContract>) -> Balance {
+    let f: Option<WrappedBalance> =
+        view!(contract.get_bet_price(bid.account_id().try_into().unwrap())).unwrap_json();
+    f.unwrap().into()
 }
 
 #[test]
@@ -145,7 +167,16 @@ fn view_first_offer() {
 
     let (alice, bob) = create_bob_sells_alice(&master_account, &contract);
 
-    let num_profiles: u64 = view!(contract.get_num_profiles()).unwrap_json();
+    let (
+        num_profiles,
+        _num_bids,
+        _total_commission,
+        _num_offers,
+        _num_bets,
+        _num_claims,
+        _num_acquisitions,
+    ): (u64, u64, WrappedBalance, u64, u64, u64, u64) =
+        view!(contract.get_global_stats()).unwrap_json();
     assert_eq!(num_profiles, 1);
 
     let profile_view: Option<ProfileView> =
@@ -477,4 +508,62 @@ fn rewards_converge() {
     let reward: Balance = profile_view.unwrap().available_rewards.into();
     assert!(reward < to_yocto("0.7501"));
     assert!(reward > to_yocto("0.7499"));
+}
+
+#[test]
+fn simple_acquisition() {
+    let (master_account, contract) = test_init();
+
+    let (alice, bob) = create_bob_sells_alice(&master_account, &contract);
+    claim(&bob, &alice, &contract);
+
+    let mut last_forfeit = 0;
+
+    for _ in 0..10 {
+        let cur_time = Instant::now();
+        let forfeit = forfeit(&alice, &contract);
+        assert!(forfeit >= last_forfeit);
+        last_forfeit = forfeit;
+
+        // This call is necessary due to sdk-sim not processing time otherwise
+        let _ = call!(
+            bob,
+            contract.claim(alice.account_id().try_into().unwrap()),
+            deposit = 1
+        );
+
+        sleep(Duration::from_secs(1) - (Instant::now() - cur_time));
+    }
+
+    let bet_price = bet_price(&alice, &contract);
+    assert_eq!(bet_price, last_forfeit * 4);
+
+    let outcome = call!(
+        bob,
+        contract.bet(alice.account_id().try_into().unwrap()),
+        deposit = OFFER_DEPOSIT * 100
+    );
+    assert!(format!("{:?}", outcome.status()).contains(ERR_BET_ON_ACQUISITION));
+
+    let carol = create_carol(&master_account);
+    let outcome = call!(
+        carol,
+        contract.acquire(alice.account_id().try_into().unwrap(), to_base58_pk(&carol)),
+        deposit = OFFER_DEPOSIT * 100
+    );
+    assert!(format!("{:?}", outcome.status()).contains(ERR_ACQUIRE_REJECTED));
+
+    let outcome = call!(
+        bob,
+        contract.acquire(alice.account_id().try_into().unwrap(), to_base58_pk(&carol)),
+        deposit = OFFER_DEPOSIT * 100
+    );
+    outcome.assert_success();
+
+    let outcome = call!(
+        bob,
+        contract.acquire(alice.account_id().try_into().unwrap(), to_base58_pk(&carol)),
+        deposit = OFFER_DEPOSIT * 100
+    );
+    assert!(!outcome.is_ok(), "Should panic");
 }

@@ -1,19 +1,27 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { fromNear, rules } from '../components/Helpers'
 
+const mapStats = (s) => {
+  return {
+    numProfiles: s[0],
+    numBids: s[1],
+    totalCommission: fromNear(s[2]),
+    numOffers: s[3],
+    numBets: s[4],
+    numClaims: s[5],
+    numAcquisitions: s[6]
+  }
+}
+
 function StatsPage (props) {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
 
   const fetchStats = useCallback(async () => {
-    const [numProfiles, numBids] = await Promise.all([
-      props._near.contract.get_num_profiles(),
-      props._near.contract.get_num_bids()
+    const [stats] = await Promise.all([
+      props._near.contract.get_global_stats()
     ])
-    return {
-      numProfiles,
-      numBids
-    }
+    return mapStats(stats)
   }, [props._near])
 
   useEffect(() => {
@@ -42,8 +50,8 @@ function StatsPage (props) {
             <div>
               <h3>Global Stats</h3>
               <ul>
-                <li>Num profiles: {stats.numProfiles}</li>
-                <li>Num accounts: {stats.numBids}</li>
+                <li>Num active profiles: {stats.numProfiles}</li>
+                <li>Num active bids: {stats.numBids}</li>
               </ul>
             </div>
           </div>

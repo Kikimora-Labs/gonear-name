@@ -39,10 +39,6 @@ impl Contract {
         self.bids.get(bid_id.as_ref()).map(|a| (&a).into())
     }
 
-    pub fn get_num_bids(&self) -> u64 {
-        self.bids.len()
-    }
-
     pub fn get_top_bets(
         &self,
         from_key: Option<(WrappedBalance, BidId)>,

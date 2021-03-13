@@ -55,10 +55,6 @@ impl Contract {
     pub fn get_profile(&self, profile_id: ValidAccountId) -> Option<ProfileView> {
         self.profiles.get(profile_id.as_ref()).map(|p| (&p).into())
     }
-
-    pub fn get_num_profiles(&self) -> u64 {
-        self.profiles.len()
-    }
 }
 
 impl Contract {
