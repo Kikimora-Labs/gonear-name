@@ -1,84 +1,108 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'react-router'
-import CardPreview from '../components/CardPreview'
 import uuid from 'react-uuid'
+import CardPreview from '../components/CardPreview'
+import InfiniteScroll from 'react-infinite-scroller'
 
-function AccountPage (props) {
-  const { accountId } = useParams()
-  const [account, setAccount] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [cardIds, setCardsIds] = useState([])
+const FetchLimit = 25
+
+function ProfilePage (props) {
+  const { profileId } = useParams()
+  const [feed, setFeed] = useState([])
+  const [profile, setProfile] = useState(null)
+  const [hasMore, setHasMore] = useState(false)
   const [gkey] = useState(uuid())
 
-  const fetchCards = useCallback(async () => {
-    const account = await props._near.getAccount(accountId)
-    if (!account) {
-      return
+  // TODO do it in React way
+  if (props._near.getProfile) {
+    Promise.resolve((async () => {
+      setProfile(await props._near.getProfile(profileId))
+    })())
+  }
+  const fetchMore = async () => {
+    const f = [...feed]
+    const lastKey = f.length > 0 ? f[f.length - 1] : null
+    const fetched = await props._near.contract.get_top_bets({
+      from_key: lastKey,
+      limit: FetchLimit
+    })
+    f.push(...fetched)
+    if (fetched.length === 0) {
+      setHasMore(false)
     }
-    setAccount(account)
-    return await account.fetchCards()
-  }, [props._near, accountId])
+    setFeed(f)
+  }
 
   useEffect(() => {
     if (props.connected) {
-      fetchCards().then((cardIds) => {
-        cardIds.sort((a, b) => b[1] - a[1])
-        setCardsIds(cardIds)
-        setLoading(false)
-      })
+      setHasMore(true)
     }
-  }, [props.connected, fetchCards])
+  }, [props.connected])
 
-  const cards = cardIds.map(([cardId, rating]) => {
+  const cards = feed.map(([rating, cardId]) => {
     const key = `${gkey}-${cardId}`
     return (
       <CardPreview {...props} key={key} cardId={cardId} rating={rating} />
     )
   })
 
+  const loader = (
+    <div className='d-flex justify-content-center' key={`${gkey}-loader`}>
+      <div className='spinner-grow' role='status'>
+        <span className='visually-hidden'>Loading...</span>
+      </div>
+    </div>
+  )
+
   return (
-    <div className='container'>
-      <div className='row justify-content-md-center'>
-        {loading ? (
-          <div className='col'>
-            <div className='d-flex justify-content-center'>
-              <div className='spinner-grow' role='status'>
-                <span className='visually-hidden'>Loading...</span>
+    <div>
+      <div className='container'>
+        <div className='row justify-content-md-center'>
+          {!profile ? (
+            <div className='col col-12 col-lg-8 col-xl-6'>
+              <div className='d-flex justify-content-center'>
+                <div className='spinner-grow' role='status'>
+                  <span className='visually-hidden'>Loading...</span>
+                </div>
               </div>
             </div>
-          </div>
-        ) : (
-          <div className='col '>
-            <h3>{accountId === props.signedAccountId ? 'Your cards' : `Cards owned by @${accountId}`}</h3>
-            <div>
-              {cards}
+          ) : (
+            <div className='col col-12 col-lg-4 col-xl-4'>
+              <h3>Stats</h3>
+              <ul>
+                <li>Bets volume: {profile.betsVolume.toFixed(2)} NEAR</li>
+                <li>Available rewards: {profile.availableRewards.toFixed(2)} NEAR</li>
+                <li>TODO BUTTON TO COLLECT REWARDS</li>
+                <li>TODO PRINT OTHER LOCAL STATS</li>
+              </ul>
             </div>
-          </div>
-        )}
-        {!account ? (
-          <div className='col col-12 col-lg-8 col-xl-6'>
-            <div className='d-flex justify-content-center'>
-              <div className='spinner-grow' role='status'>
-                <span className='visually-hidden'>Loading...</span>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className='col col-12 col-lg-4 col-xl-4'>
-            <h3>Stats</h3>
-            <ul>
-              <li>Num cards: {account.numCards}</li>
-              <li>Purchase volume: {account.purchaseVolume.toFixed(2)} NEAR</li>
-              <li>Num purchases: {account.numPurchases}</li>
-              <li>Sale profit: {account.saleProfit.toFixed(2)} NEAR</li>
-              <li>Num sales: {account.numSales}</li>
-              <li>Num votes: {account.numVotes}</li>
-            </ul>
-          </div>
-        )}
+          )}
+        </div>
+        <div className='col'>
+          <h3>Successful claims</h3>
+          <InfiniteScroll
+            pageStart={0}
+            loadMore={fetchMore}
+            hasMore={hasMore}
+            loader={loader}
+          >
+            {cards}
+          </InfiniteScroll>
+        </div>
+        <div className='col'>
+          <h3>Participating</h3>
+          <InfiniteScroll
+            pageStart={0}
+            loadMore={fetchMore}
+            hasMore={hasMore}
+            loader={loader}
+          >
+            {cards}
+          </InfiniteScroll>
+        </div>
       </div>
     </div>
   )
 }
 
-export default AccountPage
+export default ProfilePage

@@ -102,51 +102,25 @@ class App extends React.Component {
       ]
     })
 
-    this._near.accounts = {}
+    this._near.profiles = {}
 
-    this._near.getAccount = (accountId) => {
-      if (accountId in this._near.accounts) {
-        return this._near.accounts[accountId]
+    this._near.getProfile = (profileId) => {
+      if (profileId in this._near.profiles) {
+        return this._near.profiles[profileId]
       }
-      this._near.accounts[accountId] = Promise.resolve((async () => {
-        const p = await this._near.contract.get_profile({ account_id: accountId })
+      this._near.profiles[profileId] = Promise.resolve((async () => {
+        const p = await this._near.contract.get_profile({ profile_id: profileId })
         const profile = p ? mapProfile(p) : null
-        console.log(profile)
-        /* if (profile) {
-          account.fetchCards = () => {
-            if (account.cardFetching) {
-              return account.cardFetching
-            }
-            const promises = []
-            for (let i = 0; i < account.numCards; i += FetchLimit) {
-              promises.push(this._near.contract.get_account_cards({
-                account_id: accountId,
-                from_index: i,
-                limit: FetchLimit
-              }))
-            }
-            account.cardFetching = Promise.resolve((async () => {
-              return (await Promise.all(promises)).flat()
-            })())
-            return account.cardFetching
-          }
-        } */
         return profile
       })())
-      return this._near.accounts[accountId]
+      return this._near.profiles[profileId]
     }
 
     if (this._near.accountId) {
-      let account = await this._near.getAccount(this._near.accountId)
-      if (account === null) {
-        await this._near.contract.register_profile()
-        delete this._near.accounts[this._near.accountId]
-        account = await this._near.getAccount(this._near.accountId)
-        console.log(account)
-      }
+      const profile = await this._near.getProfile(this._near.accountId)
+      console.log(profile)
       this.setState({
-        account
-        // requests: account.requests
+        profile
       })
     }
   }

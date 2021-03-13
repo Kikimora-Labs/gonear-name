@@ -14,7 +14,7 @@ function MarketPage (props) {
   const fetchMore = async () => {
     const f = [...feed]
     const lastKey = f.length > 0 ? f[f.length - 1] : null
-    const fetched = await props._near.contract.get_top_bet_accounts({
+    const fetched = await props._near.contract.get_top_bets({
       from_key: lastKey,
       limit: FetchLimit
     })
