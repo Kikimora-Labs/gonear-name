@@ -4,10 +4,14 @@ use bs58;
 
 /// Import the generated proxy contract
 use accounts_marketplace::ContractContract as AMContract;
-use accounts_marketplace::{ProfileView, INIT_BET_PRICE, OFFER_ACCOUNT_DEPOSIT};
+use accounts_marketplace::{
+    ProfileView, ERR_ALREADY_CLAIMED, ERR_ALREADY_OFFERED, ERR_BET_FORFEIT_NOT_ENOUGH,
+    ERR_CLAIM_NOT_ENOUGH, ERR_GAINER_SAME_AS_OFFER, ERR_OFFER_ACCOUNT_DEPOSIT_NOT_ENOUGH,
+    INIT_BET_PRICE, OFFER_ACCOUNT_DEPOSIT,
+};
 
 use near_sdk::json_types::WrappedBalance;
-use near_sdk::{Balance,AccountId};
+use near_sdk::{AccountId, Balance};
 use near_sdk_sim::{call, deploy, init_simulator, to_yocto, view, ContractAccount, UserAccount};
 
 // Load in contract bytes at runtime
@@ -64,6 +68,12 @@ fn init() -> (UserAccount, ContractAccount<AMContract>) {
     (master_account, deployed_contract)
 }
 
+fn create_carol(
+    master_account: &UserAccount,
+) -> UserAccount { 
+    master_account.create_user("carol".into(), to_yocto("1000000000"))
+}
+
 fn create_bob_sells_alice(
     master_account: &UserAccount,
     contract: &ContractAccount<AMContract>,
@@ -73,7 +83,7 @@ fn create_bob_sells_alice(
 
     let outcome = call!(
         alice,
-        contract.offer_predecessor_account(bob.account_id().try_into().unwrap()),
+        contract.offer(bob.account_id().try_into().unwrap()),
         deposit = ENOUGH_DEPOSIT
     );
     outcome.assert_success();
@@ -93,64 +103,31 @@ fn simulate_init() {
 }
 
 #[test]
-fn simulate_register_profile() {
-    let (master_account, contract) = init();
-
-    let alice = master_account.create_user("alice".to_string(), to_yocto("100"));
-
-    let alice_stats: Option<ProfileView> =
-        view!(contract.get_profile(alice.account_id().try_into().unwrap())).unwrap_json();
-    assert!(alice_stats.is_none());
-
-    let alice_bet_price: Option<WrappedBalance> =
-        view!(contract.get_bet_price(alice.account_id().try_into().unwrap())).unwrap_json();
-    assert!(alice_bet_price.is_none());
-
-    call!(alice, contract.register_profile()).assert_success();
-
-    let alice_stats: Option<ProfileView> =
-        view!(contract.get_profile(alice.account_id().try_into().unwrap())).unwrap_json();
-    assert!(alice_stats.is_some());
-
-    let alice_bet_price: Option<WrappedBalance> =
-        view!(contract.get_bet_price(alice.account_id().try_into().unwrap())).unwrap_json();
-    assert!(alice_bet_price.is_none());
-}
-
-#[test]
-fn simulate_offer_predecessor_account() {
+fn simulate_offer() {
     let (master_account, contract) = init();
 
     let alice = master_account.create_user("alice".to_string(), to_yocto("100"));
 
     let outcome = call!(
         alice,
-        contract.offer_predecessor_account(alice.account_id().try_into().unwrap()),
+        contract.offer(alice.account_id().try_into().unwrap()),
         deposit = 10
     );
-    assert!(format!("{:?}", outcome.status())
-        .contains("Attached deposit must be greater than OFFER_ACCOUNT_DEPOSIT"));
-
-    let outcome = call!(
-        master_account,
-        contract.offer_predecessor_account(alice.account_id().try_into().unwrap()),
-        deposit = ENOUGH_DEPOSIT
-    );
-    assert!(format!("{:?}", outcome.status()).contains("Cannot be executed from owner"));
+    assert!(format!("{:?}", outcome.status()).contains(ERR_OFFER_ACCOUNT_DEPOSIT_NOT_ENOUGH));
 
     let outcome = call!(
         alice,
-        contract.offer_predecessor_account(alice.account_id().try_into().unwrap()),
-        deposit = ENOUGH_DEPOSIT
+        contract.offer(alice.account_id().try_into().unwrap()),
+        deposit = OFFER_ACCOUNT_DEPOSIT
     );
-    assert!(format!("{:?}", outcome.status()).contains("Gainer cannot be equal to predecessor"));
+    assert!(format!("{:?}", outcome.status()).contains(ERR_GAINER_SAME_AS_OFFER));
 
     let bob = master_account.create_user("bob".to_string(), to_yocto("100"));
 
     let outcome = call!(
         alice,
-        contract.offer_predecessor_account(bob.account_id().try_into().unwrap()),
-        deposit = ENOUGH_DEPOSIT
+        contract.offer(bob.account_id().try_into().unwrap()),
+        deposit = OFFER_ACCOUNT_DEPOSIT
     );
     outcome.assert_success();
     let result: bool = outcome.unwrap_json();
@@ -158,12 +135,10 @@ fn simulate_offer_predecessor_account() {
 
     let outcome = call!(
         alice,
-        contract.offer_predecessor_account(bob.account_id().try_into().unwrap()),
-        deposit = ENOUGH_DEPOSIT
+        contract.offer(bob.account_id().try_into().unwrap()),
+        deposit = OFFER_ACCOUNT_DEPOSIT
     );
-    outcome.assert_success();
-    let result: bool = outcome.unwrap_json();
-    assert!(!result, "There should not be Access Key");
+    assert!(format!("{:?}", outcome.status()).contains(ERR_ALREADY_OFFERED));
 }
 
 #[test]
@@ -204,8 +179,7 @@ fn view_first_bet() {
         contract.bet(alice.account_id().try_into().unwrap()),
         deposit = 10
     );
-    assert!(format!("{:?}", outcome.status())
-        .contains("Attached deposit must be no less than bet price"));
+    assert!(format!("{:?}", outcome.status()).contains(ERR_BET_FORFEIT_NOT_ENOUGH));
 
     let outcome = call!(
         bob,
@@ -228,6 +202,7 @@ fn view_first_bet() {
     assert_eq!(bet_price, Some((INIT_BET_PRICE * 6 / 5).into()));
 }
 
+#[cfg(feature = "expensive_tests")]
 #[test]
 fn view_100_bets() {
     let (master_account, contract) = init();
@@ -283,8 +258,7 @@ fn view_first_claim() {
         contract.claim(alice.account_id().try_into().unwrap()),
         deposit = 10
     );
-    assert!(format!("{:?}", outcome.status())
-        .contains("Attached deposit must be no less than claim price"));
+    assert!(format!("{:?}", outcome.status()).contains(ERR_CLAIM_NOT_ENOUGH));
 
     let outcome = call!(
         bob,
@@ -329,7 +303,7 @@ fn double_claim() {
         contract.claim(alice.account_id().try_into().unwrap()),
         deposit = OFFER_ACCOUNT_DEPOSIT * 300
     );
-    assert!(!outcome.is_ok(), "Should panic");
+    assert!(format!("{:?}", outcome.status()).contains(ERR_ALREADY_CLAIMED));
 }
 
 #[test]
@@ -373,14 +347,14 @@ fn bet_claim_forfeit() {
 
         let bet_price: Option<WrappedBalance> =
             view!(contract.get_bet_price(alice.account_id().try_into().unwrap())).unwrap_json();
-        let mut deposit:Balance = bet_price.unwrap().into();
+        let mut deposit: Balance = bet_price.unwrap().into();
         let outcome = call!(
             bob,
             contract.bet(alice.account_id().try_into().unwrap()),
             deposit = deposit
         );
         assert!(format!("{:?}", outcome.status())
-        .contains("Attached deposit must be no less than bet price plus forfeit"));
+            .contains(ERR_BET_FORFEIT_NOT_ENOUGH));
 
         let forfeit: Option<WrappedBalance> =
             view!(contract.get_forfeit(alice.account_id().try_into().unwrap())).unwrap_json();
@@ -389,12 +363,12 @@ fn bet_claim_forfeit() {
         assert!(forfeit * 20 > deposit);
         deposit += forfeit;
         let outcome = call!(
-                bob,
-                contract.bet(alice.account_id().try_into().unwrap()),
-                deposit = deposit - 1
-            );
+            bob,
+            contract.bet(alice.account_id().try_into().unwrap()),
+            deposit = deposit - 1
+        );
         assert!(format!("{:?}", outcome.status())
-        .contains("Attached deposit must be no less than bet price plus forfeit"));
+            .contains(ERR_BET_FORFEIT_NOT_ENOUGH));
 
         deposit = deposit * 1001 / 1000;
         let outcome = call!(
@@ -406,3 +380,59 @@ fn bet_claim_forfeit() {
     }
 }
 
+#[test]
+fn view_carol_bet_and_claim() {
+    let (master_account, contract) = init();
+
+    let (alice, bob) = create_bob_sells_alice(&master_account, &contract);
+    let carol = create_carol(&master_account);
+
+    let bet_price: Option<WrappedBalance> =
+    view!(contract.get_bet_price(alice.account_id().try_into().unwrap())).unwrap_json();
+
+    let outcome = call!(
+        carol,
+        contract.bet(alice.account_id().try_into().unwrap()),
+        deposit = bet_price.unwrap().into()
+    );
+    outcome.assert_success();
+
+    let profile_view: Option<ProfileView> =
+        view!(contract.get_profile(bob.account_id().try_into().unwrap())).unwrap_json();
+    let profile_view = profile_view.unwrap();
+    assert_eq!(profile_view.participation, vec!["alice"]);
+    assert_eq!(profile_view.acquisitions, Vec::<AccountId>::default());
+    assert_eq!(profile_view.num_offers, 1);
+    assert_eq!(profile_view.num_bets, 0);
+    assert_eq!(profile_view.num_claims, 0);
+    assert_eq!(profile_view.bets_volume, 0.into());
+
+    let profile_view: Option<ProfileView> =
+    view!(contract.get_profile(carol.account_id().try_into().unwrap())).unwrap_json();
+    let profile_view = profile_view.unwrap();
+    assert_eq!(profile_view.participation, vec!["alice"]);
+    assert_eq!(profile_view.acquisitions, Vec::<AccountId>::default());
+    assert_eq!(profile_view.num_offers, 0);
+    assert_eq!(profile_view.num_bets, 1);
+    assert_eq!(profile_view.num_claims, 0);
+    assert_eq!(profile_view.bets_volume, INIT_BET_PRICE.into());
+
+    let claim_price: Option<WrappedBalance> =
+    view!(contract.get_claim_price(alice.account_id().try_into().unwrap())).unwrap_json();
+let outcome = call!(
+    carol,
+    contract.claim(alice.account_id().try_into().unwrap()),
+    deposit = claim_price.unwrap().into()
+);
+outcome.assert_success();
+
+let profile_view: Option<ProfileView> =
+view!(contract.get_profile(carol.account_id().try_into().unwrap())).unwrap_json();
+let profile_view = profile_view.unwrap();
+assert_eq!(profile_view.participation, vec!["alice"]);
+assert_eq!(profile_view.acquisitions, Vec::<AccountId>::default());
+assert_eq!(profile_view.num_offers, 0);
+assert_eq!(profile_view.num_bets, 1);
+assert_eq!(profile_view.num_claims, 1);
+assert_eq!(profile_view.bets_volume, INIT_BET_PRICE.into());
+}

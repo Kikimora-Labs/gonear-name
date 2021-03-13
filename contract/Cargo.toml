@@ -21,6 +21,9 @@ near-sdk-sim = { path = "../../near-sdk-rs/near-sdk-sim", version = "=3.0.0-pre.
 #near-sdk-sim = { git = "https://github.com/near/near-sdk-rs.git", tag="3.0.0" }
 #near-sdk-sim = "../near-sdk-rs"
 
+[features]
+expensive_tests = []
+
 [profile.release]
 codegen-units=1
 opt-level = "z"

@@ -85,20 +85,16 @@ impl Contract {
 }
 
 impl Contract {
-    pub(crate) fn add_account(&mut self, account_id: &AccountId) {
-        let mut prefix = Vec::with_capacity(33);
-        prefix.push(b'z');
-        prefix.extend(env::sha256(account_id.as_bytes()));
-        assert!(self
-            .accounts
-            .insert(
-                account_id,
-                &Account {
-                    bets: Vector::new(prefix),
-                    claim: None,
-                    num_claims: 0,
-                }
-            )
-            .is_none());
+    pub(crate) fn extract_account_or_create(&mut self, account_id: &AccountId) -> Account {
+        self.accounts.remove(&account_id).unwrap_or_else(|| {
+            let mut prefix = Vec::with_capacity(33);
+            prefix.push(b'z');
+            prefix.extend(env::sha256(account_id.as_bytes()));
+            Account {
+                bets: Vector::new(prefix),
+                claim: None,
+                num_claims: 0,
+            }
+        })
     }
 }

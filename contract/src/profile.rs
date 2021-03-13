@@ -56,12 +56,12 @@ impl Contract {
         self.profiles.get(account_id.as_ref()).map(|p| (&p).into())
     }
 
-    pub fn register_profile(&mut self) -> ProfileView {
+    /*pub fn register_profile(&mut self) -> ProfileView {
         let account_id = env::predecessor_account_id();
         let profile = self.get_profile_or_create(&account_id);
         self.save_profile(&account_id, &profile);
         (&profile).into()
-    }
+    }*/
 
     pub fn get_num_profiles(&self) -> u64 {
         self.profiles.len()
@@ -69,8 +69,8 @@ impl Contract {
 }
 
 impl Contract {
-    pub(crate) fn get_profile_or_create(&self, account_id: &AccountId) -> Profile {
-        self.profiles.get(&account_id).unwrap_or_else(|| {
+    pub(crate) fn extract_profile_or_create(&mut self, account_id: &AccountId) -> Profile {
+        self.profiles.remove(&account_id).unwrap_or_else(|| {
             let mut prefix = Vec::with_capacity(33);
             prefix.push(b'p');
             prefix.extend(env::sha256(account_id.as_bytes()));
@@ -91,7 +91,7 @@ impl Contract {
         })
     }
 
-    pub(crate) fn save_profile(&mut self, account_id: &AccountId, profile: &Profile) {
-        self.profiles.insert(account_id, profile);
+    pub(crate) fn save_profile_or_panic(&mut self, account_id: &AccountId, profile: &Profile) {
+        assert!(self.profiles.insert(account_id, profile).is_none());
     }
 }
