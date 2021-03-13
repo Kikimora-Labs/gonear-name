@@ -6,20 +6,13 @@ function StatsPage (props) {
   const [loading, setLoading] = useState(true)
 
   const fetchStats = useCallback(async () => {
-    const [t, numAccounts] = await Promise.all([
-      props._near.contract.get_trade_data(),
-      props._near.contract.get_num_accounts()
+    const [numProfiles, numBids] = await Promise.all([
+      props._near.contract.get_num_profiles(),
+      props._near.contract.get_num_bids()
     ])
     return {
-      numAccounts,
-      numPurchases: t.num_purchases,
-      numUniqueCardsBought: t.num_unique_cards_bought,
-      nearVolume: fromNear(t.near_volume),
-      appCommission: fromNear(t.app_owner_profit),
-      artDaoProfit: fromNear(t.art_dao_profit),
-      appOwnerId: t.app_owner_id,
-      artDaoId: t.art_dao_id,
-      totalVotes: t.total_votes
+      numProfiles,
+      numBids
     }
   }, [props._near])
 
@@ -49,15 +42,8 @@ function StatsPage (props) {
             <div>
               <h3>Global Stats</h3>
               <ul>
-              TBD
-                {/* <li>Num accounts: {stats.numAccounts}</li>
-                <li>Total votes: {stats.totalVotes}</li>
-                <li>Total purchases: {stats.numPurchases}</li>
-                <li>Total unique purchases: {stats.numUniqueCardsBought}</li>
-                <li>Total volume: {stats.nearVolume.toFixed(2)} NEAR</li>
-                <li>Total Art DAO profit: {stats.artDaoProfit.toFixed(2)} NEAR</li>
-                <li>Art DAO account ID: <a href={`https://explorer.near.org/accounts/${stats.artDaoId}`}>@{stats.artDaoId}</a></li>
-        <li>Total App commission: {stats.appCommission.toFixed(2)} NEAR</li> */}
+                <li>Num profiles: {stats.numProfiles}</li>
+                <li>Num accounts: {stats.numBids}</li>
               </ul>
             </div>
           </div>
