@@ -7,11 +7,12 @@ function BuyButton (props) {
   const claimPrice = fromNear(props.claim)
   async function betBid (e) {
     e.preventDefault()
-    await props._near.contract.bet({ bid_id: props.bidId }, '200000000000000', String(betPrice * 1e9) + '000000000000000')
+    await props._near.contract.bet({ bid_id: props.bidId }, '200000000000000', String(parseInt(betPrice * 1e9)) + '000000000000000')
   }
   async function claimBid (e) {
     e.preventDefault()
-    await props._near.contract.bet({ bid_id: props.bidId }, '200000000000000', String(claimPrice * 1e9) + '000000000000000')
+    console.log(String(claimPrice * 1e9) + '000000000000000')
+    await props._near.contract.claim({ bid_id: props.bidId }, '200000000000000', String(parseInt(claimPrice * 1e9)) + '000000000000000')
   }
   const appCommission = betPrice / 100
   let artDaoProfit = betPrice / 10
@@ -34,13 +35,23 @@ function BuyButton (props) {
         Bet for {betPrice.toFixed(2)} NEAR
         </button>
         <div className='row py-1' />
-        <button
-          className='btn btn-success btn-lg btn-block'
-          disabled={!props.signedIn}
-          onClick={(e) => claimBid(e)}
-        >
+        {claimPrice ? (
+          <button
+            className='btn btn-success btn-lg btn-block'
+            disabled={!props.signedIn}
+            onClick={(e) => claimBid(e)}
+          >
         Claim for {claimPrice.toFixed(2)} NEAR
-        </button>
+          </button>
+        ) : (
+          <button
+            className='btn btn-outline-warning btn-lg btn-block'
+            disabled
+            onClick={(e) => claimBid(e)}
+          >
+        Already claimed - you can only bet
+          </button>
+        )}
       </div>
       <div className='row text-muted text-start'>
         Price breakdown:
