@@ -1,9 +1,9 @@
-mod account;
 mod action;
+mod bid;
 mod profile;
 
-pub use crate::account::*;
 pub use crate::action::*;
+pub use crate::bid::*;
 pub use crate::profile::*;
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::{TreeMap, UnorderedMap, UnorderedSet, Vector};
@@ -11,17 +11,20 @@ use near_sdk::json_types::{Base58PublicKey, ValidAccountId, WrappedBalance, Wrap
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{env, log, near_bindgen, AccountId, Balance, PanicOnDefault, PublicKey, Timestamp};
 
+pub type BidId = AccountId;
+pub type ProfileId = AccountId;
+
 near_sdk::setup_alloc!();
 
 #[near_bindgen]
 #[derive(BorshDeserialize, BorshSerialize, PanicOnDefault)]
 pub struct Contract {
-    pub profiles: UnorderedMap<AccountId, Profile>,
+    pub profiles: UnorderedMap<ProfileId, Profile>,
 
-    pub accounts: UnorderedMap<AccountId, Account>,
+    pub bids: UnorderedMap<BidId, Bid>,
 
-    pub bet_to_account_id: TreeMap<(Balance, AccountId), ()>,
-    pub claim_to_account_id: TreeMap<(Balance, AccountId), ()>,
+    pub top_bets: TreeMap<(Balance, BidId), ()>,
+    pub top_claims: TreeMap<(Balance, BidId), ()>,
 
     pub num_offers: u64,
     pub num_bets: u64,
@@ -44,9 +47,9 @@ impl Contract {
         );
         Self {
             profiles: UnorderedMap::new(b"u".to_vec()),
-            accounts: UnorderedMap::new(b"a".to_vec()),
-            bet_to_account_id: TreeMap::new(b"b".to_vec()),
-            claim_to_account_id: TreeMap::new(b"c".to_vec()),
+            bids: UnorderedMap::new(b"a".to_vec()),
+            top_bets: TreeMap::new(b"b".to_vec()),
+            top_claims: TreeMap::new(b"c".to_vec()),
             num_offers: 0,
             num_bets: 0,
             num_claims: 0,
@@ -61,9 +64,9 @@ impl Contract {
         assert!(!env::state_exists(), "Already initialized");
         Self {
             profiles: UnorderedMap::new(b"u".to_vec()),
-            accounts: UnorderedMap::new(b"a".to_vec()),
-            bet_to_account_id: TreeMap::new(b"b".to_vec()),
-            claim_to_account_id: TreeMap::new(b"c".to_vec()),
+            bids: UnorderedMap::new(b"a".to_vec()),
+            top_bets: TreeMap::new(b"b".to_vec()),
+            top_claims: TreeMap::new(b"c".to_vec()),
             num_offers: 0,
             num_bets: 0,
             num_claims: 0,

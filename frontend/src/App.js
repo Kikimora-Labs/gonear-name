@@ -84,8 +84,22 @@ class App extends React.Component {
 
     this._near.account = this._near.walletConnection.account()
     this._near.contract = new nearAPI.Contract(this._near.account, NearConfig.contractName, {
-      viewMethods: ['get_bet_price', 'get_claim_price', 'get_forfeit', 'get_profile', 'get_num_profiles', 'get_num_active_accounts', 'get_account', 'get_top_bet_accounts', 'get_top_claim_accounts'],
-      changeMethods: ['offer_predecessor_account', 'bet', 'claim', 'register_profile']
+      viewMethods: [
+        'get_bet_price',
+        'get_claim_price',
+        'get_forfeit',
+        'get_profile',
+        'get_num_profiles',
+        'get_bid',
+        'get_num_bids',
+        'get_top_bets',
+        'get_top_claims'
+      ],
+      changeMethods: [
+        'offer',
+        'bet',
+        'claim'
+      ]
     })
 
     this._near.accounts = {}

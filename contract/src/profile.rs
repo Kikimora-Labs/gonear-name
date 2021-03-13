@@ -2,7 +2,7 @@ use crate::*;
 
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct Profile {
-    pub participation: UnorderedSet<AccountId>,
+    pub participation: UnorderedSet<BidId>,
 
     pub acquisitions: Vector<AccountId>,
 
@@ -20,7 +20,7 @@ pub struct Profile {
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(crate = "near_sdk::serde")]
 pub struct ProfileView {
-    pub participation: Vec<AccountId>,
+    pub participation: Vec<BidId>,
 
     pub acquisitions: Vec<AccountId>,
 
@@ -52,16 +52,9 @@ impl From<&Profile> for ProfileView {
 
 #[near_bindgen]
 impl Contract {
-    pub fn get_profile(&self, account_id: ValidAccountId) -> Option<ProfileView> {
-        self.profiles.get(account_id.as_ref()).map(|p| (&p).into())
+    pub fn get_profile(&self, profile_id: ValidAccountId) -> Option<ProfileView> {
+        self.profiles.get(profile_id.as_ref()).map(|p| (&p).into())
     }
-
-    /*pub fn register_profile(&mut self) -> ProfileView {
-        let account_id = env::predecessor_account_id();
-        let profile = self.get_profile_or_create(&account_id);
-        self.save_profile(&account_id, &profile);
-        (&profile).into()
-    }*/
 
     pub fn get_num_profiles(&self) -> u64 {
         self.profiles.len()
@@ -69,14 +62,14 @@ impl Contract {
 }
 
 impl Contract {
-    pub(crate) fn extract_profile_or_create(&mut self, account_id: &AccountId) -> Profile {
-        self.profiles.remove(&account_id).unwrap_or_else(|| {
+    pub(crate) fn extract_profile_or_create(&mut self, profile_id: &ProfileId) -> Profile {
+        self.profiles.remove(&profile_id).unwrap_or_else(|| {
             let mut prefix = Vec::with_capacity(33);
             prefix.push(b'p');
-            prefix.extend(env::sha256(account_id.as_bytes()));
+            prefix.extend(env::sha256(profile_id.as_bytes()));
             let mut prefix2 = Vec::with_capacity(33);
             prefix2.push(b'q');
-            prefix2.extend(env::sha256(account_id.as_bytes()));
+            prefix2.extend(env::sha256(profile_id.as_bytes()));
             Profile {
                 participation: UnorderedSet::new(prefix),
                 acquisitions: Vector::new(prefix2),
@@ -91,7 +84,7 @@ impl Contract {
         })
     }
 
-    pub(crate) fn save_profile_or_panic(&mut self, account_id: &AccountId, profile: &Profile) {
-        assert!(self.profiles.insert(account_id, profile).is_none());
+    pub(crate) fn save_profile_or_panic(&mut self, profile_id: &ProfileId, profile: &Profile) {
+        assert!(self.profiles.insert(profile_id, profile).is_none());
     }
 }
