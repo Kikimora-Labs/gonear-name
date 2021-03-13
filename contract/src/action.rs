@@ -77,7 +77,7 @@ impl Contract {
         &mut self,
         offer_account_id: AccountId,
         profile_account_id: AccountId,
-        signer_pk: PublicKey,
+        _signer_pk: PublicKey,
     ) -> bool {
         assert_eq!(
             env::predecessor_account_id(),
@@ -99,8 +99,8 @@ impl Contract {
             self.update_bet_leaders(&profile_account_id, &offer_account_id);
 
             // 4. Removing FullAccessKey
-            // TODO what will happen if Promise fails?
-            Promise::new(offer_account_id).delete_key(signer_pk);
+            // TODO it's impossible for now
+            // Promise::new(offer_account_id).delete_key(signer_pk);
         } else {
             // In case of failure, put the amount back.
             Promise::new(offer_account_id).transfer(OFFER_ACCOUNT_DEPOSIT.into());
