@@ -87,4 +87,10 @@ impl Contract {
     pub(crate) fn save_profile_or_panic(&mut self, profile_id: &ProfileId, profile: &Profile) {
         assert!(self.profiles.insert(profile_id, profile).is_none());
     }
+
+    pub(crate) fn update_reward(&mut self, profile_id: &ProfileId, value: &Balance) {
+        let mut profile = self.extract_profile_or_create(profile_id);
+        profile.available_rewards += value;
+        self.save_profile_or_panic(profile_id, &profile);
+    }
 }

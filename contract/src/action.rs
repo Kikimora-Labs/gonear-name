@@ -1,8 +1,10 @@
 use crate::*;
 
 pub const OFFER_DEPOSIT: u128 = 450_000_000_000_000_000_000_000;
-
 pub const INIT_BET_PRICE: u128 = 500_000_000_000_000_000_000_000;
+
+pub const INV_COMMISSION: u128 = 20;
+pub const INV_REWARD_DECAY_MULT_100: u128 = 144;
 
 /// Indicates there are no deposit for a callback for better readability
 pub const NO_DEPOSIT: u128 = 0;
@@ -143,14 +145,28 @@ impl Contract {
 impl Contract {
     fn bet_and_update_leaders(&mut self, profile_id: &ProfileId, bid_id: &BidId, bid: &mut Bid) {
         let mut bet_price = self.calculate_bet(&bid);
-        if bid.bets.len() > 0 {
+        if bid.bets.len() == 0 {
+            // Offer
+            self.update_commission(OFFER_DEPOSIT);
+        } else {
             self.top_bets.remove(&(bet_price, bid_id.clone()));
+            self.update_commission(bet_price / INV_COMMISSION);
+            let mut paid = bet_price - bet_price / INV_COMMISSION;
+            for i in (0..bid.bets.len()).rev() {
+                self.update_reward(
+                    &bid.bets.get(i).unwrap(),
+                    &(paid / INV_REWARD_DECAY_MULT_100 * 100),
+                );
+                paid -= paid / INV_REWARD_DECAY_MULT_100 * 100;
+            }
+            self.update_reward(&bid.bets.get(0).unwrap(), &paid);
         }
 
         bid.bets.push(&profile_id);
         bet_price = bet_price * 6 / 5;
         self.top_bets.insert(&(bet_price, bid_id.clone()), &());
         self.top_claims.remove(&(bet_price, bid_id.clone()));
+
         assert!(self.bids.insert(bid_id, bid).is_none());
     }
 
@@ -178,5 +194,9 @@ impl Contract {
         ) * bet_price
             / 5_000_000_000
             + bet_price / 20
+    }
+
+    fn update_commission(&mut self, value: Balance) {
+        self.total_commission += value;
     }
 }

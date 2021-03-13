@@ -31,6 +31,8 @@ pub struct Contract {
     pub num_claims: u64,
     pub num_acquisitions: u64,
 
+    pub total_commission: Balance,
+
     pub owner_id: AccountId,
     pub owner_pk: PublicKey,
 }
@@ -54,6 +56,7 @@ impl Contract {
             num_bets: 0,
             num_claims: 0,
             num_acquisitions: 0,
+            total_commission: 0,
             owner_id: env::signer_account_id(),
             owner_pk: env::signer_account_pk(),
         }
@@ -71,6 +74,7 @@ impl Contract {
             num_bets: 0,
             num_claims: 0,
             num_acquisitions: 0,
+            total_commission: 0,
             owner_id: owner_id.into(),
             owner_pk: owner_pk.into(),
         }
