@@ -49,6 +49,11 @@ function ClaimPage (props) {
   return (
     <div>
       <div className='container'>
+        <div>
+          <h3>
+            Claims
+          </h3>
+        </div>
         <div className='row justify-content-md-center'>
           <div className='col'>
             <InfiniteScroll

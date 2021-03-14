@@ -49,6 +49,11 @@ function MarketPage (props) {
   return (
     <div>
       <div className='container'>
+        <div>
+          <h3>
+            Account names on sale
+          </h3>
+        </div>
         <div className='row'>
           <div className='col'>
             <InfiniteScroll
