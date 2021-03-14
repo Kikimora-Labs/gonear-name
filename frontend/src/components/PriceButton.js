@@ -9,7 +9,7 @@ function PriceButton (props) {
         to={`/bid/${props.bidId}`}
         className='btn btn-success' disabled={!props.signedIn}
       >
-        {fromNear(props.price).toFixed(2)} NEAR
+Starts from {fromNear(props.price).toFixed(2)} NEAR
       </Link>
     </div>
   )

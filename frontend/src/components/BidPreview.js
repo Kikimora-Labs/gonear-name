@@ -25,16 +25,21 @@ function BidPreview (props) {
   }, [props.connected, propsBet, fetchBid])
 
   return props.bidId ? (
-    <div className='bid bid-preview m-2'>
-      <div className='bid-body'>
-        <Link to={`/bid/${bidId}`}>{bidId}</Link>
-      </div>
-      <div className='bid-footer text-center'>
-        <PriceButton {...props} bidId={bidId} price={bet} />
+    <div className='container m-3'>
+      <div className='row'>
+        <div className='col-3'>
+          <Link to={`/bid/${bidId}`}>{bidId}</Link>
+        </div>
+        <div className='col'>
+          <div className='row py-2' />
+        </div>
+        <div className='col-6'>
+          <PriceButton {...props} bidId={bidId} price={bet} />
+        </div>
       </div>
     </div>
   ) : (
-    <div className='bid bid-preview m-2'>
+    <div className='container m-2'>
       <div className='d-flex justify-content-center'>
         <div className='spinner-grow' role='status'>
           <span className='visually-hidden'>Loading...</span>

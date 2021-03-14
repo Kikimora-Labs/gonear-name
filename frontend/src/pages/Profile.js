@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'react-router'
 import uuid from 'react-uuid'
 import BidPreview from '../components/BidPreview'
+import { OfferButton } from '../components/Helpers'
 import InfiniteScroll from 'react-infinite-scroller'
 
 const FetchLimit = 25
@@ -58,6 +59,7 @@ function ProfilePage (props) {
     <div>
       <div className='container'>
         <div className='row justify-content-md-center'>
+          <OfferButton {...props} />
           {!profile ? (
             <div className='col col-12 col-lg-8 col-xl-6'>
               <div className='d-flex justify-content-center'>

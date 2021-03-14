@@ -49,7 +49,7 @@ function MarketPage (props) {
   return (
     <div>
       <div className='container'>
-        <div className='row justify-content-md-center'>
+        <div className='row'>
           <div className='col'>
             <InfiniteScroll
               pageStart={0}

@@ -55,17 +55,34 @@ function BuyButton (props) {
       </div>
       <div className='row text-muted text-start'>
         Price breakdown:
-        <ul>
-          {props.ownerId && (
-            <li>Owner @{props.ownerId} will get {ownerPrice.toFixed(2)} NEAR</li>
-          )}
-          <li>Art DAO will get {artDaoProfit.toFixed(2)} NEAR</li>
-          <li>1% App commission is {appCommission.toFixed(2)} NEAR</li>
-        </ul>
+        ...
         <p>
           The new price will be {newPrice.toFixed(2)} NEAR
         </p>
       </div>
+    </div>
+  )
+}
+
+function OfferButton (props) {
+  async function offerBid (e) {
+    e.preventDefault()
+    await props._near.contract.offer({ profile_id: document.getElementById('offer_input').value }, '200000000000000', String(parseInt(0.5 * 1e9)) + '000000000000000')
+  }
+
+  return (
+    <div>
+      <form onSubmit={(e) => offerBid(e)}>
+        <div className='input-group mb-3'>
+          <button
+            className='btn btn-primary'
+            disabled={!props.signedIn}
+            onClick={(e) => offerBid(e)}
+          >Offer current account in favor of
+          </button>
+          <input id='offer_input' type='text' className='form-control' placeholder='satoshi.testnet' aria-label='Username' aria-describedby='basic-addon1' />
+        </div>
+      </form>
     </div>
   )
 }
@@ -272,4 +289,4 @@ function rules () {
   )
 }
 
-export { rules, fromNear, BuyButton }
+export { rules, fromNear, BuyButton, OfferButton }
