@@ -229,7 +229,7 @@ class App extends React.Component {
         <Router basename={process.env.PUBLIC_URL}>
           <nav className='navbar navbar-expand-lg navbar-light bg-light mb-3'>
             <div className='container-fluid'>
-              <Link className='navbar-brand' to='/' title='near.ws'>
+              <Link className='navbar-brand' to='/' title='near.bet'>
                 <img src={Logo} alt='NEAR Accounts Marketplace' className='d-inline-block align-middle' />
                 [BETA] NEAR Accounts Marketplace
               </Link>
