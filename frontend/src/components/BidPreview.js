@@ -27,8 +27,8 @@ function BidPreview (props) {
   return props.bidId ? (
     <div className='container m-3'>
       <div className='row'>
-        <div className='col-3'>
-          <Link to={`/bid/${bidId}`}>{bidId}</Link>
+        <div className='col-5'>
+          <Link className='nav-link' to={`/bid/${bidId}`}>{bidId}</Link>
         </div>
         <div className='col'>
           <div className='row py-2' />
