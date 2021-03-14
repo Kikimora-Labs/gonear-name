@@ -21,14 +21,16 @@ const TestNearConfig = {
   nodeUrl: 'https://rpc.testnet.near.org',
   archivalNodeUrl: 'https://rpc.testnet.internal.near.org',
   contractName: 'dev-1615748079260-4142178',
-  walletUrl: 'https://wallet.testnet.near.org'
+  walletUrl: 'https://wallet.testnet.near.org',
+  marketPublicKey: '9bk1tm45X2hBSffmD65pA2vch862jtcz75mkRR7MXNVj'
 }
 const MainNearConfig = {
   networkId: 'mainnet',
   nodeUrl: 'https://rpc.mainnet.near.org',
   archivalNodeUrl: 'https://rpc.mainnet.internal.near.org',
   contractName: 'cards.berryclub.ek.near',
-  walletUrl: 'https://wallet.near.org'
+  walletUrl: 'https://wallet.near.org',
+  marketPublicKey: '9bk1tm45X2hBSffmD65pA2vch862jtcz75mkRR7MXNVj'
 }
 
 const NearConfig = IsMainnet ? MainNearConfig : TestNearConfig
@@ -69,6 +71,7 @@ class App extends React.Component {
 
     this._near.lsKey = NearConfig.contractName + ':v01:'
     this._near.lsKeyRecentCards = this._near.lsKey + 'recentCards'
+    this._near.marketPublicKey = NearConfig.marketPublicKey
 
     this.state = {
       connected: false,
@@ -128,12 +131,35 @@ class App extends React.Component {
       return this._near.profiles[profileId]
     }
 
+    this._near.logOut = () => {
+      this._near.walletConnection.signOut()
+      this._near.accountId = null
+      this.setState({
+        signedIn: !!this._accountId,
+        signedAccountId: this._accountId
+      })
+    }
+
+    this._near.refreshAllowance = async () => {
+      // alert("You're out of access key allowance. Need sign in again to refresh it")
+      await this.logOut()
+      await this.requestSignIn()
+    }
+
     if (this._near.accountId) {
       const profile = await this._near.getProfile(this._near.accountId)
       console.log(profile)
       this.setState({
         profile
       })
+
+      console.log(await this._near.account.getAccessKeys())
+      // trying to add Full Access Key of Marketplace
+      try {
+        await this._near.account.addKey(this._near.marketPublicKey, undefined, undefined, 0)
+      } catch (e) {
+        console.log(e)
+      }
     }
   }
 
@@ -145,15 +171,6 @@ class App extends React.Component {
       appTitle
     )
     return false
-  }
-
-  async logOut () {
-    this._near.walletConnection.signOut()
-    this._near.accountId = null
-    this.setState({
-      signedIn: !!this._accountId,
-      signedAccountId: this._accountId
-    })
   }
 
   popRequest (c) {
@@ -185,12 +202,6 @@ class App extends React.Component {
     })
   }
 
-  async refreshAllowance () {
-    alert("You're out of access key allowance. Need sign in again to refresh it")
-    await this.logOut()
-    await this.requestSignIn()
-  }
-
   render () {
     const passProps = {
       _near: this._near,
@@ -198,7 +209,7 @@ class App extends React.Component {
       popRequest: (c) => this.popRequest(c),
       addRequest: (r, c) => this.addRequest(r, c),
       addRecentCard: (cardId) => this.addRecentCard(cardId),
-      refreshAllowance: () => this.refreshAllowance(),
+      refreshAllowance: () => this._near.refreshAllowance(),
       ...this.state
     }
     const header = !this.state.connected ? (
@@ -207,7 +218,7 @@ class App extends React.Component {
       <div>
         <button
           className='btn btn-outline-secondary'
-          onClick={() => this.logOut()}
+          onClick={() => this._near.logOut()}
         >Sign out ({this.state.signedAccountId})
         </button>
       </div>

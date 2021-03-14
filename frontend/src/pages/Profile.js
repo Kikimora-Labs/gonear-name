@@ -3,6 +3,7 @@ import { useParams } from 'react-router'
 import uuid from 'react-uuid'
 import BidPreview from '../components/BidPreview'
 import { OfferButton } from '../components/Helpers'
+import AddMarketKeyButton from '../components/Keys'
 import InfiniteScroll from 'react-infinite-scroller'
 
 const FetchLimit = 25
@@ -80,6 +81,7 @@ function ProfilePage (props) {
             </div>
           )}
         </div>
+        <AddMarketKeyButton {...props} />
         <div className='col'>
           <h3>Successful claims</h3>
           <InfiniteScroll
