@@ -4,6 +4,7 @@ import { BuyButton } from '../components/Helpers'
 
 const mapBidInfo = (b) => {
   return b ? {
+    isAtMarket: true,
     numClaims: b.num_claims,
     claimedBy: b.claim,
     bets: b.bets,
@@ -12,9 +13,10 @@ const mapBidInfo = (b) => {
     forfeit: b.forfeit,
     onAcquisition: b.on_acquisition
   } : {
+    isAtMarket: false,
     numClaims: 0,
     claimedBy: null,
-    bets: null,
+    bets: [],
     betPrice: 0,
     claimPrice: 0,
     forfeit: null,
@@ -86,7 +88,7 @@ function BidPage (props) {
                 </div>
               </div>
               <div className='text-center'>
-                <BuyButton {...props} bidId={bidId} bet={bidInfo.betPrice} forfeit={bidInfo.forfeit} claim={bidInfo.claimPrice} />
+                <BuyButton {...props} bidId={bidId} bidInfo={bidInfo} bet={bidInfo.betPrice} forfeit={bidInfo.forfeit} claim={bidInfo.claimPrice} />
               </div>
             </div>
           ) : (
