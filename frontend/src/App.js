@@ -20,7 +20,7 @@ const TestNearConfig = {
   networkId: 'testnet',
   nodeUrl: 'https://rpc.testnet.near.org',
   archivalNodeUrl: 'https://rpc.testnet.internal.near.org',
-  contractName: 'dev-1615668901851-6597817',
+  contractName: 'dev-1615735979760-2198693',
   walletUrl: 'https://wallet.testnet.near.org'
 }
 const MainNearConfig = {
@@ -99,9 +99,6 @@ class App extends React.Component {
     this._near.account = this._near.walletConnection.account()
     this._near.contract = new nearAPI.Contract(this._near.account, NearConfig.contractName, {
       viewMethods: [
-        'get_bet_price',
-        'get_claim_price',
-        'get_forfeit',
         'get_profile',
         'get_bid',
         'get_top_bets',

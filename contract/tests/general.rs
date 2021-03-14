@@ -1,13 +1,10 @@
-use std::convert::TryInto;
-use std::time::{Duration, Instant};
-// TODO remove
 use bs58;
-use std::thread::sleep;
+use std::convert::TryInto;
 
 /// Import the generated proxy contract
 use accounts_marketplace::ContractContract as AMContract;
 use accounts_marketplace::{
-    ProfileView, ERR_ACQUIRE_REJECTED, ERR_ALREADY_CLAIMED, ERR_ALREADY_OFFERED,
+    BidId, BidView, ProfileView, ERR_ACQUIRE_REJECTED, ERR_ALREADY_CLAIMED, ERR_ALREADY_OFFERED,
     ERR_BET_FORFEIT_NOT_ENOUGH, ERR_BET_ON_ACQUISITION, ERR_CLAIM_NOT_ENOUGH,
     ERR_GAINER_SAME_AS_OFFER, ERR_OFFER_DEPOSIT_NOT_ENOUGH, INIT_BET_PRICE, OFFER_DEPOSIT,
 };
@@ -22,7 +19,7 @@ near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
 }
 
 const CONTRACT_ID: &str = "marketplace";
-const ENOUGH_DEPOSIT: u128 = OFFER_DEPOSIT * 101 / 100;
+const ANY_ERR: Option<&str> = Some("");
 
 fn test_init() -> (UserAccount, ContractAccount<AMContract>) {
     let master_account = init_simulator(None);
@@ -81,7 +78,7 @@ fn create_bob_sells_alice(
     let outcome = call!(
         alice,
         contract.offer(bob.account_id().try_into().unwrap()),
-        deposit = ENOUGH_DEPOSIT
+        deposit = OFFER_DEPOSIT
     );
     outcome.assert_success();
     let result: bool = outcome.unwrap_json();
@@ -89,27 +86,137 @@ fn create_bob_sells_alice(
     (alice, bob)
 }
 
-fn claim(profile: &UserAccount, bid: &UserAccount, contract: &ContractAccount<AMContract>) {
-    let claim_price: Option<WrappedBalance> =
-        view!(contract.get_claim_price(bid.account_id().try_into().unwrap())).unwrap_json();
+fn do_offer(
+    profile: &UserAccount,
+    bid: &UserAccount,
+    contract: &ContractAccount<AMContract>,
+    err: Option<&str>,
+) {
+    let outcome = call!(
+        bid,
+        contract.offer(profile.account_id().try_into().unwrap()),
+        deposit = OFFER_DEPOSIT
+    );
+    if let Some(msg) = err {
+        assert!(format!("{:?}", outcome.status()).contains(msg));
+        assert!(!outcome.is_ok(), "Should panic");
+    } else {
+        outcome.assert_success();
+    }
+}
+
+fn do_bet(
+    profile: &UserAccount,
+    bid: &UserAccount,
+    contract: &ContractAccount<AMContract>,
+    err: Option<&str>,
+) {
+    let bet_price: Balance = get_bet_price(bid, contract);
+    let outcome = call!(
+        profile,
+        contract.bet(bid.account_id().try_into().unwrap()),
+        deposit = bet_price * 3
+    );
+    if let Some(msg) = err {
+        assert!(format!("{:?}", outcome.status()).contains(msg));
+        assert!(!outcome.is_ok(), "Should panic");
+    } else {
+        outcome.assert_success();
+    }
+}
+
+fn do_claim(
+    profile: &UserAccount,
+    bid: &UserAccount,
+    contract: &ContractAccount<AMContract>,
+    err: Option<&str>,
+) {
+    let claim_price: Balance = get_claim_price(bid, contract);
     let outcome = call!(
         profile,
         contract.claim(bid.account_id().try_into().unwrap()),
-        deposit = claim_price.unwrap().into()
+        deposit = claim_price * 3
     );
-    outcome.assert_success();
+    if let Some(msg) = err {
+        assert!(format!("{:?}", outcome.status()).contains(msg));
+        assert!(!outcome.is_ok(), "Should panic");
+    } else {
+        outcome.assert_success();
+    }
 }
 
-fn forfeit(bid: &UserAccount, contract: &ContractAccount<AMContract>) -> Balance {
-    let f: Option<WrappedBalance> =
-        view!(contract.get_forfeit(bid.account_id().try_into().unwrap())).unwrap_json();
-    f.unwrap().into()
+fn do_finalize(
+    profile: &UserAccount,
+    bid: &UserAccount,
+    contract: &ContractAccount<AMContract>,
+    err: Option<&str>,
+) {
+    let outcome = call!(
+        profile,
+        contract.finalize(bid.account_id().try_into().unwrap()),
+        deposit = 0
+    );
+    if let Some(msg) = err {
+        assert!(format!("{:?}", outcome.status()).contains(msg));
+        assert!(!outcome.is_ok(), "Should panic");
+    } else {
+        outcome.assert_success();
+    }
 }
 
-fn bet_price(bid: &UserAccount, contract: &ContractAccount<AMContract>) -> Balance {
-    let f: Option<WrappedBalance> =
-        view!(contract.get_bet_price(bid.account_id().try_into().unwrap())).unwrap_json();
-    f.unwrap().into()
+fn do_acquire(
+    profile: &UserAccount,
+    bid: &UserAccount,
+    contract: &ContractAccount<AMContract>,
+    err: Option<&str>,
+) {
+    let outcome = call!(
+        profile,
+        contract.acquire(bid.account_id().try_into().unwrap(), to_base58_pk(&profile)),
+        deposit = 0
+    );
+    if let Some(msg) = err {
+        assert!(format!("{:?}", outcome.status()).contains(msg));
+        assert!(!outcome.is_ok(), "Should panic");
+    } else {
+        outcome.assert_success();
+    }
+}
+
+fn get_forfeit(bid: &UserAccount, contract: &ContractAccount<AMContract>) -> Balance {
+    let bw: Option<BidView> =
+        view!(contract.get_bid(bid.account_id().try_into().unwrap())).unwrap_json();
+    bw.unwrap().forfeit.unwrap().into()
+}
+
+fn get_bet_price(bid: &UserAccount, contract: &ContractAccount<AMContract>) -> Balance {
+    let bw: Option<BidView> =
+        view!(contract.get_bid(bid.account_id().try_into().unwrap())).unwrap_json();
+    bw.unwrap().bet_price.into()
+}
+
+fn get_claim_price(bid: &UserAccount, contract: &ContractAccount<AMContract>) -> Balance {
+    let bw: Option<BidView> =
+        view!(contract.get_bid(bid.account_id().try_into().unwrap())).unwrap_json();
+    bw.unwrap().claim_price.unwrap().into()
+}
+
+fn get_bid_view(bid: &UserAccount, contract: &ContractAccount<AMContract>) -> Option<BidView> {
+    view!(contract.get_bid(bid.account_id().try_into().unwrap())).unwrap_json()
+}
+
+fn get_profile(profile: &UserAccount, contract: &ContractAccount<AMContract>) -> ProfileView {
+    let profile_view: Option<ProfileView> =
+        view!(contract.get_profile(profile.account_id().try_into().unwrap())).unwrap_json();
+    profile_view.unwrap()
+}
+
+fn sdk_sim_tick_tock(profile: &UserAccount, contract: &ContractAccount<AMContract>) {
+    let _outcome = call!(
+        profile,
+        contract.bet("123".try_into().unwrap()),
+        deposit = 456
+    );
 }
 
 #[test]
@@ -196,12 +303,9 @@ fn view_first_bet() {
 
     let (alice, bob) = create_bob_sells_alice(&master_account, &contract);
 
-    let bet_price: Option<WrappedBalance> =
-        view!(contract.get_bet_price(alice.account_id().try_into().unwrap())).unwrap_json();
-    assert_eq!(bet_price, Some(INIT_BET_PRICE.into()));
-    let bet_price: Option<WrappedBalance> =
-        view!(contract.get_bet_price(bob.account_id().try_into().unwrap())).unwrap_json();
-    assert!(bet_price.is_none());
+    let bet_price = get_bet_price(&alice, &contract);
+    assert_eq!(bet_price, INIT_BET_PRICE);
+    assert!(get_bid_view(&bob, &contract).is_none());
 
     let outcome = call!(
         bob,
@@ -226,9 +330,8 @@ fn view_first_bet() {
     assert_eq!(profile_view.num_bets, 1);
     assert_eq!(profile_view.bets_volume, INIT_BET_PRICE.into());
 
-    let bet_price: Option<WrappedBalance> =
-        view!(contract.get_bet_price(alice.account_id().try_into().unwrap())).unwrap_json();
-    assert_eq!(bet_price, Some((INIT_BET_PRICE * 6 / 5).into()));
+    let bet_price = get_bet_price(&alice, &contract);
+    assert_eq!(bet_price, INIT_BET_PRICE * 6 / 5);
 }
 
 #[cfg(feature = "expensive_tests")]
@@ -242,10 +345,8 @@ fn view_100_bets() {
     let mut bets_volume = 0;
 
     for _ in 0..100 {
-        let bet_price: Option<WrappedBalance> =
-            view!(contract.get_bet_price(alice.account_id().try_into().unwrap())).unwrap_json();
-
-        assert_eq!(bet_price, Some(proven_price.into()));
+        let bet_price = get_bet_price(&alice, &contract);
+        assert_eq!(bet_price, proven_price);
 
         let outcome = call!(
             bob,
@@ -275,12 +376,9 @@ fn view_first_claim() {
 
     let (alice, bob) = create_bob_sells_alice(&master_account, &contract);
 
-    let claim_price: Option<WrappedBalance> =
-        view!(contract.get_claim_price(alice.account_id().try_into().unwrap())).unwrap_json();
-    assert_eq!(claim_price, Some((INIT_BET_PRICE * 2).into()));
-    let claim_price: Option<WrappedBalance> =
-        view!(contract.get_claim_price(bob.account_id().try_into().unwrap())).unwrap_json();
-    assert!(claim_price.is_none());
+    let claim_price = get_claim_price(&alice, &contract);
+    assert_eq!(claim_price, INIT_BET_PRICE * 2);
+    assert!(get_bid_view(&bob, &contract).is_none());
 
     let outcome = call!(
         bob,
@@ -304,12 +402,12 @@ fn view_first_claim() {
     assert_eq!(profile_view.num_offers, 1);
     assert_eq!(profile_view.num_claims, 1);
 
-    let bet_price: Option<WrappedBalance> =
-        view!(contract.get_bet_price(alice.account_id().try_into().unwrap())).unwrap_json();
-    assert_eq!(bet_price, Some((INIT_BET_PRICE).into()));
-    let claim_price: Option<WrappedBalance> =
-        view!(contract.get_claim_price(alice.account_id().try_into().unwrap())).unwrap_json();
-    assert!(claim_price.is_none());
+    let bet_price = get_bet_price(&alice, &contract);
+    assert_eq!(bet_price, INIT_BET_PRICE);
+    assert!(get_bid_view(&alice, &contract)
+        .unwrap()
+        .claim_price
+        .is_none());
 }
 
 #[test]
@@ -365,18 +463,8 @@ fn bet_claim_forfeit() {
     let (alice, bob) = create_bob_sells_alice(&master_account, &contract);
 
     for _ in 0..10 {
-        let claim_price: Option<WrappedBalance> =
-            view!(contract.get_claim_price(alice.account_id().try_into().unwrap())).unwrap_json();
-        let outcome = call!(
-            bob,
-            contract.claim(alice.account_id().try_into().unwrap()),
-            deposit = claim_price.unwrap().into()
-        );
-        outcome.assert_success();
-
-        let bet_price: Option<WrappedBalance> =
-            view!(contract.get_bet_price(alice.account_id().try_into().unwrap())).unwrap_json();
-        let mut deposit: Balance = bet_price.unwrap().into();
+        do_claim(&bob, &alice, &contract, None);
+        let mut deposit = get_bet_price(&alice, &contract);
         let outcome = call!(
             bob,
             contract.bet(alice.account_id().try_into().unwrap()),
@@ -384,9 +472,7 @@ fn bet_claim_forfeit() {
         );
         assert!(format!("{:?}", outcome.status()).contains(ERR_BET_FORFEIT_NOT_ENOUGH));
 
-        let forfeit: Option<WrappedBalance> =
-            view!(contract.get_forfeit(alice.account_id().try_into().unwrap())).unwrap_json();
-        let forfeit: Balance = forfeit.unwrap().into();
+        let forfeit = get_forfeit(&alice, &contract);
         assert!(forfeit * 19 < deposit);
         assert!(forfeit * 20 > deposit);
         deposit += forfeit;
@@ -414,13 +500,12 @@ fn view_carol_bet_and_claim() {
     let (alice, bob) = create_bob_sells_alice(&master_account, &contract);
     let carol = create_carol(&master_account);
 
-    let bet_price: Option<WrappedBalance> =
-        view!(contract.get_bet_price(alice.account_id().try_into().unwrap())).unwrap_json();
+    let bet_price = get_bet_price(&alice, &contract);
 
     let outcome = call!(
         carol,
         contract.bet(alice.account_id().try_into().unwrap()),
-        deposit = bet_price.unwrap().into()
+        deposit = bet_price
     );
     outcome.assert_success();
 
@@ -444,12 +529,11 @@ fn view_carol_bet_and_claim() {
     assert_eq!(profile_view.num_claims, 0);
     assert_eq!(profile_view.bets_volume, INIT_BET_PRICE.into());
 
-    let claim_price: Option<WrappedBalance> =
-        view!(contract.get_claim_price(alice.account_id().try_into().unwrap())).unwrap_json();
+    let claim_price = get_claim_price(&alice, &contract);
     let outcome = call!(
         carol,
         contract.claim(alice.account_id().try_into().unwrap()),
-        deposit = claim_price.unwrap().into()
+        deposit = claim_price
     );
     outcome.assert_success();
 
@@ -480,17 +564,16 @@ fn rewards_converge() {
             to_yocto("1000000000"),
         );
 
-        let bet_price: Option<WrappedBalance> =
-            view!(contract.get_bet_price(alice.account_id().try_into().unwrap())).unwrap_json();
+        let bet_price = get_bet_price(&alice, &contract);
         let outcome = call!(
             cur_account,
             contract.bet(alice.account_id().try_into().unwrap()),
-            deposit = bet_price.unwrap().into()
+            deposit = bet_price
         );
         outcome.assert_success();
 
         accounts.push(cur_account);
-        prices.push(bet_price.unwrap().into());
+        prices.push(bet_price);
     }
 
     for i in 0..15 {
@@ -515,48 +598,36 @@ fn simple_acquisition() {
     let (master_account, contract) = test_init();
 
     let (alice, bob) = create_bob_sells_alice(&master_account, &contract);
-    claim(&bob, &alice, &contract);
+    do_claim(&bob, &alice, &contract, None);
 
     let mut last_forfeit = 0;
 
     for _ in 0..10 {
-        let cur_time = Instant::now();
-        let forfeit = forfeit(&alice, &contract);
+        let forfeit = get_forfeit(&alice, &contract);
         assert!(forfeit >= last_forfeit);
         last_forfeit = forfeit;
 
-        // This call is necessary due to sdk-sim not processing time otherwise
-        let _ = call!(
-            bob,
-            contract.claim(alice.account_id().try_into().unwrap()),
-            deposit = 1
-        );
-
-        sleep(Duration::from_secs(1) - (Instant::now() - cur_time));
+        sdk_sim_tick_tock(&alice, &contract);
     }
 
-    let bet_price = bet_price(&alice, &contract);
+    let bet_price = get_bet_price(&alice, &contract);
     assert_eq!(bet_price, last_forfeit * 4);
 
-    let outcome = call!(
-        bob,
-        contract.bet(alice.account_id().try_into().unwrap()),
-        deposit = OFFER_DEPOSIT * 100
-    );
-    assert!(format!("{:?}", outcome.status()).contains(ERR_BET_ON_ACQUISITION));
+    do_bet(&bob, &alice, &contract, Some(ERR_BET_ON_ACQUISITION));
+
+    do_finalize(&bob, &alice, &contract, None);
 
     let carol = create_carol(&master_account);
     let outcome = call!(
         carol,
-        contract.acquire(alice.account_id().try_into().unwrap(), to_base58_pk(&carol)),
-        deposit = OFFER_DEPOSIT * 100
+        contract.acquire(alice.account_id().try_into().unwrap(), to_base58_pk(&carol))
     );
     assert!(format!("{:?}", outcome.status()).contains(ERR_ACQUIRE_REJECTED));
 
     let outcome = call!(
         bob,
         contract.acquire(alice.account_id().try_into().unwrap(), to_base58_pk(&carol)),
-        deposit = OFFER_DEPOSIT * 100
+        deposit = 0
     );
     outcome.assert_success();
 
@@ -566,4 +637,179 @@ fn simple_acquisition() {
         deposit = OFFER_DEPOSIT * 100
     );
     assert!(!outcome.is_ok(), "Should panic");
+}
+
+#[test]
+fn top_bets_claims() {
+    let (master_account, contract) = test_init();
+
+    let bets: Vec<(WrappedBalance, BidId)> = view!(contract.get_top_bets(None, 100)).unwrap_json();
+    assert_eq!(bets.len(), 0);
+    let claims: Vec<(WrappedBalance, BidId)> =
+        view!(contract.get_top_claims(None, 100)).unwrap_json();
+    assert_eq!(claims.len(), 0);
+
+    let (alice, bob) = create_bob_sells_alice(&master_account, &contract);
+    let mut bet_price = INIT_BET_PRICE;
+
+    // bet = 0.5, claim = 1.0
+
+    let bets: Vec<(WrappedBalance, BidId)> = view!(contract.get_top_bets(None, 100)).unwrap_json();
+    assert_eq!(bets, vec![(bet_price.into(), "alice".to_string())]);
+    let claims: Vec<(WrappedBalance, BidId)> =
+        view!(contract.get_top_claims(None, 100)).unwrap_json();
+    assert_eq!(claims.len(), 0);
+
+    do_claim(&bob, &alice, &contract, None);
+    let mut claim_price = INIT_BET_PRICE * 2;
+
+    // bet = 0.5, claim = impossible
+
+    let bets: Vec<(WrappedBalance, BidId)> = view!(contract.get_top_bets(None, 100)).unwrap_json();
+    assert_eq!(bets, vec![(bet_price.into(), "alice".to_string())]);
+    let claims: Vec<(WrappedBalance, BidId)> =
+        view!(contract.get_top_claims(None, 100)).unwrap_json();
+    assert_eq!(claims, vec![(claim_price.into(), "alice".to_string())]);
+
+    do_bet(&bob, &alice, &contract, None);
+    bet_price = bet_price * 6 / 5;
+
+    // bet = 0.6, claim = 1.2
+
+    let bets: Vec<(WrappedBalance, BidId)> = view!(contract.get_top_bets(None, 100)).unwrap_json();
+    assert_eq!(bets, vec![(bet_price.into(), "alice".to_string())]);
+    let claims: Vec<(WrappedBalance, BidId)> =
+        view!(contract.get_top_claims(None, 100)).unwrap_json();
+    assert_eq!(claims.len(), 0);
+
+    do_claim(&bob, &alice, &contract, None);
+    claim_price = claim_price * 6 / 5;
+
+    // bet = 0.6, claim = impossible
+
+    let bets: Vec<(WrappedBalance, BidId)> = view!(contract.get_top_bets(None, 100)).unwrap_json();
+    assert_eq!(bets, vec![(bet_price.into(), "alice".to_string())]);
+    let claims: Vec<(WrappedBalance, BidId)> =
+        view!(contract.get_top_claims(None, 100)).unwrap_json();
+    assert_eq!(claims, vec![(claim_price.into(), "alice".to_string())]);
+
+    for _ in 0..10 {
+        sdk_sim_tick_tock(&alice, &contract);
+    }
+
+    let bets: Vec<(WrappedBalance, BidId)> = view!(contract.get_top_bets(None, 100)).unwrap_json();
+    assert_eq!(bets, vec![(bet_price.into(), "alice".to_string())]);
+    let claims: Vec<(WrappedBalance, BidId)> =
+        view!(contract.get_top_claims(None, 100)).unwrap_json();
+    assert_eq!(claims, vec![(claim_price.into(), "alice".to_string())]);
+
+    do_finalize(&bob, &alice, &contract, None);
+
+    let bets: Vec<(WrappedBalance, BidId)> = view!(contract.get_top_bets(None, 100)).unwrap_json();
+    assert_eq!(bets.len(), 0);
+    let claims: Vec<(WrappedBalance, BidId)> =
+        view!(contract.get_top_claims(None, 100)).unwrap_json();
+    assert_eq!(claims.len(), 0);
+
+    do_acquire(&bob, &alice, &contract, None);
+
+    let bets: Vec<(WrappedBalance, BidId)> = view!(contract.get_top_bets(None, 100)).unwrap_json();
+    assert_eq!(bets.len(), 0);
+    let claims: Vec<(WrappedBalance, BidId)> =
+        view!(contract.get_top_claims(None, 100)).unwrap_json();
+    assert_eq!(claims.len(), 0);
+}
+
+#[test]
+fn offer_same_after_acquisition() {
+    let (master_account, contract) = test_init();
+
+    let (alice, bob) = create_bob_sells_alice(&master_account, &contract);
+    do_claim(&bob, &alice, &contract, None);
+
+    for _ in 0..10 {
+        sdk_sim_tick_tock(&alice, &contract);
+    }
+
+    let bw: Option<BidView> =
+        view!(contract.get_bid(alice.account_id().try_into().unwrap())).unwrap_json();
+    assert!(bw.is_some());
+
+    do_finalize(&bob, &alice, &contract, None);
+    do_acquire(&bob, &alice, &contract, None);
+
+    let bw: Option<BidView> =
+        view!(contract.get_bid(alice.account_id().try_into().unwrap())).unwrap_json();
+    assert!(bw.is_none());
+
+    do_offer(&bob, &alice, &contract, None);
+
+    let bets: Vec<(WrappedBalance, BidId)> = view!(contract.get_top_bets(None, 100)).unwrap_json();
+    assert_eq!(bets, vec![(INIT_BET_PRICE.into(), "alice".to_string())]);
+    let claims: Vec<(WrappedBalance, BidId)> =
+        view!(contract.get_top_claims(None, 100)).unwrap_json();
+    assert_eq!(claims.len(), 0);
+    let bw: Option<BidView> =
+        view!(contract.get_bid(alice.account_id().try_into().unwrap())).unwrap_json();
+    assert!(bw.is_some());
+
+    do_claim(&bob, &alice, &contract, None);
+
+    for _ in 0..10 {
+        sdk_sim_tick_tock(&alice, &contract);
+    }
+
+    do_finalize(&bob, &alice, &contract, None);
+    do_acquire(&bob, &alice, &contract, None);
+    do_offer(&bob, &alice, &contract, None);
+}
+
+#[test]
+fn bob_carol_finalize_acquire() {
+    let (master_account, contract) = test_init();
+
+    let (alice, bob) = create_bob_sells_alice(&master_account, &contract);
+    let carol = create_carol(&master_account);
+
+    do_claim(&carol, &alice, &contract, None);
+    do_finalize(&alice, &alice, &contract, ANY_ERR);
+    do_finalize(&bob, &alice, &contract, ANY_ERR);
+    do_finalize(&carol, &alice, &contract, ANY_ERR);
+    for _ in 0..10 {
+        sdk_sim_tick_tock(&alice, &contract);
+    }
+
+    do_acquire(&bob, &alice, &contract, ANY_ERR);
+    do_acquire(&carol, &alice, &contract, ANY_ERR);
+    do_finalize(&alice, &alice, &contract, None);
+    do_finalize(&alice, &alice, &contract, ANY_ERR);
+    do_finalize(&carol, &alice, &contract, ANY_ERR);
+    do_acquire(&bob, &alice, &contract, ANY_ERR);
+    do_acquire(&carol, &alice, &contract, None);
+    do_acquire(&carol, &alice, &contract, ANY_ERR);
+
+    // We cannot prove keys at this point - any first offer should work
+    do_offer(&carol, &alice, &contract, None);
+    do_offer(&bob, &alice, &contract, ANY_ERR);
+
+    do_claim(&bob, &alice, &contract, None);
+    do_finalize(&bob, &alice, &contract, ANY_ERR);
+    do_finalize(&carol, &alice, &contract, ANY_ERR);
+    do_finalize(&alice, &alice, &contract, ANY_ERR);
+    for _ in 0..10 {
+        sdk_sim_tick_tock(&alice, &contract);
+    }
+
+    do_acquire(&bob, &alice, &contract, ANY_ERR);
+    do_acquire(&carol, &alice, &contract, ANY_ERR);
+    do_finalize(&carol, &alice, &contract, None);
+    do_finalize(&carol, &alice, &contract, ANY_ERR);
+    do_finalize(&alice, &alice, &contract, ANY_ERR);
+    do_acquire(&carol, &alice, &contract, ANY_ERR);
+    do_acquire(&bob, &alice, &contract, None);
+    do_acquire(&bob, &alice, &contract, ANY_ERR);
+
+    // Same as above
+    do_offer(&bob, &alice, &contract, None);
+    do_offer(&bob, &alice, &contract, ANY_ERR);
 }

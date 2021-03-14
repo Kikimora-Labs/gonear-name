@@ -6,11 +6,19 @@ const mapBidInfo = (b) => {
   return b ? {
     numClaims: b.num_claims,
     claimedBy: b.claim,
-    bets: b.bets
+    bets: b.bets,
+    betPrice: b.bet_price,
+    claimPrice: b.claim_price,
+    forfeit: b.forfeit,
+    onAcquisition: b.on_acquisition
   } : {
     numClaims: 0,
     claimedBy: null,
-    bets: null
+    bets: null,
+    betPrice: 0,
+    claimPrice: 0,
+    forfeit: null,
+    onAcquisition: false
   }
 }
 
@@ -24,22 +32,10 @@ function BidPage (props) {
   const hidden = props.hidden
 
   const fetchInfo = useCallback(async () => {
-    const bet = await props._near.contract.get_bet_price({
-      bid_id: bidId
-    })
-    const claim = await props._near.contract.get_claim_price({
-      bid_id: bidId
-    })
-    const forfeit = await props._near.contract.get_forfeit({
-      bid_id: bidId
-    })
     const bidInfo = mapBidInfo(await props._near.contract.get_bid({
       bid_id: bidId
     }))
     bidInfo.refreshTime = refreshTime
-    bidInfo.bet = bet
-    bidInfo.claim = claim
-    bidInfo.forfeit = forfeit
     return bidInfo
   }, [props._near, bidId, refreshTime])
 
@@ -90,7 +86,7 @@ function BidPage (props) {
                 </div>
               </div>
               <div className='text-center'>
-                <BuyButton {...props} bidId={bidId} bet={bidInfo.bet} forfeit={bidInfo.forfeit} claim={bidInfo.claim} ownerId={bidInfo.ownerId} />
+                <BuyButton {...props} bidId={bidId} bet={bidInfo.betPrice} forfeit={bidInfo.forfeit} claim={bidInfo.claimPrice} />
               </div>
             </div>
           ) : (

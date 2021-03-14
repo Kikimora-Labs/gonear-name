@@ -3,8 +3,7 @@ use crate::*;
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct Profile {
     pub participation: UnorderedSet<BidId>,
-
-    pub acquisitions: Vector<AccountId>,
+    pub acquisitions: UnorderedSet<BidId>,
 
     pub bets_volume: Balance,
     pub available_rewards: Balance,
@@ -21,8 +20,7 @@ pub struct Profile {
 #[serde(crate = "near_sdk::serde")]
 pub struct ProfileView {
     pub participation: Vec<BidId>,
-
-    pub acquisitions: Vec<AccountId>,
+    pub acquisitions: Vec<BidId>,
 
     pub bets_volume: WrappedBalance,
     pub available_rewards: WrappedBalance,
@@ -68,7 +66,7 @@ impl Contract {
             prefix2.extend(env::sha256(profile_id.as_bytes()));
             Profile {
                 participation: UnorderedSet::new(prefix),
-                acquisitions: Vector::new(prefix2),
+                acquisitions: UnorderedSet::new(prefix2),
                 bets_volume: 0,
                 available_rewards: 0,
                 profit_taken: 0,

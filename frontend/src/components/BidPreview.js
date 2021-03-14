@@ -4,27 +4,27 @@ import { Link } from 'react-router-dom'
 import PriceButton from './PriceButton'
 
 function BidPreview (props) {
-  const [bet, setBet] = useState(props.bet)
+  const [bid, setBid] = useState(props.bid)
   const bidId = props.bidId
-  const propsBet = props.bet
+  const propsBid = props.bid
 
   const fetchBid = useCallback(async () => {
-    return await props._near.contract.get_bet_price({
+    return (await props._near.contract.get_bid({
       bid_id: bidId
-    })
+    }))
   }, [props._near, bidId])
 
   useEffect(() => {
     if (props.connected) {
-      if (!propsBet) {
-        fetchBid().then(setBet)
+      if (!propsBid) {
+        fetchBid().then(setBid)
       } else {
-        setBet(propsBet)
+        setBid(propsBid)
       }
     }
-  }, [props.connected, propsBet, fetchBid])
+  }, [props.connected, propsBid, fetchBid])
 
-  return props.bidId ? (
+  return bid ? (
     <div className='container m-3'>
       <div className='row'>
         <div className='col-5'>
@@ -34,7 +34,7 @@ function BidPreview (props) {
           <div className='row py-2' />
         </div>
         <div className='col-6'>
-          <PriceButton {...props} bidId={bidId} price={bet} />
+          <PriceButton {...props} bidId={bidId} price={bid.bet_price} />
         </div>
       </div>
     </div>

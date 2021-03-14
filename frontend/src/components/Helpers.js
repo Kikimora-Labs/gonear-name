@@ -7,7 +7,7 @@ function BuyButton (props) {
   const claimPrice = fromNear(props.claim)
   async function betBid (e) {
     e.preventDefault()
-    await props._near.contract.bet({ bid_id: props.bidId }, '200000000000000', String(parseInt(betPrice * 1e9)) + '000000000000000')
+    await props._near.contract.bet({ bid_id: props.bidId }, '200000000000000', String(parseInt(betPrice * 1.1 * 1e9)) + '000000000000000')
   }
   async function claimBid (e) {
     e.preventDefault()
@@ -67,7 +67,7 @@ function BuyButton (props) {
 function OfferButton (props) {
   async function offerBid (e) {
     e.preventDefault()
-    await props._near.contract.offer({ profile_id: document.getElementById('offer_input').value }, '200000000000000', String(parseInt(0.5 * 1e9)) + '000000000000000')
+    await props._near.contract.offer({ profile_id: document.getElementById('offer_input').value }, '200000000000000', String(parseInt(0.45 * 1e9)) + '000000000000000')
   }
 
   return (
