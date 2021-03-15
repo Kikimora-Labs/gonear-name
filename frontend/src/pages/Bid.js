@@ -27,8 +27,6 @@ const mapBidInfo = (b) => {
 function BidPage (props) {
   const { bidId } = useParams()
 
-  console.log(bidId)
-
   const [bidInfo, setBidInfo] = useState(null)
   const refreshTime = props.refreshTime
   const hidden = props.hidden
@@ -40,8 +38,6 @@ function BidPage (props) {
     bidInfo.refreshTime = refreshTime
     return bidInfo
   }, [props._near, bidId, refreshTime])
-
-  console.log(bidInfo)
 
   useEffect(() => {
     if (props.connected && !hidden) {

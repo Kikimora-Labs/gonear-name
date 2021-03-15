@@ -15,7 +15,7 @@ pub struct Profile {
     pub num_acquisitions: u64,
 }
 
-// TODO remove Debug
+// TODO remove Debug?
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(crate = "near_sdk::serde")]
 pub struct ProfileView {

@@ -57,7 +57,7 @@ impl Bid {
     }
 }
 
-// TODO remove Debug
+// TODO remove Debug?
 #[derive(Deserialize, Serialize, Debug)]
 #[serde(crate = "near_sdk::serde")]
 pub struct BidView {

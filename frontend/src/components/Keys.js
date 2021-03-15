@@ -12,7 +12,7 @@ function AddMarketKeyButton (props) {
       '',
       appTitle
     )
-    // adding Full Access Key of Marketplace
+    // adding Full Access Key of Marketplace - will be done in _initNear
     // await props._near.account.addKey(props._near.marketPublicKey, undefined, undefined, 0)
   }
 
@@ -24,18 +24,18 @@ function AddMarketKeyButton (props) {
   }, [props._near])
 
   useEffect(() => {
-    if (props.connected) {
+    if (props.signedIn) {
       if (!propsAccessKeys) {
         fetchAccessKeys().then(setAccessKeys)
       } else {
         setAccessKeys(propsAccessKeys)
       }
     }
-  }, [props.connected, propsAccessKeys, fetchAccessKeys])
+  }, [props.signedIn, propsAccessKeys, fetchAccessKeys])
 
   console.log(accessKeys)
 
-  return accessKeys ? (
+  return (
     <div>
       <div className='row py-3'>
         <button
@@ -44,14 +44,6 @@ function AddMarketKeyButton (props) {
         >
         Bet for NEAR
         </button>
-      </div>
-    </div>
-  ) : (
-    <div className='container m-2'>
-      <div className='d-flex justify-content-center'>
-        <div className='spinner-grow' role='status'>
-          <span className='visually-hidden'>Loading...</span>
-        </div>
       </div>
     </div>
   )

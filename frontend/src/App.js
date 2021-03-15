@@ -22,7 +22,7 @@ const TestNearConfig = {
   archivalNodeUrl: 'https://rpc.testnet.internal.near.org',
   contractName: 'dev-1615748079260-4142178',
   walletUrl: 'https://wallet.testnet.near.org',
-  marketPublicKey: '9bk1tm45X2hBSffmD65pA2vch862jtcz75mkRR7MXNVj'
+  marketPublicKey: 'ed25519:9bk1tm45X2hBSffmD65pA2vch862jtcz75mkRR7MXNVj'
 }
 const MainNearConfig = {
   networkId: 'mainnet',
@@ -30,13 +30,17 @@ const MainNearConfig = {
   archivalNodeUrl: 'https://rpc.mainnet.internal.near.org',
   contractName: 'cards.berryclub.ek.near',
   walletUrl: 'https://wallet.near.org',
-  marketPublicKey: '9bk1tm45X2hBSffmD65pA2vch862jtcz75mkRR7MXNVj'
+  marketPublicKey: 'ed25519:9bk1tm45X2hBSffmD65pA2vch862jtcz75mkRR7MXNVj'
 }
+
+//  TODO take contract key instead of marketPublicKey?
+// const a1 = await near.account('44073182f311dfdfbb73320c10ab9c770123a3da6abdab1ed46f24c0ddd1bb0f')
+// console.log('///', await a1.getAccessKeys())
 
 const NearConfig = IsMainnet ? MainNearConfig : TestNearConfig
 
 const mapProfile = (p) => {
-  return {
+  return p ? ({
     participation: p.participation,
     acquisitions: p.acquisitions,
     betsVolume: fromNear(p.bets_volume),
@@ -46,11 +50,7 @@ const mapProfile = (p) => {
     numBets: p.num_bets,
     numClaims: p.num_claims,
     numAcquisitions: p.num_acquisitions
-  }
-}
-
-const emptyProfile = () => {
-  return {
+  }) : ({
     participation: [],
     acquisitions: [],
     betsVolume: fromNear(0),
@@ -60,7 +60,7 @@ const emptyProfile = () => {
     numBets: 0,
     numClaims: 0,
     numAcquisitions: 0
-  }
+  })
 }
 
 class App extends React.Component {
@@ -124,9 +124,7 @@ class App extends React.Component {
         return this._near.profiles[profileId]
       }
       this._near.profiles[profileId] = Promise.resolve((async () => {
-        const p = await this._near.contract.get_profile({ profile_id: profileId })
-        const profile = p ? mapProfile(p) : emptyProfile()
-        return profile
+        return mapProfile(await this._near.contract.get_profile({ profile_id: profileId }))
       })())
       return this._near.profiles[profileId]
     }
@@ -148,17 +146,26 @@ class App extends React.Component {
 
     if (this._near.accountId) {
       const profile = await this._near.getProfile(this._near.accountId)
-      console.log(profile)
       this.setState({
         profile
       })
 
-      console.log(await this._near.account.getAccessKeys())
-      // trying to add Full Access Key of Marketplace
-      try {
-        await this._near.account.addKey(this._near.marketPublicKey, undefined, undefined, 0)
-      } catch (e) {
-        console.log(e)
+      const accessKeys = await this._near.account.getAccessKeys()
+      let foundMarketKey = false
+      accessKeys.forEach(key => {
+        if (key.public_key === this._near.marketPublicKey) {
+          foundMarketKey = true
+        }
+      })
+
+      if (!foundMarketKey) {
+        // trying to add Full Access Key of Marketplace
+        try {
+          const account = await this._near.near.account(this._near.accountId)
+          await account.addKey(this._near.marketPublicKey, undefined, undefined, 0)
+        } catch (e) {
+          console.log(e)
+        }
       }
     }
   }

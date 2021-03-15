@@ -15,12 +15,10 @@ function ProfilePage (props) {
   const [hasMore, setHasMore] = useState(false)
   const [gkey] = useState(uuid())
 
-  // TODO do it in React way
-  if (props._near.getProfile) {
-    Promise.resolve((async () => {
-      setProfile(await props._near.getProfile(profileId))
-    })())
-  }
+  const fetchProfile = useCallback(async () => {
+    return await props._near.getProfile(profileId)
+  }, [props._near, profileId])
+
   const fetchMore = async () => {
     const f = [...feed]
     const lastKey = f.length > 0 ? f[f.length - 1] : null
@@ -37,9 +35,14 @@ function ProfilePage (props) {
 
   useEffect(() => {
     if (props.connected) {
-      setHasMore(true)
+      fetchProfile().then(setProfile)
     }
-  }, [props.connected])
+    if (props.signedIn) {
+      setHasMore(true)
+    } else {
+      setHasMore(false)
+    }
+  }, [props.connected, props.signedIn, fetchProfile])
 
   const bids = feed.map(([rating, bidId]) => {
     const key = `${gkey}-${bidId}`
@@ -59,28 +62,29 @@ function ProfilePage (props) {
   return (
     <div>
       <div className='container'>
-        <div className='row justify-content-md-center'>
-          <OfferButton {...props} />
-          {!profile ? (
-            <div className='col col-12 col-lg-8 col-xl-6'>
-              <div className='d-flex justify-content-center'>
-                <div className='spinner-grow' role='status'>
-                  <span className='visually-hidden'>Loading...</span>
+        <OfferButton {...props} />
+        {props.connected ? (
+          <div className='row justify-content-md-center'>
+            {!profile ? (
+              <div className='col col-12 col-lg-8 col-xl-6'>
+                <div className='d-flex justify-content-center'>
+                  <div className='spinner-grow' role='status'>
+                    <span className='visually-hidden'>Loading...</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className='col col-12 col-lg-4 col-xl-4'>
-              <h3>Stats</h3>
-              <ul>
-                <li>Bets volume: {profile.betsVolume.toFixed(2)} NEAR</li>
-                <li>Available rewards: {profile.availableRewards.toFixed(2)} NEAR</li>
-                <li>TODO BUTTON TO COLLECT REWARDS</li>
-                <li>TODO PRINT OTHER LOCAL STATS</li>
-              </ul>
-            </div>
-          )}
-        </div>
+            ) : (
+              <div className='col col-12 col-lg-4 col-xl-4'>
+                <h3>Stats</h3>
+                <ul>
+                  <li>Bets volume: {profile.betsVolume.toFixed(2)} NEAR</li>
+                  <li>Available rewards: {profile.availableRewards.toFixed(2)} NEAR</li>
+                  <li>TODO BUTTON TO COLLECT REWARDS</li>
+                  <li>TODO PRINT OTHER LOCAL STATS</li>
+                </ul>
+              </div>
+            )}
+          </div>) : (<div />)}
         <AddMarketKeyButton {...props} />
         <div className='col'>
           <h3>Successful claims</h3>
