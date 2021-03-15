@@ -11,6 +11,7 @@ import { fromNear } from './components/Helpers'
 import ls from 'local-storage'
 import MarketPage from './pages/Market'
 import ClaimsPage from './pages/Claims'
+import OfferPage from './pages/Offer'
 import RulesPage from './pages/Rules'
 import ProfilePage from './pages/Profile'
 import BidPage from './pages/Bid'
@@ -275,6 +276,15 @@ class App extends React.Component {
                   <li className='nav-item'>
                     <Link className='nav-link' aria-current='page' to='/rules'>Rules</Link>
                   </li>
+                  {this.state.signedIn && (
+                      <li className='nav-item'>
+                        <Link
+                            className='nav-link' aria-current='page'
+                            to={`/offer/${this.state.signedAccountId}`}
+                        >Offer
+                        </Link>
+                      </li>
+                  )}
                 </ul>
                 <form className='d-flex'>
                   {header}
@@ -298,6 +308,9 @@ class App extends React.Component {
             </Route>
             <Route exact path='/rules'>
               <RulesPage {...passProps} />
+            </Route>
+            <Route exact path='/offer/:profileId'>
+              <OfferPage {...passProps} />
             </Route>
             <Route exact path='/profile/:profileId'>
               <ProfilePage {...passProps} />

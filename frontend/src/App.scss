@@ -2,3 +2,35 @@
   height: 2em;
   margin-right: 0.5em;
 }
+
+body {
+  font-family: Arial, serif;
+}
+
+h1 {
+  margin-top: 50px;
+  font-family: Inter, Lato, Tahoma, serif;
+  font-weight: 900;
+  font-size: calc(24px + 14 * ((100vw - 300px) / 1300)) !important;
+}
+
+h2 {
+  margin: 25px auto;
+  text-align: center !important;
+  line-height: 150% !important;
+  font-size: 18px !important;
+  max-width: 400px;
+}
+
+.near-suffix {
+  position: relative;
+  color: rgb(74, 79, 84);
+}
+
+.near-suffix::after {
+  content: '.near';
+  position: absolute;
+  top: 6.5px;
+  right: .9em;
+  transition: all .05s ease-in-out;
+}
