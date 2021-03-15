@@ -4,7 +4,9 @@ pub const OFFER_DEPOSIT: Balance = 450_000_000_000_000_000_000_000;
 pub const INIT_BET_PRICE: Balance = 500_000_000_000_000_000_000_000;
 
 pub const INV_COMMISSION: u128 = 20;
+pub const INV_FOUNDER_COMMISSION_ON_SALE: u128 = 4;
 pub const INV_REWARD_DECAY_MULT_100: u128 = 144;
+pub const INV_REWARD_DECAY_ON_SALE_MULT_100: u128 = 120;
 
 pub const ERR_OFFER_DEPOSIT_NOT_ENOUGH: &str =
     "Attached deposit must be no less than OFFER_DEPOSIT";
@@ -215,12 +217,28 @@ impl Contract {
     }
 
     fn update_final_rewards(&mut self, bid_id: &BidId, bid: &Bid) {
+        // Update participants list
         for profile_id in bid.participants.iter() {
             let mut profile = self.extract_profile_or_create(&profile_id);
             profile.participation.remove(bid_id);
             self.save_profile_or_panic(&profile_id, &profile);
         }
-        // TODO implement
+
+        // Update rewards
+        let mut paid = bid.force_calculate_claim_price();
+        self.update_reward(
+            &bid.bets.get(0).unwrap(),
+            &(paid / INV_FOUNDER_COMMISSION_ON_SALE),
+        );
+        paid = paid - paid / INV_FOUNDER_COMMISSION_ON_SALE;
+        for i in (0..bid.bets.len()).rev() {
+            self.update_reward(
+                &bid.bets.get(i).unwrap(),
+                &(paid / INV_REWARD_DECAY_ON_SALE_MULT_100 * 100),
+            );
+            paid -= paid / INV_REWARD_DECAY_ON_SALE_MULT_100 * 100;
+        }
+        self.update_reward(&bid.bets.get(0).unwrap(), &paid);
     }
 
     fn update_commission(&mut self, value: Balance) {

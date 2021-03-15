@@ -43,7 +43,6 @@ for i in range(len(rewards)):
 
 paid = claim_price
 sum_bets = sum(bets)
-normalized_bets = [bet / sum_bets for bet in bets]
 rewards[0] += paid * sell_reward
 paid *= (1 - sell_reward)
 # don't take commission on sale

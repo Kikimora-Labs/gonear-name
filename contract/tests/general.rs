@@ -6,7 +6,8 @@ use accounts_marketplace::ContractContract as AMContract;
 use accounts_marketplace::{
     BidId, BidView, ProfileView, ERR_ACQUIRE_REJECTED, ERR_ALREADY_CLAIMED, ERR_ALREADY_OFFERED,
     ERR_BET_FORFEIT_NOT_ENOUGH, ERR_BET_ON_ACQUISITION, ERR_CLAIM_NOT_ENOUGH,
-    ERR_GAINER_SAME_AS_OFFER, ERR_OFFER_DEPOSIT_NOT_ENOUGH, INIT_BET_PRICE, OFFER_DEPOSIT,
+    ERR_GAINER_SAME_AS_OFFER, ERR_OFFER_DEPOSIT_NOT_ENOUGH, ERR_REWARD_BALANCE_INSUFFICIENT,
+    INIT_BET_PRICE, OFFER_DEPOSIT,
 };
 
 use near_sdk::json_types::{Base58PublicKey, WrappedBalance};
@@ -175,6 +176,20 @@ fn do_acquire(
         contract.acquire(bid.account_id().try_into().unwrap(), to_base58_pk(&profile)),
         deposit = 0
     );
+    if let Some(msg) = err {
+        assert!(format!("{:?}", outcome.status()).contains(msg));
+        assert!(!outcome.is_ok(), "Should panic");
+    } else {
+        outcome.assert_success();
+    }
+}
+
+fn do_collect_rewards(
+    profile: &UserAccount,
+    contract: &ContractAccount<AMContract>,
+    err: Option<&str>,
+) {
+    let outcome = call!(profile, contract.collect_rewards());
     if let Some(msg) = err {
         assert!(format!("{:?}", outcome.status()).contains(msg));
         assert!(!outcome.is_ok(), "Should panic");
@@ -835,4 +850,33 @@ fn claim_update_rewards() {
         assert!(final_rewards - cur_rewards > claim_price);
         assert!(final_rewards - cur_rewards < claim_price * 1001 / 1000);
     }
+}
+
+#[test]
+fn collect_rewards_simple() {
+    let (master_account, contract) = test_init();
+
+    let alice = master_account.create_user("alice".into(), to_yocto("1000000000"));
+    let bob = master_account.create_user("bob".into(), to_yocto("0.02"));
+    let carol = create_carol(&master_account);
+
+    let outcome = call!(
+        alice,
+        contract.offer(bob.account_id().try_into().unwrap()),
+        deposit = OFFER_DEPOSIT
+    );
+    outcome.assert_success();
+
+    do_claim(&carol, &alice, &contract, None);
+    for _ in 0..10 {
+        sdk_sim_tick_tock(&alice, &contract);
+    }
+    do_collect_rewards(&bob, &contract, Some(ERR_REWARD_BALANCE_INSUFFICIENT));
+
+    do_finalize(&carol, &alice, &contract, None);
+
+    do_collect_rewards(&bob, &contract, None);
+    do_collect_rewards(&bob, &contract, Some(ERR_REWARD_BALANCE_INSUFFICIENT));
+
+    bob.transfer("alice".to_string(), to_yocto("1.00"));
 }
