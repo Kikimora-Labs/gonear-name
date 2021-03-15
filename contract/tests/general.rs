@@ -813,3 +813,26 @@ fn bob_carol_finalize_acquire() {
     do_offer(&bob, &alice, &contract, None);
     do_offer(&bob, &alice, &contract, ANY_ERR);
 }
+
+#[test]
+fn claim_update_rewards() {
+    let (master_account, contract) = init();
+
+    let (alice, bob) = create_bob_sells_alice(&master_account, &contract);
+    let carol = create_carol(&master_account);
+
+    for _ in 0..10 {
+        let claim_price = get_claim_price(&alice, &contract);
+        do_claim(&carol, &alice, &contract, None);
+
+        let cur_rewards: Balance = get_profile(&carol, &contract).available_rewards.into();
+
+        do_bet(&bob, &alice, &contract, None);
+
+        let final_rewards: Balance = get_profile(&carol, &contract).available_rewards.into();
+
+        // claim_price + little forfeit
+        assert!(final_rewards - cur_rewards > claim_price);
+        assert!(final_rewards - cur_rewards < claim_price * 1001 / 1000);
+    }
+}

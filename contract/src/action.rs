@@ -66,15 +66,22 @@ impl Contract {
             ERR_BET_ON_ACQUISITION
         );
         let bet_price = bid.calculate_bet_price();
-        let forfeit = bid.calculate_forfeit(&self.acquisition_time).unwrap_or(0);
+
+        let (forfeit, commission) = if let Some((ref claimer_profile_id, _)) = bid.claim_status {
+            let (forfeit, commission) = bid.calculate_forfeit(&self.acquisition_time).unwrap();
+            let mut claimer_profile = self.extract_profile_or_create(&claimer_profile_id);
+            claimer_profile.available_rewards += bid.force_calculate_claim_price() + forfeit;
+            self.save_profile_or_panic(&claimer_profile_id, &claimer_profile);
+            (forfeit, commission)
+        } else {
+            (0, 0)
+        };
+
         assert!(
-            env::attached_deposit() >= bet_price + forfeit,
+            env::attached_deposit() >= bet_price + forfeit + commission,
             "{}",
             ERR_BET_FORFEIT_NOT_ENOUGH
         );
-
-        // TODO forfeit -> rewards
-        // TODO return money back to claimer as rewards
 
         // Update bid
         bid.claim_status = None;

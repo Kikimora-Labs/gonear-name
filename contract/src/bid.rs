@@ -31,17 +31,17 @@ impl Bid {
         }
     }
 
-    pub(crate) fn calculate_forfeit(&self, acquisition_time: &u64) -> Option<Balance> {
+    pub(crate) fn calculate_forfeit(&self, acquisition_time: &u64) -> Option<(Balance, Balance)> {
         if let Some((_profile_id, timestamp)) = &self.claim_status {
             let bet_price = self.calculate_bet_price();
-            Some(
+            Some((
                 std::cmp::min(
                     ((env::block_timestamp() - timestamp) / acquisition_time).into(),
                     1_000_000_000,
                 ) // [0..1] ratio multiplied by 1e9
-                * (bet_price / 40_000_000_000) // this will be 2.5% for Claimer
-                    + bet_price / 40, // this is 2.5 additional commission
-            )
+                * (bet_price / 40_000_000_000), // this will be 2.5% for Claimer
+                bet_price / 40, // this is 2.5% commission of Marketplace
+            ))
         } else {
             None
         }
@@ -83,7 +83,7 @@ impl From<(&Bid, &u64)> for BidView {
                 .map(|(p, t)| (p.into(), (t.clone().into()))),
             bet_price: a.0.calculate_bet_price().into(),
             claim_price: (a.0.calculate_claim_price()).map(|c| (c).into()),
-            forfeit: a.0.calculate_forfeit(a.1).map(|f| (f).into()),
+            forfeit: a.0.calculate_forfeit(a.1).map(|(x, y)| (x + y).into()),
             on_acquisition: a.0.on_acquisition(a.1),
             num_claims: a.0.num_claims,
         }
