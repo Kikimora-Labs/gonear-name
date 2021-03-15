@@ -74,6 +74,7 @@ impl Contract {
         );
 
         // TODO forfeit -> rewards
+        // TODO return money back to claimer as rewards
 
         // Update bid
         bid.claim_status = None;
@@ -86,7 +87,7 @@ impl Contract {
         profile.participation.insert(bid_id.as_ref());
         self.save_profile_or_panic(&env::predecessor_account_id(), &profile);
 
-        // Update top
+        // Update top and rewards
         self.bet_and_update_leaders(&env::predecessor_account_id(), bid_id.as_ref(), &mut bid);
 
         true

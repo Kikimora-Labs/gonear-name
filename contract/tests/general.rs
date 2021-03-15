@@ -473,8 +473,8 @@ fn bet_claim_forfeit() {
         assert!(format!("{:?}", outcome.status()).contains(ERR_BET_FORFEIT_NOT_ENOUGH));
 
         let forfeit = get_forfeit(&alice, &contract);
-        assert!(forfeit * 19 < deposit);
-        assert!(forfeit * 20 > deposit);
+        assert!(forfeit * 39 < deposit);
+        assert!(forfeit * 40 > deposit);
         deposit += forfeit;
         let outcome = call!(
             bob,
@@ -611,7 +611,7 @@ fn simple_acquisition() {
     }
 
     let bet_price = get_bet_price(&alice, &contract);
-    assert_eq!(bet_price, last_forfeit * 4);
+    assert_eq!(bet_price, last_forfeit * 20);
 
     do_bet(&bob, &alice, &contract, Some(ERR_BET_ON_ACQUISITION));
 

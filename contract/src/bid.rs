@@ -34,14 +34,13 @@ impl Bid {
     pub(crate) fn calculate_forfeit(&self, acquisition_time: &u64) -> Option<Balance> {
         if let Some((_profile_id, timestamp)) = &self.claim_status {
             let bet_price = self.calculate_bet_price();
-            // TODO validate
             Some(
                 std::cmp::min(
                     ((env::block_timestamp() - timestamp) / acquisition_time).into(),
                     1_000_000_000,
-                ) * bet_price
-                    / 5_000_000_000
-                    + bet_price / 20,
+                ) // [0..1] ratio multiplied by 1e9
+                * (bet_price / 40_000_000_000) // this will be 2.5% for Claimer
+                    + bet_price / 40, // this is 2.5 additional commission
             )
         } else {
             None
@@ -171,6 +170,6 @@ impl Contract {
         bid.bets.clear();
         bid.participants.clear();
         bid.claim_status = None;
-        bid.num_claims = 10000;
+        bid.num_claims = 0;
     }
 }
