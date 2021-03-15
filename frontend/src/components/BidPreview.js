@@ -34,7 +34,7 @@ function BidPreview (props) {
           <div className='row py-2' />
         </div>
         <div className='col-6'>
-          <PriceButton {...props} bidId={bidId} price={bid.bet_price} />
+          <PriceButton {...props} bidId={bidId} price={bid.bet_price} forfeit={bid.forfeit} />
         </div>
       </div>
     </div>

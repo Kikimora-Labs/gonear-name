@@ -1,6 +1,5 @@
 import './Market.scss'
 import React, { useEffect, useState } from 'react'
-import uuid from 'react-uuid'
 import BidPreview from '../components/BidPreview'
 import InfiniteScroll from 'react-infinite-scroller'
 
@@ -9,7 +8,6 @@ const FetchLimit = 25
 function MarketPage (props) {
   const [feed, setFeed] = useState([])
   const [hasMore, setHasMore] = useState(false)
-  const [gkey] = useState(uuid())
 
   const fetchMore = async () => {
     const f = [...feed]
@@ -31,15 +29,15 @@ function MarketPage (props) {
     }
   }, [props.connected])
 
-  const bids = feed.map(([rating, bidId]) => {
-    const key = `${gkey}-${bidId}`
+  const bids = feed.map(([bidPrice, bidId]) => {
     return (
-      <BidPreview {...props} key={key} bidId={bidId} rating={rating} />
+      <BidPreview {...props} key={bidId} bidId={bidId} />
     )
   })
 
   const loader = (
-    <div className='d-flex justify-content-center' key={`${gkey}-loader`}>
+    // key='1' is needed by InfiniteScroll
+    <div key='1' className='d-flex justify-content-center'>
       <div className='spinner-grow' role='status'>
         <span className='visually-hidden'>Loading...</span>
       </div>

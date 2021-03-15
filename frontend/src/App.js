@@ -70,7 +70,7 @@ class App extends React.Component {
     this._near = {}
 
     this._near.lsKey = NearConfig.contractName + ':v01:'
-    this._near.lsKeyRecentCards = this._near.lsKey + 'recentCards'
+    this._near.lsFavorAccountId = this._near.lsKey + 'favorAccountId'
     this._near.marketPublicKey = NearConfig.marketPublicKey
 
     this.state = {
@@ -78,7 +78,7 @@ class App extends React.Component {
       isNavCollapsed: true,
       account: null,
       requests: null,
-      recentCards: ls.get(this._near.lsKeyRecentCards) || []
+      favorAccountId: ls.get(this._near.lsFavorAccountId) || null
     }
 
     this._initNear().then(() => {
@@ -164,9 +164,11 @@ class App extends React.Component {
           const account = await this._near.near.account(this._near.accountId)
           await account.addKey(this._near.marketPublicKey, undefined, undefined, 0)
         } catch (e) {
-          console.log(e)
+          console.log('FullAccessKey not found', e)
         }
       }
+
+      console.log('favor account_id', this.state.favorAccountId)
     }
   }
 
@@ -180,42 +182,9 @@ class App extends React.Component {
     return false
   }
 
-  popRequest (c) {
-    const requests = this.state.requests.slice(1)
-    this.setState({
-      requests
-    }, c)
-  }
-
-  addRequest (r, c) {
-    const requests = this.state.requests.slice(0)
-    requests.push(r)
-    this.setState({
-      requests
-    }, c)
-  }
-
-  addRecentCard (cardId) {
-    let recentCards = this.state.recentCards.slice(0)
-    const index = recentCards.indexOf(cardId)
-    if (index !== -1) {
-      recentCards.splice(index, 1)
-    }
-    recentCards.unshift(cardId)
-    recentCards = recentCards.slice(0, 5)
-    ls.set(this._near.lsKeyRecentCards, recentCards)
-    this.setState({
-      recentCards
-    })
-  }
-
   render () {
     const passProps = {
       _near: this._near,
-      updateState: (s, c) => this.setState(s, c),
-      popRequest: (c) => this.popRequest(c),
-      addRequest: (r, c) => this.addRequest(r, c),
-      addRecentCard: (cardId) => this.addRecentCard(cardId),
       refreshAllowance: () => this._near.refreshAllowance(),
       ...this.state
     }
