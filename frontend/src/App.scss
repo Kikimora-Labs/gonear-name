@@ -22,13 +22,20 @@ h2 {
   max-width: 400px;
 }
 
-.near-suffix {
+.account-suffix {
   position: relative;
   color: rgb(74, 79, 84);
 }
 
-.near-suffix::after {
+.account-suffix-near::after {
   content: '.near';
+}
+
+.account-suffix-testnet::after {
+  content: '.testnet';
+}
+
+.account-suffix::after {
   position: absolute;
   top: 6.5px;
   right: .9em;

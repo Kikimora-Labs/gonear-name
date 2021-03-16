@@ -18,6 +18,7 @@ import BidPage from './pages/Bid'
 
 const IsMainnet = window.location.hostname === 'berry.cards'
 const TestNearConfig = {
+  accountSuffix: 'testnet',
   networkId: 'testnet',
   nodeUrl: 'https://rpc.testnet.near.org',
   archivalNodeUrl: 'https://rpc.testnet.internal.near.org',
@@ -26,6 +27,7 @@ const TestNearConfig = {
   marketPublicKey: 'ed25519:9bk1tm45X2hBSffmD65pA2vch862jtcz75mkRR7MXNVj'
 }
 const MainNearConfig = {
+  accountSuffix: 'near',
   networkId: 'mainnet',
   nodeUrl: 'https://rpc.mainnet.near.org',
   archivalNodeUrl: 'https://rpc.mainnet.internal.near.org',
@@ -73,6 +75,7 @@ class App extends React.Component {
     this._near.lsKey = NearConfig.contractName + ':v01:'
     this._near.lsKeyRecentCards = this._near.lsKey + 'recentCards'
     this._near.marketPublicKey = NearConfig.marketPublicKey
+    this._near.accountSuffix = NearConfig.accountSuffix
 
     this.state = {
       connected: false,
@@ -280,7 +283,7 @@ class App extends React.Component {
                       <li className='nav-item'>
                         <Link
                             className='nav-link' aria-current='page'
-                            to={`/offer/${this.state.signedAccountId}`}
+                            to={`/offer`}
                         >Offer
                         </Link>
                       </li>
@@ -309,7 +312,7 @@ class App extends React.Component {
             <Route exact path='/rules'>
               <RulesPage {...passProps} />
             </Route>
-            <Route exact path='/offer/:profileId'>
+            <Route exact path='/offer'>
               <OfferPage {...passProps} />
             </Route>
             <Route exact path='/profile/:profileId'>
