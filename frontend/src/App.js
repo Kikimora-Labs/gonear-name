@@ -24,7 +24,7 @@ const TestNearConfig = {
   archivalNodeUrl: 'https://rpc.testnet.internal.near.org',
   contractName: 'dev-1615934646069-3103644',
   walletUrl: 'https://wallet.testnet.near.org',
-  marketPublicKey: 'ed25519:9bk1tm45X2hBSffmD65pA2vch862jtcz75mkRR7MXNVj'
+  marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA'
 }
 const MainNearConfig = {
   accountSuffix: 'near',
@@ -33,7 +33,7 @@ const MainNearConfig = {
   archivalNodeUrl: 'https://rpc.mainnet.internal.near.org',
   contractName: 'cards.berryclub.ek.near',
   walletUrl: 'https://wallet.near.org',
-  marketPublicKey: 'ed25519:9bk1tm45X2hBSffmD65pA2vch862jtcz75mkRR7MXNVj'
+  marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA'
 }
 
 //  TODO take contract key instead of marketPublicKey?
