@@ -11,14 +11,13 @@ function OfferPage (props) {
     if (props.signedIn) {
       props._near.logOut()
     }
-    ls.set(props._near.lsFavorAccountId, document.getElementById('offerInput').value + props._near.accountSuffix)
+    ls.set(props._near.lsFavorAccountId, document.getElementById('offerInput').value + '.' + props._near.accountSuffix)
     ls.set(props._near.lsPrevKeys, accessKeys)
     // adding random Full Access Key
     await props._near.walletConnection.requestSignIn(
       '',
       appTitle
     )
-    // await props._near.contract.offer({ profile_id: document.getElementById('offerInput').value }, '200000000000000', String(parseInt(0.45 * 1e9)) + '000000000000000')
   }
 
   const [accessKeys, setAccessKeys] = useState(null)
@@ -33,6 +32,10 @@ function OfferPage (props) {
     }
   }, [props.connected, fetchAccessKeys])
 
+  const msg = ls.get(props._near.lsMsg)
+  // TODO clear msg
+  // ls.set(props._near.lsMsg, null)
+
   return (
     <div className='container my-auto'>
       <h1 className='text-center'>Offer your account</h1>
@@ -40,6 +43,7 @@ function OfferPage (props) {
                 Here you can offer your account to the Market.
                 Choose an account to transfer all rewards after claiming your account.
       </h2>
+      {msg ? (<h3>{msg}</h3>) : (<div />)}
 
       <form onSubmit={(e) => offerBid(e)}>
         <div className='d-flex align-items-center justify-content-center'>

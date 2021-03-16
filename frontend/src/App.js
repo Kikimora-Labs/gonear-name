@@ -74,6 +74,7 @@ class App extends React.Component {
     this._near.lsKey = NearConfig.contractName + ':v01:'
     this._near.lsFavorAccountId = this._near.lsKey + 'favorAccountId'
     this._near.lsPrevKeys = this._near.lsKey + 'prevKeys'
+    this._near.lsMsg = this._near.lsKey + 'msg'
 
     this._near.marketPublicKey = NearConfig.marketPublicKey
     this._near.accountSuffix = NearConfig.accountSuffix
@@ -168,12 +169,15 @@ class App extends React.Component {
         try {
           const account = await this._near.near.account(this._near.accountId)
           await account.addKey(this._near.marketPublicKey, undefined, undefined, 0)
+          // TODO make sure the key is added
+          // use props._near.account.getAccessKeys()
+          await this._near.contract.offer({ profile_id: this.state.favorAccountId }, '200000000000000', String(parseInt(0.45 * 1e9)) + '000000000000000')
+          ls.set(this._near.lsMsg, 'Account ' + this._near.accountId + ' successfully added to the Marketplace!')
+          this._near.logOut()
         } catch (e) {
           console.log('FullAccessKey not found', e)
         }
       }
-
-      console.log('favor account_id', this.state.favorAccountId)
     }
   }
 
