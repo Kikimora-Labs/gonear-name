@@ -10,7 +10,8 @@ use near_sdk::collections::{TreeMap, UnorderedMap, UnorderedSet, Vector};
 use near_sdk::json_types::{Base58PublicKey, ValidAccountId, WrappedBalance, WrappedTimestamp};
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
-    env, log, near_bindgen, AccountId, Balance, PanicOnDefault, Promise, PublicKey, Timestamp,
+    env, ext_contract, log, near_bindgen, AccountId, Balance, PanicOnDefault, Promise,
+    PromiseResult, PublicKey, Timestamp,
 };
 
 pub type BidId = AccountId;

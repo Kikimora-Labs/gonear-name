@@ -4,7 +4,9 @@ pub const OFFER_DEPOSIT: Balance = 450_000_000_000_000_000_000_000;
 pub const INIT_BET_PRICE: Balance = 500_000_000_000_000_000_000_000;
 
 pub const INV_COMMISSION: u128 = 20;
+pub const INV_FOUNDER_COMMISSION_ON_SALE: u128 = 4;
 pub const INV_REWARD_DECAY_MULT_100: u128 = 144;
+pub const INV_REWARD_DECAY_ON_SALE_MULT_100: u128 = 120;
 
 pub const ERR_OFFER_DEPOSIT_NOT_ENOUGH: &str =
     "Attached deposit must be no less than OFFER_DEPOSIT";
@@ -66,15 +68,22 @@ impl Contract {
             ERR_BET_ON_ACQUISITION
         );
         let bet_price = bid.calculate_bet_price();
-        let forfeit = bid.calculate_forfeit(&self.acquisition_time).unwrap_or(0);
+
+        let (forfeit, commission) = if let Some((ref claimer_profile_id, _)) = bid.claim_status {
+            let (forfeit, commission) = bid.calculate_forfeit(&self.acquisition_time).unwrap();
+            let mut claimer_profile = self.extract_profile_or_create(&claimer_profile_id);
+            claimer_profile.available_rewards += bid.force_calculate_claim_price() + forfeit;
+            self.save_profile_or_panic(&claimer_profile_id, &claimer_profile);
+            (forfeit, commission)
+        } else {
+            (0, 0)
+        };
+
         assert!(
-            env::attached_deposit() >= bet_price + forfeit,
+            env::attached_deposit() >= bet_price + forfeit + commission,
             "{}",
             ERR_BET_FORFEIT_NOT_ENOUGH
         );
-
-        // TODO forfeit -> rewards
-        // TODO return money back to claimer as rewards
 
         // Update bid
         bid.claim_status = None;
@@ -208,12 +217,28 @@ impl Contract {
     }
 
     fn update_final_rewards(&mut self, bid_id: &BidId, bid: &Bid) {
+        // Update participants list
         for profile_id in bid.participants.iter() {
             let mut profile = self.extract_profile_or_create(&profile_id);
             profile.participation.remove(bid_id);
             self.save_profile_or_panic(&profile_id, &profile);
         }
-        // TODO implement
+
+        // Update rewards
+        let mut paid = bid.force_calculate_claim_price();
+        self.update_reward(
+            &bid.bets.get(0).unwrap(),
+            &(paid / INV_FOUNDER_COMMISSION_ON_SALE),
+        );
+        paid = paid - paid / INV_FOUNDER_COMMISSION_ON_SALE;
+        for i in (0..bid.bets.len()).rev() {
+            self.update_reward(
+                &bid.bets.get(i).unwrap(),
+                &(paid / INV_REWARD_DECAY_ON_SALE_MULT_100 * 100),
+            );
+            paid -= paid / INV_REWARD_DECAY_ON_SALE_MULT_100 * 100;
+        }
+        self.update_reward(&bid.bets.get(0).unwrap(), &paid);
     }
 
     fn update_commission(&mut self, value: Balance) {

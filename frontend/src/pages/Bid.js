@@ -1,28 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router'
-import { BuyButton } from '../components/Helpers'
-
-const mapBidInfo = (b) => {
-  return b ? {
-    isAtMarket: true,
-    numClaims: b.num_claims,
-    claimedBy: b.claim,
-    bets: b.bets,
-    betPrice: b.bet_price,
-    claimPrice: b.claim_price,
-    forfeit: b.forfeit,
-    onAcquisition: b.on_acquisition
-  } : {
-    isAtMarket: false,
-    numClaims: 0,
-    claimedBy: null,
-    bets: [],
-    betPrice: 0,
-    claimPrice: 0,
-    forfeit: null,
-    onAcquisition: false
-  }
-}
+import { BidActions } from '../components/BidActions'
+import { mapBidInfo } from '../components/BidPreview'
 
 function BidPage (props) {
   const { bidId } = useParams()
@@ -84,7 +63,14 @@ function BidPage (props) {
                 </div>
               </div>
               <div className='text-center'>
-                <BuyButton {...props} bidId={bidId} bidInfo={bidInfo} bet={bidInfo.betPrice} forfeit={bidInfo.forfeit} claim={bidInfo.claimPrice} />
+                <BidActions {...props} bidId={bidId} bidInfo={bidInfo} />
+                <div className='row text-muted text-start'>
+        Price breakdown:
+        ...
+                  <p>
+          blah
+                  </p>
+                </div>
               </div>
             </div>
           ) : (

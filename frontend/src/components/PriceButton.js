@@ -7,12 +7,25 @@ function PriceButton (props) {
     <div>
       <Link
         to={`/bid/${props.bidId}`}
-        className='btn btn-success' disabled={!props.signedIn}
+        className='btn btn-success'
       >
-Starts from {fromNear(props.price).toFixed(2)} NEAR
+Starts from {(fromNear(props.price) + fromNear(props.forfeit)).toFixed(2)} NEAR
       </Link>
     </div>
   )
 }
 
-export default PriceButton
+function DetailsButton (props) {
+  return (
+    <div>
+      <Link
+        to={`/bid/${props.bidId}`}
+        className='btn btn-primary'
+      >
+Details
+      </Link>
+    </div>
+  )
+}
+
+export { PriceButton, DetailsButton }
