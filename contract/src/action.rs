@@ -175,11 +175,11 @@ impl Contract {
         self.save_profile_or_panic(&env::predecessor_account_id(), &profile);
 
         // Update keys
-        Promise::new(env::current_account_id())
+        Promise::new(bid_id.clone().into())
             .add_full_access_key(new_public_key.into())
             .then({
                 // This Promise may fail by design
-                Promise::new(env::current_account_id()).delete_key(env::signer_account_pk())
+                Promise::new(bid_id.into()).delete_key(env::signer_account_pk())
             });
 
         true

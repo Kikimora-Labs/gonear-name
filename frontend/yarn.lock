@@ -1651,6 +1651,11 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.31.tgz#72286bd33d137aa0d152d47ec7c1762563d34055"
   integrity sha512-vFHy/ezP5qI0rFgJ7aQnjDXwAMrG0KqqIH7tQG5PPv3BWBayOPIQNBjVc/P6hhdZfMx51REc6tfDNXHUio893g==
 
+"@types/node@11.11.6":
+  version "11.11.6"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.11.6.tgz#df929d1bb2eee5afdda598a41930fe50b43eaa6a"
+  integrity sha512-Exw4yUWMBXM3X+8oqzJNRqZSwUAaS4+7NdvHqQuFi/d+synz++xmX3QIf+BFqneW8N31R8Ky+sikfZUXq07ggQ==
+
 "@types/parse-json@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
@@ -2591,6 +2596,24 @@ bindings@^1.5.0:
   dependencies:
     file-uri-to-path "1.0.0"
 
+bip39-light@^1.0.7:
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/bip39-light/-/bip39-light-1.0.7.tgz#06a72f251b89389a136d3f177f29b03342adc5ba"
+  integrity sha512-WDTmLRQUsiioBdTs9BmSEmkJza+8xfJmptsNJjxnoq3EydSa/ZBXT6rm66KoT3PJIRYMnhSKNR7S9YL1l7R40Q==
+  dependencies:
+    create-hash "^1.1.0"
+    pbkdf2 "^3.0.9"
+
+bip39@3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/bip39/-/bip39-3.0.2.tgz#2baf42ff3071fc9ddd5103de92e8f80d9257ee32"
+  integrity sha512-J4E1r2N0tUylTKt07ibXvhpT2c5pyAFgvuA5q1H9uDy6dEGpjV8jmymh3MTYJDLCNbIVClSB9FbND49I6N24MQ==
+  dependencies:
+    "@types/node" "11.11.6"
+    create-hash "^1.1.0"
+    pbkdf2 "^3.0.9"
+    randombytes "^2.0.1"
+
 block-stream@*:
   version "0.0.9"
   resolved "https://registry.yarnpkg.com/block-stream/-/block-stream-0.0.9.tgz#13ebfe778a03205cfe03751481ebb4b3300c126a"
@@ -2791,7 +2814,7 @@ browserslist@^4.0.0, browserslist@^4.12.0, browserslist@^4.14.5, browserslist@^4
     escalade "^3.1.1"
     node-releases "^1.1.70"
 
-bs58@^4.0.0:
+bs58@^4.0.0, bs58@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/bs58/-/bs58-4.0.1.tgz#be161e76c354f6f788ae4071f63f34e8c4f0a42a"
   integrity sha1-vhYedsNU9veIrkBx9j806MTwpCo=
@@ -3508,7 +3531,7 @@ create-hash@^1.1.0, create-hash@^1.1.2, create-hash@^1.2.0:
     ripemd160 "^2.0.1"
     sha.js "^2.4.0"
 
-create-hmac@^1.1.0, create-hmac@^1.1.4, create-hmac@^1.1.7:
+create-hmac@1.1.7, create-hmac@^1.1.0, create-hmac@^1.1.4, create-hmac@^1.1.7:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/create-hmac/-/create-hmac-1.1.7.tgz#69170c78b3ab957147b2b8b04572e47ead2243ff"
   integrity sha512-MJG9liiZ+ogc4TzUwuvbER1JRdgvUFSB5+VR/g5h82fGaIRWMWddtKBHi7/sVhfjQZ6SehlyhvQYrcYkaUIpLg==
@@ -7792,6 +7815,25 @@ near-api-js@^0.37.0:
     text-encoding-utf-8 "^1.0.2"
     tweetnacl "^1.0.1"
 
+near-hd-key@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/near-hd-key/-/near-hd-key-1.2.1.tgz#f508ff15436cf8a439b543220f3cc72188a46756"
+  integrity sha512-SIrthcL5Wc0sps+2e1xGj3zceEa68TgNZDLuCx0daxmfTP7sFTB3/mtE2pYhlFsCxWoMn+JfID5E1NlzvvbRJg==
+  dependencies:
+    bip39 "3.0.2"
+    create-hmac "1.1.7"
+    tweetnacl "1.0.3"
+
+near-seed-phrase@^0.1.0:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/near-seed-phrase/-/near-seed-phrase-0.1.1.tgz#69efb34956ae6f1f1c54f73a9bf05f0d2c4395ad"
+  integrity sha512-SuyazZJNbgZeracALTqwPj8sekduR6LG/V4ifDHGgSjQrLzbldXdv7gK1RUB3xphJ/EX2rsiBhbJMqqWA5DPwg==
+  dependencies:
+    bip39-light "^1.0.7"
+    bs58 "^4.0.1"
+    near-hd-key "^1.2.1"
+    tweetnacl "^1.0.2"
+
 negotiator@0.6.2:
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.2.tgz#feacf7ccf525a77ae9634436a64883ffeca346fb"
@@ -8524,7 +8566,7 @@ path-type@^4.0.0:
   resolved "https://registry.yarnpkg.com/path-type/-/path-type-4.0.0.tgz#84ed01c0a7ba380afe09d90a8c180dcd9d03043b"
   integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
 
-pbkdf2@^3.0.3:
+pbkdf2@^3.0.3, pbkdf2@^3.0.9:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/pbkdf2/-/pbkdf2-3.1.1.tgz#cb8724b0fada984596856d1a6ebafd3584654b94"
   integrity sha512-4Ejy1OPxi9f2tt1rRV7Go7zmfDQ+ZectEQz3VGUQhgq62HtIRPDyG/JtnwIxs6x3uNMwo2V7q1fMvKjb+Tnpqg==
@@ -11351,15 +11393,15 @@ tunnel-agent@^0.6.0:
   dependencies:
     safe-buffer "^5.0.1"
 
+tweetnacl@1.0.3, tweetnacl@^1.0.1, tweetnacl@^1.0.2:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
+  integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
+
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
   integrity sha1-WuaBd/GS1EViadEIr6k/+HQ/T2Q=
-
-tweetnacl@^1.0.1:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.3.tgz#ac0af71680458d8a6378d0d0d050ab1407d35596"
-  integrity sha512-6rt+RN7aOi1nGMyC4Xa5DdYiukl2UWCbcJft7YhxReBGQD7OAM8Pbxw6YMo4r2diNEA8FEmu32YOn9rhaiE5yw==
 
 type-check@~0.3.2:
   version "0.3.2"

@@ -13,6 +13,7 @@ import MarketPage from './pages/Market'
 import OfferPage from './pages/Offer'
 import RulesPage from './pages/Rules'
 import ProfilePage from './pages/Profile'
+import AcquirePage from './pages/Acquire'
 import BidPage from './pages/Bid'
 
 const IsMainnet = window.location.hostname === 'berry.cards'
@@ -21,7 +22,7 @@ const TestNearConfig = {
   networkId: 'testnet',
   nodeUrl: 'https://rpc.testnet.near.org',
   archivalNodeUrl: 'https://rpc.testnet.internal.near.org',
-  contractName: 'dev-1615748079260-4142178',
+  contractName: 'dev-1615934646069-3103644',
   walletUrl: 'https://wallet.testnet.near.org',
   marketPublicKey: 'ed25519:9bk1tm45X2hBSffmD65pA2vch862jtcz75mkRR7MXNVj'
 }
@@ -76,6 +77,7 @@ class App extends React.Component {
     this._near.lsPrevKeys = this._near.lsKey + 'prevKeys'
     this._near.lsMsg = this._near.lsKey + 'msg'
 
+    this._near.config = NearConfig
     this._near.marketPublicKey = NearConfig.marketPublicKey
     this._near.accountSuffix = NearConfig.accountSuffix
 
@@ -282,6 +284,9 @@ class App extends React.Component {
             </Route>
             <Route exact path='/bid/:bidId'>
               <BidPage {...passProps} />
+            </Route>
+            <Route exact path='/acquire/:bidId'>
+              <AcquirePage {...passProps} />
             </Route>
           </Switch>
         </Router>

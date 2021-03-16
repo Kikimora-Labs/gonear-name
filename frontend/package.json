@@ -13,6 +13,7 @@
     "error-polyfill": "^0.1.2",
     "local-storage": "^2.0.0",
     "near-api-js": "^0.37.0",
+    "near-seed-phrase": "^0.1.0",
     "node-sass": "^4.0.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

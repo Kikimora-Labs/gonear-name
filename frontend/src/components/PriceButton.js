@@ -2,6 +2,19 @@ import React from 'react'
 import { fromNear } from './Helpers'
 import { Link } from 'react-router-dom'
 
+function AcquireButton (props) {
+  return (
+    <div>
+      <Link
+        to={`/acquire/${props.bidId}`}
+        className='btn btn-success'
+      >
+Acquire
+      </Link>
+    </div>
+  )
+}
+
 function PriceButton (props) {
   return (
     <div>
@@ -28,4 +41,4 @@ Details
   )
 }
 
-export { PriceButton, DetailsButton }
+export { PriceButton, DetailsButton, AcquireButton }

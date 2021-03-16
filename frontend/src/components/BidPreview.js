@@ -1,7 +1,7 @@
 import './BidPreview.scss'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { PriceButton, DetailsButton } from './PriceButton'
+import { AcquireButton, PriceButton, DetailsButton } from './PriceButton'
 
 const mapBidInfo = (b) => {
   return b ? {
@@ -61,9 +61,9 @@ function BidPreview (props) {
           <div className='row py-2' />
         </div>
         <div className='col-6'>
-          {isOnAcquisition | bid.isOnAcquisition
+          {isOnAcquisition ? (<AcquireButton {...props} bidId={bidId} />) : (bid.isOnAcquisition
             ? (<DetailsButton {...props} bidId={bidId} />)
-            : (<PriceButton {...props} bidId={bidId} price={bid.betPrice} forfeit={bid.forfeit} />)}
+            : (<PriceButton {...props} bidId={bidId} price={bid.betPrice} forfeit={bid.forfeit} />))}
         </div>
       </div>
     </div>
