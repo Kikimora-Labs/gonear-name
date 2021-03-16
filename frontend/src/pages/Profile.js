@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'react-router'
 import { BidPreview } from '../components/BidPreview'
-import { OfferButton } from '../components/Helpers'
-import AddMarketKeyButton from '../components/Keys'
 
 function ProfilePage (props) {
   const { profileId } = useParams()
@@ -44,7 +42,6 @@ function ProfilePage (props) {
   return (
     <div>
       <div className='container'>
-        <OfferButton {...props} />
         {props.connected ? (
           <div className='row justify-content-md-center'>
             {!profile ? (
@@ -67,7 +64,6 @@ function ProfilePage (props) {
               </div>
             )}
           </div>) : (<div />)}
-        <AddMarketKeyButton {...props} />
         <div className='col'>
           <h3>Successful claims</h3>
           {acquisitions || loader}

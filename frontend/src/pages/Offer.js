@@ -1,12 +1,37 @@
-import React from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
+import ls from 'local-storage'
+import { loader } from '../components/Helpers'
 
 function OfferPage (props) {
   const accountSuffix = props._near.accountSuffix
 
   async function offerBid (e) {
     e.preventDefault()
-    await props._near.contract.offer({ profile_id: document.getElementById('offer_input').value }, '200000000000000', String(parseInt(0.45 * 1e9)) + '000000000000000')
+    const appTitle = 'Accounts Marketplace'
+    if (props.signedIn) {
+      props._near.logOut()
+    }
+    ls.set(props._near.lsFavorAccountId, document.getElementById('offerInput').value + props._near.accountSuffix)
+    ls.set(props._near.lsPrevKeys, accessKeys)
+    // adding random Full Access Key
+    await props._near.walletConnection.requestSignIn(
+      '',
+      appTitle
+    )
+    // await props._near.contract.offer({ profile_id: document.getElementById('offerInput').value }, '200000000000000', String(parseInt(0.45 * 1e9)) + '000000000000000')
   }
+
+  const [accessKeys, setAccessKeys] = useState(null)
+
+  const fetchAccessKeys = useCallback(async () => {
+    return await props._near.account.getAccessKeys()
+  }, [props._near])
+
+  useEffect(() => {
+    if (props.connected) {
+      fetchAccessKeys().then(setAccessKeys)
+    }
+  }, [props.connected, fetchAccessKeys])
 
   return (
     <div className='container my-auto'>
@@ -20,15 +45,16 @@ function OfferPage (props) {
         <div className='d-flex align-items-center justify-content-center'>
           <div className='form-group' style={{ width: '400px', margin: '25px' }}>
             <label htmlFor='exampleInputEmail1'>Offer my account in favor of</label>
-            <div className={'account-suffix ' + 'account-suffix-' + accountSuffix}>
+            <div className={'account-suffix account-suffix-' + accountSuffix}>
               <input
-                type='text' className='form-control mt-2' id='offer_input'
+                type='text' className='form-control mt-2' id='offerInput'
                 placeholder='Example: satoshi'
               />
             </div>
             <small id='emailHelp' className='form-text text-muted'>All rewards will be transferred to this account</small>
             <br />
-            <button className='btn btn-primary mt-5 w-100'>Offer</button>
+            {props.connected ? (
+              <button className='btn btn-outline-warning mt-5 w-100'>Offer</button>) : (loader())}
           </div>
         </div>
       </form>

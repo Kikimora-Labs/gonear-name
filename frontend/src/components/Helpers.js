@@ -2,25 +2,12 @@ import React from 'react'
 
 const fromNear = (s) => parseFloat(s) / 1e24 || 0
 
-function OfferButton (props) {
-  async function offerBid (e) {
-    e.preventDefault()
-    await props._near.contract.offer({ profile_id: document.getElementById('offer_input').value }, '200000000000000', String(parseInt(0.45 * 1e9)) + '000000000000000')
-  }
-
+function loader () {
   return (
-    <div>
-      <form onSubmit={(e) => offerBid(e)}>
-        <div className='input-group mb-3'>
-          <button
-            className='btn btn-primary'
-            disabled={!props.signedIn}
-            onClick={(e) => offerBid(e)}
-          >Offer current account in favor of
-          </button>
-          <input id='offer_input' type='text' className='form-control' placeholder='satoshi.testnet' aria-label='Username' aria-describedby='basic-addon1' />
-        </div>
-      </form>
+    <div className='d-flex justify-content-center' key='loader'>
+      <div className='spinner-grow' role='status'>
+        <span className='visually-hidden'>Loading...</span>
+      </div>
     </div>
   )
 }
@@ -227,4 +214,4 @@ function rules () {
   )
 }
 
-export { rules, fromNear, OfferButton }
+export { rules, fromNear, loader }

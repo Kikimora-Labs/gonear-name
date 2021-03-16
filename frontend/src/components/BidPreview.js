@@ -39,7 +39,7 @@ function BidPreview (props) {
     } else {
       return mapBidInfo(null)
     }
-  }, [props._near, bidId])
+  }, [props._near, bidId, isOnAcquisition])
 
   useEffect(() => {
     if (props.connected) {

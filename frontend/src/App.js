@@ -73,6 +73,8 @@ class App extends React.Component {
 
     this._near.lsKey = NearConfig.contractName + ':v01:'
     this._near.lsFavorAccountId = this._near.lsKey + 'favorAccountId'
+    this._near.lsPrevKeys = this._near.lsKey + 'prevKeys'
+
     this._near.marketPublicKey = NearConfig.marketPublicKey
     this._near.accountSuffix = NearConfig.accountSuffix
 
@@ -80,7 +82,8 @@ class App extends React.Component {
       connected: false,
       account: null,
       requests: null,
-      favorAccountId: ls.get(this._near.lsFavorAccountId) || null
+      favorAccountId: ls.get(this._near.lsFavorAccountId) || null,
+      prevKeys: ls.get(this._near.lsPrevKeys) || null
     }
 
     this._initNear().then(() => {
