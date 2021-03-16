@@ -10,12 +10,15 @@ import { HashRouter as Router, Link, Route, Switch } from 'react-router-dom'
 import { fromNear } from './components/Helpers'
 import ls from 'local-storage'
 import MarketPage from './pages/Market'
+import ClaimsPage from './pages/Claims'
+import OfferPage from './pages/Offer'
 import RulesPage from './pages/Rules'
 import ProfilePage from './pages/Profile'
 import BidPage from './pages/Bid'
 
 const IsMainnet = window.location.hostname === 'berry.cards'
 const TestNearConfig = {
+  accountSuffix: 'testnet',
   networkId: 'testnet',
   nodeUrl: 'https://rpc.testnet.near.org',
   archivalNodeUrl: 'https://rpc.testnet.internal.near.org',
@@ -24,6 +27,7 @@ const TestNearConfig = {
   marketPublicKey: 'ed25519:9bk1tm45X2hBSffmD65pA2vch862jtcz75mkRR7MXNVj'
 }
 const MainNearConfig = {
+  accountSuffix: 'near',
   networkId: 'mainnet',
   nodeUrl: 'https://rpc.mainnet.near.org',
   archivalNodeUrl: 'https://rpc.mainnet.internal.near.org',
@@ -71,6 +75,7 @@ class App extends React.Component {
     this._near.lsKey = NearConfig.contractName + ':v01:'
     this._near.lsFavorAccountId = this._near.lsKey + 'favorAccountId'
     this._near.marketPublicKey = NearConfig.marketPublicKey
+    this._near.accountSuffix = NearConfig.accountSuffix
 
     this.state = {
       connected: false,
@@ -239,6 +244,15 @@ class App extends React.Component {
                   <li className='nav-item'>
                     <Link className='nav-link' aria-current='page' to='/rules'>Rules</Link>
                   </li>
+                  {this.state.signedIn && (
+                      <li className='nav-item'>
+                        <Link
+                            className='nav-link' aria-current='page'
+                            to={`/offer`}
+                        >Offer
+                        </Link>
+                      </li>
+                  )}
                 </ul>
                 <form className='d-flex'>
                   {header}
@@ -259,6 +273,9 @@ class App extends React.Component {
             </Route>
             <Route exact path='/rules'>
               <RulesPage {...passProps} />
+            </Route>
+            <Route exact path='/offer'>
+              <OfferPage {...passProps} />
             </Route>
             <Route exact path='/profile/:profileId'>
               <ProfilePage {...passProps} />
