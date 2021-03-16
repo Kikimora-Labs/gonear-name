@@ -61,9 +61,9 @@ function BidPreview (props) {
           <div className='row py-2' />
         </div>
         <div className='col-6'>
-          {!isOnAcquisition
-            ? (<PriceButton {...props} bidId={bidId} price={bid.betPrice} forfeit={bid.forfeit} />)
-            : (<DetailsButton {...props} bidId={bidId} />)}
+          {isOnAcquisition | bid.isOnAcquisition
+            ? (<DetailsButton {...props} bidId={bidId} />)
+            : (<PriceButton {...props} bidId={bidId} price={bid.betPrice} forfeit={bid.forfeit} />)}
         </div>
       </div>
     </div>
