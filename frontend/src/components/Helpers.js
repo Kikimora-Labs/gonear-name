@@ -2,69 +2,6 @@ import React from 'react'
 
 const fromNear = (s) => parseFloat(s) / 1e24 || 0
 
-function BuyButton (props) {
-  const betPrice = fromNear(props.bet) + fromNear(props.forfeit)
-  const claimPrice = fromNear(props.claim)
-  async function betBid (e) {
-    e.preventDefault()
-    // TODO
-    await props._near.contract.bet({ bid_id: props.bidId }, '200000000000000', String(parseInt(betPrice * 1.01 * 1e9)) + '000000000000000')
-  }
-  async function claimBid (e) {
-    e.preventDefault()
-    console.log(String(claimPrice * 1e9) + '000000000000000')
-    // TODO
-    await props._near.contract.claim({ bid_id: props.bidId }, '200000000000000', String(parseInt(claimPrice * 1e9)) + '000000000000000')
-  }
-  const appCommission = betPrice / 100
-  let artDaoProfit = betPrice / 10
-  let ownerPrice = betPrice - appCommission - artDaoProfit
-  if (!props.ownerId) {
-    artDaoProfit += ownerPrice
-    ownerPrice = 0
-  }
-
-  const newPrice = betPrice * 1.2
-  return (
-    <div>
-      <div className='row py-3'>
-        <button
-          className='btn btn-primary btn-lg btn-block'
-          disabled={!props.signedIn}
-          onClick={(e) => betBid(e)}
-        >
-        Bet for {betPrice.toFixed(6)} NEAR
-        </button>
-        <div className='row py-1' />
-        {claimPrice ? (
-          <button
-            className='btn btn-success btn-lg btn-block'
-            disabled={!props.signedIn}
-            onClick={(e) => claimBid(e)}
-          >
-        Claim for {claimPrice.toFixed(6)} NEAR
-          </button>
-        ) : (
-          <button
-            className='btn btn-outline-warning btn-lg btn-block'
-            disabled
-            onClick={(e) => claimBid(e)}
-          >
-        Already claimed - you can only bet
-          </button>
-        )}
-      </div>
-      <div className='row text-muted text-start'>
-        Price breakdown:
-        ...
-        <p>
-          The new price will be {newPrice.toFixed(2)} NEAR
-        </p>
-      </div>
-    </div>
-  )
-}
-
 function OfferButton (props) {
   async function offerBid (e) {
     e.preventDefault()
@@ -290,4 +227,4 @@ function rules () {
   )
 }
 
-export { rules, fromNear, BuyButton, OfferButton }
+export { rules, fromNear, OfferButton }

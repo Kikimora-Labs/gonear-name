@@ -10,7 +10,6 @@ import { HashRouter as Router, Link, Route, Switch } from 'react-router-dom'
 import { fromNear } from './components/Helpers'
 import ls from 'local-storage'
 import MarketPage from './pages/Market'
-import ClaimsPage from './pages/Claims'
 import RulesPage from './pages/Rules'
 import ProfilePage from './pages/Profile'
 import BidPage from './pages/Bid'
@@ -75,7 +74,6 @@ class App extends React.Component {
 
     this.state = {
       connected: false,
-      isNavCollapsed: true,
       account: null,
       requests: null,
       favorAccountId: ls.get(this._near.lsFavorAccountId) || null
@@ -229,9 +227,6 @@ class App extends React.Component {
                   <li className='nav-item'>
                     <Link className='nav-link' aria-current='page' to='/'>Accounts</Link>
                   </li>
-                  <li className='nav-item'>
-                    <Link className='nav-link' aria-current='page' to='/claims'>Claims</Link>
-                  </li>
                   {this.state.signedIn && (
                     <li className='nav-item'>
                       <Link
@@ -261,9 +256,6 @@ class App extends React.Component {
           <Switch>
             <Route exact path='/'>
               <MarketPage {...passProps} />
-            </Route>
-            <Route exact path='/claims'>
-              <ClaimsPage {...passProps} />
             </Route>
             <Route exact path='/rules'>
               <RulesPage {...passProps} />

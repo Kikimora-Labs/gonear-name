@@ -1,6 +1,6 @@
 import './Market.scss'
 import React, { useEffect, useState } from 'react'
-import BidPreview from '../components/BidPreview'
+import { BidPreview } from '../components/BidPreview'
 import InfiniteScroll from 'react-infinite-scroller'
 
 const FetchLimit = 25
