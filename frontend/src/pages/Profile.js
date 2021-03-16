@@ -20,7 +20,6 @@ function ProfilePage (props) {
 
   let acquisitions = null
   let participation = null
-  // console.log(profile.acquisitions)
   if (props.connected && !!profile) {
     acquisitions = profile.acquisitions.map((bidId) => {
       return (

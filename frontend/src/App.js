@@ -10,7 +10,6 @@ import { HashRouter as Router, Link, Route, Switch } from 'react-router-dom'
 import { fromNear } from './components/Helpers'
 import ls from 'local-storage'
 import MarketPage from './pages/Market'
-import ClaimsPage from './pages/Claims'
 import OfferPage from './pages/Offer'
 import RulesPage from './pages/Rules'
 import ProfilePage from './pages/Profile'
@@ -242,17 +241,11 @@ class App extends React.Component {
                     </li>
                   )}
                   <li className='nav-item'>
+                    <Link className='nav-link' aria-current='page' to='/offer'>Offer</Link>
+                  </li>
+                  <li className='nav-item'>
                     <Link className='nav-link' aria-current='page' to='/rules'>Rules</Link>
                   </li>
-                  {this.state.signedIn && (
-                      <li className='nav-item'>
-                        <Link
-                            className='nav-link' aria-current='page'
-                            to={`/offer`}
-                        >Offer
-                        </Link>
-                      </li>
-                  )}
                 </ul>
                 <form className='d-flex'>
                   {header}
