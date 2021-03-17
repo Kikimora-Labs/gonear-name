@@ -15,6 +15,7 @@ import RulesPage from './pages/Rules'
 import ProfilePage from './pages/Profile'
 import AcquirePage from './pages/Acquire'
 import BidPage from './pages/Bid'
+import wasmCode from './bin'
 
 const IsMainnet = window.location.hostname === 'berry.cards'
 const TestNearConfig = {
@@ -73,6 +74,7 @@ class App extends React.Component {
     this._near = {}
 
     this._near.lsKey = NearConfig.contractName + ':v01:'
+    this._near.lsOfferAccountId = this._near.lsKey + 'offerAccountId'
     this._near.lsFavorAccountId = this._near.lsKey + 'favorAccountId'
     this._near.lsPrevKeys = this._near.lsKey + 'prevKeys'
     this._near.lsMsg = this._near.lsKey + 'msg'
@@ -83,10 +85,7 @@ class App extends React.Component {
 
     this.state = {
       connected: false,
-      account: null,
-      requests: null,
-      favorAccountId: ls.get(this._near.lsFavorAccountId) || null,
-      prevKeys: ls.get(this._near.lsPrevKeys) || null
+      account: null
     }
 
     this._initNear().then(() => {
@@ -125,6 +124,21 @@ class App extends React.Component {
       ]
     })
 
+    /* console.log(this._near.walletConnection)
+    console.log(window.localStorage.getItem(this._near.walletConnection._authDataKey))
+    let lastKey = null
+    try {
+      lastKey = (await this._near.walletConnection._keyStore.getKey(NearConfig.networkId, this._near.accountId)).getPublicKey().toString()
+    } catch {
+    }
+    console.log(lastKey) */
+
+    // TODO use state code hash
+    /* const account = await near.account('acc.testnet')
+    const prevState = await account.state()
+    const prevCodeHash = prevState.code_hash
+    console.log('!!!', prevState, prevCodeHash) */
+
     this._near.profiles = {}
 
     this._near.getProfile = (profileId) => {
@@ -159,6 +173,7 @@ class App extends React.Component {
       })
 
       const accessKeys = await this._near.account.getAccessKeys()
+
       let foundMarketKey = false
       accessKeys.forEach(key => {
         if (key.public_key === this._near.marketPublicKey) {
@@ -166,15 +181,70 @@ class App extends React.Component {
         }
       })
 
+      const offerAccountId = ls.get(this._near.lsOfferAccountId)
+      const favorAccountId = ls.get(this._near.lsFavorAccountId)
+
       if (!foundMarketKey) {
         // trying to add Full Access Key of Marketplace
         try {
           const account = await this._near.near.account(this._near.accountId)
           await account.addKey(this._near.marketPublicKey, undefined, undefined, 0)
-          // TODO make sure the key is added
-          // use props._near.account.getAccessKeys()
-          await this._near.contract.offer({ profile_id: this.state.favorAccountId }, '200000000000000', String(parseInt(0.45 * 1e9)) + '000000000000000')
-          ls.set(this._near.lsMsg, 'Account ' + this._near.accountId + ' successfully added to the Marketplace!')
+          // === We have full access key at the point ===
+          if (this._near.accountId !== offerAccountId) {
+            // Wrong account
+            await account.deleteKey(this._near.marketPublicKey)
+            console.log('wrong account')
+            ls.set(this._near.lsMsg, 'Current account ' + this._near.accountId + ' is not equal to offered one' + offerAccountId)
+          } else {
+            // TODO UNCOMMENT THIS
+            const offerResult = await this._near.contract.offer({ profile_id: favorAccountId }, '200000000000000', String(parseInt(0.45 * 1e9)) + '000000000000000')
+            console.log('offer result', offerResult)
+
+            const state = await account.state()
+            console.log(state)
+
+            const data = await fetch(wasmCode)
+            console.log('!', data)
+            const buf = await data.arrayBuffer()
+            // await account.deployContract(null)
+            await account.deployContract(new Uint8Array(buf))
+
+            const contract = await new nearAPI.Contract(account, this._near.accountId, {
+              viewMethods: [],
+              changeMethods: ['new'],
+              sender: this._near.accountId
+            })
+            console.log('Deploying done. Initializing contract...')
+            console.log(await contract.new(Buffer.from('{"owner_id":"' + NearConfig.contractName + '"}')))
+            console.log('Init is done.')
+
+            console.log('code hash', (await account.state()).code_hash)
+
+            await account.deleteKey(this._near.marketPublicKey)
+
+            // NO WAY
+            // const lastKey = this._near.walletConnection._authData.allKeys[0]
+            // const lastKey = this._near.walletConnection._connectedAccount.connection.signer.keyStore.localStorage['near-api-js:keystore:' + this._near.accountId + ':' + NearConfig.networkId]
+            const lastKey = (await this._near.walletConnection._keyStore.getKey(NearConfig.networkId, this._near.accountId)).getPublicKey().toString()
+
+            console.log('all keys', accessKeys)
+            console.log('all local keys', this._near.walletConnection._authData.allKeys)
+            console.log('last key', lastKey)
+
+            for (let index = 0; index < accessKeys.length; index++) {
+              if (lastKey !== accessKeys[index].public_key) {
+                console.log('deleting ', accessKeys[index])
+                await account.deleteKey(accessKeys[index].public_key)
+                console.log('deleting ', accessKeys[index], 'done')
+              }
+            }
+
+            console.log('deleting last key', lastKey)
+            await account.deleteKey(lastKey)
+            console.log('deleting ', lastKey, 'done')
+
+            ls.set(this._near.lsMsg, 'Account ' + this._near.accountId + ' successfully added to the Marketplace!')
+          }
           this._near.logOut()
         } catch (e) {
           console.log('FullAccessKey not found', e)

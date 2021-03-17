@@ -3,6 +3,10 @@ use crate::*;
 pub const OFFER_DEPOSIT: Balance = 450_000_000_000_000_000_000_000;
 pub const INIT_BET_PRICE: Balance = 500_000_000_000_000_000_000_000;
 
+pub const ON_ACQUIRE_FUNCTION_CALL_GAS: u64 = 30_000_000_000_000;
+/// Indicates there are no deposit for a callback for better readability
+const NO_DEPOSIT: u128 = 0;
+
 pub const INV_COMMISSION: u128 = 20;
 pub const INV_FOUNDER_COMMISSION_ON_SALE: u128 = 4;
 pub const INV_REWARD_DECAY_MULT_100: u128 = 144;
@@ -174,13 +178,18 @@ impl Contract {
         profile.num_acquisitions += 1;
         self.save_profile_or_panic(&env::predecessor_account_id(), &profile);
 
-        // Update keys
-        Promise::new(bid_id.clone().into())
-            .add_full_access_key(new_public_key.into())
-            .then({
-                // This Promise may fail by design
-                Promise::new(bid_id.into()).delete_key(env::signer_account_pk())
-            });
+        let key: String = (&new_public_key).into();
+
+        Promise::new(bid_id.clone().into()).function_call(
+            "add_access_key".to_string().into_bytes(),
+            json!({
+                "public_key": key,
+            })
+            .to_string()
+            .into_bytes(),
+            NO_DEPOSIT,
+            ON_ACQUIRE_FUNCTION_CALL_GAS,
+        );
 
         true
     }

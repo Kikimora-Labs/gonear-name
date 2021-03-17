@@ -12,16 +12,14 @@ function AcquirePage (props) {
     const seedPhrase = document.getElementById('acquireSeedPhrase').value
     const publicKey = parseSeedPhrase(seedPhrase, '').publicKey
     console.log(publicKey)
-    // TODO
-    // await props._near.contract.acquire({ bid_id: bidId, new_public_key: publicKey }, '200000000000000', '0')
+    await props._near.contract.acquire({ bid_id: bidId, new_public_key: publicKey }, '200000000000000', '0')
   }
 
   async function acquireBidPublicKey (e) {
     e.preventDefault()
     const publicKey = document.getElementById('acquirePublicKey').value
     console.log(publicKey)
-    // TODO
-    // await props._near.contract.acquire({ bid_id: bidId, new_public_key: publicKey }, '200000000000000', '0')
+    await props._near.contract.acquire({ bid_id: bidId, new_public_key: publicKey }, '200000000000000', '0')
   }
 
   const seedPhraseLink = props._near.config.walletUrl + '/setup-seed-phrase/' + bidId + '/phrase'
