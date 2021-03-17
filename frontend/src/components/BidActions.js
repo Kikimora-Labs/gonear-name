@@ -15,7 +15,7 @@ function BetButton (props) {
   return (
     <button
       className='btn btn-primary btn-lg btn-block'
-      disabled={!props.signedIn}
+      disabled={!props.signedIn || !props.isSafe}
       onClick={(e) => betBid(e)}
     >
         Bet for {totalBetPrice.toFixed(6)} NEAR
@@ -24,7 +24,6 @@ function BetButton (props) {
 }
 
 function ClaimButton (props) {
-  console.log(props)
   const claimPrice = fromNear(props.claimPrice)
   async function claimBid (e) {
     e.preventDefault()
@@ -37,7 +36,7 @@ function ClaimButton (props) {
     claimPrice ? (
       <button
         className='btn btn-success btn-lg btn-block'
-        disabled={!props.signedIn}
+        disabled={!props.signedIn || !props.isSafe}
         onClick={(e) => claimBid(e)}
       >
         Claim for {claimPrice.toFixed(6)} NEAR
@@ -67,7 +66,7 @@ function FinalizeButton (props) {
     <button
       id='finalize_button_input'
       className='btn btn-primary btn-lg btn-block'
-      disabled={!props.signedIn}
+      disabled={!props.signedIn || !props.isSafe}
       onClick={(e) => finalizeBid(e)}
     >Finalize
     </button>
