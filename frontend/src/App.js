@@ -22,7 +22,7 @@ const TestNearConfig = {
   networkId: 'testnet',
   nodeUrl: 'https://rpc.testnet.near.org',
   archivalNodeUrl: 'https://rpc.testnet.internal.near.org',
-  contractName: 'dev-1615934646069-3103644',
+  contractName: 'dev-1616019744083-2039273',
   walletUrl: 'https://wallet.testnet.near.org',
   marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA',
   wasmCode: 'https://near.bet/bin'
@@ -32,7 +32,7 @@ const MainNearConfig = {
   networkId: 'mainnet',
   nodeUrl: 'https://rpc.mainnet.near.org',
   archivalNodeUrl: 'https://rpc.mainnet.internal.near.org',
-  contractName: 'cards.berryclub.ek.near',
+  contractName: 'dev-1616019744083-2039273',
   walletUrl: 'https://wallet.near.org',
   marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA',
   wasmCode: 'https://near.bet/bin'
