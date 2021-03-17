@@ -7,7 +7,7 @@ const mapBidInfo = (b) => {
   return b ? {
     isAtMarket: true,
     numClaims: b.num_claims,
-    claimedBy: b.claim,
+    claimedBy: b.claim_status ? b.claim_status[0] : null,
     bets: b.bets,
     betPrice: b.bet_price,
     claimPrice: b.claim_price,

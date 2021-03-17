@@ -57,20 +57,20 @@ function BidPage (props) {
                 {bidInfo.claimedBy ? (
                   <div>
                     <p>
-                    (claimed data)
+                    Claimed by {bidInfo.claimedBy}
                     </p>
                   </div>
                 ) : (
                   <div>
                     <p>
-              (claimed data)
+               No one claimed yet
                     </p>
                   </div>
                 )}
                 <div>
-                  <p>
+                  <h2>
               Accounts who participate:
-                  </p>
+                  </h2>
                   <table className='table'>
                     <tbody>
                       {bidInfo.bets.map((data, index) => {
