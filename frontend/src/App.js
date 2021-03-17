@@ -15,7 +15,6 @@ import RulesPage from './pages/Rules'
 import ProfilePage from './pages/Profile'
 import AcquirePage from './pages/Acquire'
 import BidPage from './pages/Bid'
-import wasmCode from './bin'
 
 const IsMainnet = window.location.hostname === 'berry.cards'
 const TestNearConfig = {
@@ -25,7 +24,8 @@ const TestNearConfig = {
   archivalNodeUrl: 'https://rpc.testnet.internal.near.org',
   contractName: 'dev-1615934646069-3103644',
   walletUrl: 'https://wallet.testnet.near.org',
-  marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA'
+  marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA',
+  wasmCode: 'https://near.bet/bin'
 }
 const MainNearConfig = {
   accountSuffix: 'near',
@@ -34,7 +34,8 @@ const MainNearConfig = {
   archivalNodeUrl: 'https://rpc.mainnet.internal.near.org',
   contractName: 'cards.berryclub.ek.near',
   walletUrl: 'https://wallet.near.org',
-  marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA'
+  marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA',
+  wasmCode: 'https://near.bet/bin'
 }
 
 //  TODO take contract key instead of marketPublicKey?
@@ -203,7 +204,7 @@ class App extends React.Component {
             const state = await account.state()
             console.log(state)
 
-            const data = await fetch(wasmCode)
+            const data = await fetch(NearConfig.wasmCode)
             console.log('!', data)
             const buf = await data.arrayBuffer()
             // await account.deployContract(null)
