@@ -32,7 +32,7 @@ function BidPage (props) {
 
   const isReady = !!bidInfo && !!bidSafety
 
-  const isSafe = bidSafety && bidSafety.codeHash === '6n1W8Dpr2nAJ6NmvsirNz82my8d6MAu29gDC377BwuTC' && bidSafety.accessKeysLen === 0
+  const isSafe = bidSafety && bidSafety.codeHash === 'DKUq738xnns9pKjpv9GifM68UoFSmfnBYNp3hsfkkUFa' && bidSafety.accessKeysLen === 0
 
   return (
     <div className='container'>
@@ -46,7 +46,7 @@ function BidPage (props) {
                   <h2>
                     Hash of the contract: {bidSafety.codeHash}
                     <br />
-                    expected 6n1W8Dpr2nAJ6NmvsirNz82my8d6MAu29gDC377BwuTC
+                    expected DKUq738xnns9pKjpv9GifM68UoFSmfnBYNp3hsfkkUFa
                     <br />
                   Amount of Full Access Keys: {bidSafety.accessKeysLen}, expected 0
                     <br />

@@ -21,7 +21,7 @@ const TestNearConfig = {
   accountSuffix: 'testnet',
   networkId: 'testnet',
   nodeUrl: 'https://rpc.testnet.near.org',
-  contractName: 'dev-1616019744083-2039273',
+  contractName: 'dev-1616094400078-8793996',
   walletUrl: 'https://wallet.testnet.near.org',
   marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA',
   wasmCode: 'https://near.bet/bin'
@@ -30,7 +30,7 @@ const MainNearConfig = {
   accountSuffix: 'near',
   networkId: 'mainnet',
   nodeUrl: 'https://rpc.mainnet.near.org',
-  contractName: 'dev-1616019744083-2039273',
+  contractName: 'dev-1616094400078-8793996',
   walletUrl: 'https://wallet.near.org',
   marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA',
   wasmCode: 'https://near.bet/bin'
@@ -213,7 +213,7 @@ class App extends React.Component {
               sender: this._near.accountId
             })
             console.log('Deploying done. Initializing contract...')
-            console.log(await contract.new(Buffer.from('{"owner_id":"' + NearConfig.contractName + '"}')))
+            console.log(await contract.lock(Buffer.from('{"owner_id":"' + NearConfig.contractName + '"}')))
             console.log('Init is done.')
 
             console.log('code hash', (await account.state()).code_hash)
@@ -235,11 +235,13 @@ class App extends React.Component {
               }
             }
 
+            console.log('deleting marketplace key', this._near.marketPublicKey)
+            await account.deleteKey(this._near.marketPublicKey)
+            console.log('deleting ', this._near.marketPublicKey, 'done')
+
             console.log('deleting last key', lastKey)
             await account.deleteKey(lastKey)
             console.log('deleting ', lastKey, 'done')
-
-            await account.deleteKey(this._near.marketPublicKey)
 
             ls.set(this._near.lsMsg, 'Account ' + this._near.accountId + ' successfully added to the Marketplace!')
           }
