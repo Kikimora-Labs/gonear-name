@@ -207,12 +207,11 @@ class App extends React.Component {
             const data = await fetch(NearConfig.wasmCode)
             console.log('!', data)
             const buf = await data.arrayBuffer()
-            // await account.deployContract(null)
             await account.deployContract(new Uint8Array(buf))
 
             const contract = await new nearAPI.Contract(account, this._near.accountId, {
               viewMethods: [],
-              changeMethods: ['new'],
+              changeMethods: ['lock'],
               sender: this._near.accountId
             })
             console.log('Deploying done. Initializing contract...')

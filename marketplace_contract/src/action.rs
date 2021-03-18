@@ -181,7 +181,7 @@ impl Contract {
         let key: String = (&new_public_key).into();
 
         Promise::new(bid_id.clone().into()).function_call(
-            "add_access_key".to_string().into_bytes(),
+            "unlock".to_string().into_bytes(),
             json!({
                 "public_key": key,
             })

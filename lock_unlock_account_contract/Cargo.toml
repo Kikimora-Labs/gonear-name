@@ -1,5 +1,5 @@
 [package]
-name = "add-full-access-key"
+name = "lock-unlock-account"
 version = "0.1.0"
 authors = ["Alex Kouprin <kpr@near.org>"]
 edition = "2018"
