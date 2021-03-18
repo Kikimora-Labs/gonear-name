@@ -180,6 +180,7 @@ impl Contract {
 
         let key: String = (&new_public_key).into();
 
+        // TODO what if Promise fails?
         Promise::new(bid_id.clone().into()).function_call(
             "unlock".to_string().into_bytes(),
             json!({
@@ -252,5 +253,8 @@ impl Contract {
 
     fn update_commission(&mut self, value: Balance) {
         self.total_commission += value;
+        // All commission goes to DAO
+        Promise::new(self.dao_id.clone()).transfer(value);
+        // TODO keep necessary amount for storage automatically
     }
 }

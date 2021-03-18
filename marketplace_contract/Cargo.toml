@@ -8,18 +8,14 @@ edition = "2018"
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-# TODO remove
-bs58 = "0.4"
 # TODO use released sdk
 near-sdk = { path = "../../near-sdk-rs/near-sdk", version = "=3.0.0-pre.3" }
 #near-sdk = "=3.0.0-pre.2"
-#near-sdk = { git = "https://github.com/near/near-sdk-rs.git", tag="3.0.0" }
 
 [dev-dependencies]
 # TODO use released sdk-sim when available
 near-sdk-sim = { path = "../../near-sdk-rs/near-sdk-sim", version = "=3.0.0-pre.3" }
 #near-sdk-sim = { git = "https://github.com/near/near-sdk-rs.git", tag="3.0.0" }
-#near-sdk-sim = "../near-sdk-rs"
 
 [features]
 expensive_tests = []

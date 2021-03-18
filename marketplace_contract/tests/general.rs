@@ -1,4 +1,3 @@
-use bs58;
 use std::convert::TryInto;
 
 /// Import the generated proxy contract
@@ -21,21 +20,17 @@ near_sdk_sim::lazy_static_include::lazy_static_include_bytes! {
 
 const CONTRACT_ID: &str = "marketplace";
 const ANY_ERR: Option<&str> = Some("");
+const MIN_STORAGE_FOR_ACCOUNT: Balance = 16543800000000000000000;
 
 fn test_init() -> (UserAccount, ContractAccount<AMContract>) {
     let master_account = init_simulator(None);
 
     let deployed_contract = deploy!(
-        // Contract Proxy
         contract: AMContract,
-        // Contract account id
         contract_id: CONTRACT_ID,
-        // Bytes of contract
         bytes: &CONTRACT_WASM_BYTES,
-        // User deploying the contract,
         signer_account: master_account,
-        // init method
-        init_method: test_new(10) // 10 seconds
+        init_method: test_new(10, master_account.account_id().try_into().unwrap()) // 10 seconds
     );
     (master_account, deployed_contract)
 }
@@ -43,26 +38,18 @@ fn test_init() -> (UserAccount, ContractAccount<AMContract>) {
 fn init() -> (UserAccount, ContractAccount<AMContract>) {
     let master_account = init_simulator(None);
     let deployed_contract = deploy!(
-        // Contract Proxy
         contract: AMContract,
-        // Contract account id
         contract_id: CONTRACT_ID,
-        // Bytes of contract
         bytes: &CONTRACT_WASM_BYTES,
-        // User deploying the contract,
         signer_account: master_account,
-        // init method
-        init_method: new(master_account.account_id().try_into().unwrap(), to_base58_pk(&master_account))
+        init_method: new(master_account.account_id().try_into().unwrap(), master_account.account_id().try_into().unwrap())
     );
     (master_account, deployed_contract)
 }
 
 fn to_base58_pk(user: &UserAccount) -> Base58PublicKey {
-    // TODO SIMPLIFY THIS HELL
-    bs58::encode(&user.signer.public_key.unwrap_as_ed25519().0.to_vec())
-        .into_string()
-        .try_into()
-        .unwrap()
+    let key: String = (&user.signer.public_key).into();
+    key.try_into().unwrap()
 }
 
 fn create_carol(master_account: &UserAccount) -> UserAccount {
@@ -242,6 +229,19 @@ fn simulate_test_init() {
 #[test]
 fn simulate_init() {
     let (_, _) = init();
+}
+
+#[test]
+fn min_storage() {
+    let master_account = init_simulator(None);
+    master_account.create_user("dao".into(), MIN_STORAGE_FOR_ACCOUNT);
+}
+
+#[test]
+#[should_panic]
+fn min_storage_minus_1() {
+    let master_account = init_simulator(None);
+    master_account.create_user("dao".into(), MIN_STORAGE_FOR_ACCOUNT - 1);
 }
 
 #[test]
@@ -857,7 +857,7 @@ fn collect_rewards_simple() {
     let (master_account, contract) = test_init();
 
     let alice = master_account.create_user("alice".into(), to_yocto("1000000000"));
-    let bob = master_account.create_user("bob".into(), to_yocto("0.02"));
+    let bob = master_account.create_user("bob".into(), MIN_STORAGE_FOR_ACCOUNT);
     let carol = create_carol(&master_account);
 
     let outcome = call!(
@@ -879,4 +879,30 @@ fn collect_rewards_simple() {
     do_collect_rewards(&bob, &contract, Some(ERR_REWARD_BALANCE_INSUFFICIENT));
 
     bob.transfer("alice".to_string(), to_yocto("1.00"));
+}
+
+#[test]
+fn dao_rewards_simple() {
+    let master_account = init_simulator(None);
+    let dao = master_account.create_user("dao".into(), MIN_STORAGE_FOR_ACCOUNT);
+
+    let contract = deploy!(
+        contract: AMContract,
+        contract_id: CONTRACT_ID,
+        bytes: &CONTRACT_WASM_BYTES,
+        signer_account: master_account,
+        init_method: new(master_account.account_id().try_into().unwrap(), dao.account_id().try_into().unwrap())
+    );
+
+    let (alice, bob) = create_bob_sells_alice(&master_account, &contract);
+
+    dao.transfer("alice".to_string(), OFFER_DEPOSIT);
+
+    do_bet(&bob, &alice, &contract, None);
+
+    dao.transfer("alice".to_string(), INIT_BET_PRICE / 20);
+
+    do_bet(&bob, &alice, &contract, None);
+
+    dao.transfer("alice".to_string(), INIT_BET_PRICE * 6 / 5 / 20);
 }

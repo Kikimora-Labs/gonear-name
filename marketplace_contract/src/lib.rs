@@ -12,7 +12,7 @@ use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::serde_json::json;
 use near_sdk::{
     env, ext_contract, log, near_bindgen, AccountId, Balance, PanicOnDefault, Promise,
-    PromiseResult, PublicKey, Timestamp,
+    PromiseResult, Timestamp,
 };
 
 pub type BidId = AccountId;
@@ -42,18 +42,18 @@ pub struct Contract {
     pub acquisition_time: u64, // in seconds
 
     pub owner_id: AccountId,
-    pub owner_pk: PublicKey,
+    pub dao_id: AccountId,
 }
 
 #[near_bindgen]
 impl Contract {
     #[init]
-    pub fn test_new(acquisition_time: u64) -> Self {
+    pub fn test_new(acquisition_time: u64, dao_id: ValidAccountId) -> Self {
         assert!(!env::state_exists(), "Already initialized");
         log!(
-            "Test init with owner_id = {:?}, owner_pk = {:?}, acquisition_time = {:?}",
+            "Test init with owner_id = {:?}, dao_id = {:?}, acquisition_time = {:?}",
             env::signer_account_id(),
-            env::signer_account_pk(),
+            dao_id,
             acquisition_time
         );
         Self {
@@ -68,12 +68,12 @@ impl Contract {
             total_commission: 0,
             acquisition_time,
             owner_id: env::signer_account_id(),
-            owner_pk: env::signer_account_pk(),
+            dao_id: dao_id.into(),
         }
     }
 
     #[init]
-    pub fn new(owner_id: ValidAccountId, owner_pk: Base58PublicKey) -> Self {
+    pub fn new(owner_id: ValidAccountId, dao_id: ValidAccountId) -> Self {
         assert!(!env::state_exists(), "Already initialized");
         Self {
             profiles: UnorderedMap::new(b"u".to_vec()),
@@ -87,7 +87,7 @@ impl Contract {
             total_commission: 0,
             acquisition_time: ACQUISITION_TIME,
             owner_id: owner_id.into(),
-            owner_pk: owner_pk.into(),
+            dao_id: dao_id.into(),
         }
     }
 
