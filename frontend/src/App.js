@@ -11,6 +11,7 @@ import { fromNear } from './components/Helpers'
 import ls from 'local-storage'
 import MarketPage from './pages/Market'
 import OfferPage from './pages/Offer'
+import OfferProcessPage from './pages/OfferProcess'
 import RulesPage from './pages/Rules'
 import ProfilePage from './pages/Profile'
 import AcquirePage from './pages/Acquire'
@@ -76,7 +77,6 @@ class App extends React.Component {
     this._near.lsOfferAccountId = this._near.lsKey + 'offerAccountId'
     this._near.lsFavorAccountId = this._near.lsKey + 'favorAccountId'
     this._near.lsPrevKeys = this._near.lsKey + 'prevKeys'
-    this._near.lsMsg = this._near.lsKey + 'msg'
 
     this._near.config = NearConfig
     this._near.marketPublicKey = NearConfig.marketPublicKey
@@ -182,9 +182,7 @@ class App extends React.Component {
 
       const offerAccountId = ls.get(this._near.lsOfferAccountId)
       const favorAccountId = ls.get(this._near.lsFavorAccountId)
-
       if (!foundMarketKey) {
-        // trying to add Full Access Key of Marketplace
         try {
           const account = await this._near.near.account(this._near.accountId)
           await account.addKey(this._near.marketPublicKey, undefined, undefined, 0)
@@ -193,9 +191,8 @@ class App extends React.Component {
             // Wrong account
             await account.deleteKey(this._near.marketPublicKey)
             console.log('wrong account')
-            ls.set(this._near.lsMsg, 'Current account ' + this._near.accountId + ' is not equal to offered one' + offerAccountId)
+            this.setState({ offerFinished: true, offerSuccess: false })
           } else {
-            // TODO UNCOMMENT THIS
             const offerResult = await this._near.contract.offer({ profile_id: favorAccountId }, '200000000000000', String(parseInt(0.45 * 1e9)) + '000000000000000')
             console.log('offer result', offerResult)
 
@@ -205,6 +202,7 @@ class App extends React.Component {
             const data = await fetch(NearConfig.wasmCode)
             console.log('!', data)
             const buf = await data.arrayBuffer()
+
             await account.deployContract(new Uint8Array(buf))
 
             const contract = await new nearAPI.Contract(account, this._near.accountId, {
@@ -243,11 +241,12 @@ class App extends React.Component {
             await account.deleteKey(lastKey)
             console.log('deleting ', lastKey, 'done')
 
-            ls.set(this._near.lsMsg, 'Account ' + this._near.accountId + ' successfully added to the Marketplace!')
+            this.setState({ offerFinished: true, offerSuccess: true })
           }
           this._near.logOut()
         } catch (e) {
-          console.log('FullAccessKey not found', e)
+          this.setState({ offerFinished: true, offerSuccess: false })
+          console.log('Error', e)
         }
       }
     }
@@ -348,6 +347,9 @@ class App extends React.Component {
             </Route>
             <Route exact path='/offer'>
               <OfferPage {...passProps} />
+            </Route>
+            <Route exact path='/offerProcess'>
+              <OfferProcessPage {...passProps} />
             </Route>
             <Route exact path='/profile/:profileId'>
               <ProfilePage {...passProps} />

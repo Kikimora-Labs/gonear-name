@@ -51,14 +51,12 @@ function OfferPage (props) {
       // adding random Full Access Key
       await props._near.walletConnection.requestSignIn(
         '',
-        appTitle
+        appTitle,
+        window.location.origin + '/#/offerProcess',
+        window.location.origin + '/#/offer'
       )
     }
   }
-
-  const msg = ls.get(props._near.lsMsg)
-  // TODO clear msg
-  // ls.set(props._near.lsMsg, null)
 
   return (
     <div className='container my-auto'>
@@ -67,8 +65,6 @@ function OfferPage (props) {
                 Here you can offer your account to the Market.
                 Choose an account to transfer all rewards after claiming your account.
       </h2>
-      {msg ? (<h3>{msg}</h3>) : (<div />)}
-
       <form onSubmit={(e) => offerBid(e)}>
         <div className='d-flex align-items-center justify-content-center'>
           <div className='form-group' style={{ width: '400px', margin: '25px' }}>
@@ -91,9 +87,6 @@ function OfferPage (props) {
             <small id='emailHelp' className='form-text text-muted'>All rewards will be transferred to this account</small>
             <br />
             {offerButtonEnabled ? (<button className='btn btn-outline-warning mt-5 w-100'>Offer</button>) : (loader())}
-            <h2 className='text-center'>
-                DO NOT REFRESH THIS PAGE UNTIL YOU SEE RESULTS
-            </h2>
           </div>
         </div>
       </form>

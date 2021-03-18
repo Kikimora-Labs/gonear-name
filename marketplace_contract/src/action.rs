@@ -3,7 +3,7 @@ use crate::*;
 pub const OFFER_DEPOSIT: Balance = 450_000_000_000_000_000_000_000;
 pub const INIT_BET_PRICE: Balance = 500_000_000_000_000_000_000_000;
 
-pub const ON_ACQUIRE_FUNCTION_CALL_GAS: u64 = 30_000_000_000_000;
+pub const ON_ACQUIRE_FUNCTION_CALL_GAS: u64 = 100_000_000_000_000;
 /// Indicates there are no deposit for a callback for better readability
 const NO_DEPOSIT: u128 = 0;
 
