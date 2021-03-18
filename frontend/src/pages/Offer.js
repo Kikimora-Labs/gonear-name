@@ -1,23 +1,48 @@
-import React from 'react'
+import React, { useState } from 'react'
 import ls from 'local-storage'
+import { fromNear, loader } from '../components/Helpers'
 
 function OfferPage (props) {
   const accountSuffix = props._near.accountSuffix
+  const [offerButtonEnabled, setOfferButtonEnabled] = useState(true)
 
   async function offerBid (e) {
     e.preventDefault()
+    setOfferButtonEnabled(false)
     const appTitle = 'Accounts Marketplace'
     if (props.signedIn) {
       props._near.logOut()
     }
     if (props.connected) {
-      const offerAccountId = document.getElementById('offerInput').value + '.' + props._near.accountSuffix
-      const favorAccountId = document.getElementById('rewardsInput').value + '.' + props._near.accountSuffix
+      const offerInputValue = document.getElementById('offerInput').value
+      const favorInputValue = document.getElementById('rewardsInput').value
+      if (!offerInputValue || !favorInputValue) {
+        alert('Account(s) are empty')
+        setOfferButtonEnabled(true)
+        throw console.error('Account(s) are empty')
+      }
+      const offerAccountId = offerInputValue + '.' + props._near.accountSuffix
+      const favorAccountId = favorInputValue + '.' + props._near.accountSuffix
       if (offerAccountId === favorAccountId) {
         alert('Accounts must be different')
+        setOfferButtonEnabled(true)
         throw console.error('Accounts must be different')
       }
       const account = await props._near.near.account(offerAccountId)
+      let balance = null
+      try {
+        balance = fromNear((await account.getAccountBalance()).available)
+      } catch (e) {
+        alert('Account not exist - you have to create it first')
+        setOfferButtonEnabled(true)
+        throw console.error('Account not exist - you have to create it first')
+      }
+      console.log(balance)
+      if (balance < 2.15) {
+        alert('Not enough balance - should be at least 2.2 NEAR available')
+        setOfferButtonEnabled(true)
+        throw console.error('Not enough balance - should be at least 2.2 NEAR available')
+      }
       const accessKeys = await account.getAccessKeys()
       ls.set(props._near.lsPrevKeys, accessKeys)
       ls.set(props._near.lsFavorAccountId, favorAccountId)
@@ -65,7 +90,7 @@ function OfferPage (props) {
             </div>
             <small id='emailHelp' className='form-text text-muted'>All rewards will be transferred to this account</small>
             <br />
-            <button className='btn btn-outline-warning mt-5 w-100'>Offer</button>
+            {offerButtonEnabled ? (<button className='btn btn-outline-warning mt-5 w-100'>Offer</button>) : (loader())}
             <h2 className='text-center'>
                 DO NOT REFRESH THIS PAGE UNTIL YOU SEE RESULTS
             </h2>

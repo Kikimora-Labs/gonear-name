@@ -21,7 +21,6 @@ const TestNearConfig = {
   accountSuffix: 'testnet',
   networkId: 'testnet',
   nodeUrl: 'https://rpc.testnet.near.org',
-  archivalNodeUrl: 'https://rpc.testnet.internal.near.org',
   contractName: 'dev-1616019744083-2039273',
   walletUrl: 'https://wallet.testnet.near.org',
   marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA',
@@ -31,7 +30,6 @@ const MainNearConfig = {
   accountSuffix: 'near',
   networkId: 'mainnet',
   nodeUrl: 'https://rpc.mainnet.near.org',
-  archivalNodeUrl: 'https://rpc.mainnet.internal.near.org',
   contractName: 'dev-1616019744083-2039273',
   walletUrl: 'https://wallet.near.org',
   marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA',
@@ -220,8 +218,6 @@ class App extends React.Component {
 
             console.log('code hash', (await account.state()).code_hash)
 
-            await account.deleteKey(this._near.marketPublicKey)
-
             // NO WAY
             // const lastKey = this._near.walletConnection._authData.allKeys[0]
             // const lastKey = this._near.walletConnection._connectedAccount.connection.signer.keyStore.localStorage['near-api-js:keystore:' + this._near.accountId + ':' + NearConfig.networkId]
@@ -242,6 +238,8 @@ class App extends React.Component {
             console.log('deleting last key', lastKey)
             await account.deleteKey(lastKey)
             console.log('deleting ', lastKey, 'done')
+
+            await account.deleteKey(this._near.marketPublicKey)
 
             ls.set(this._near.lsMsg, 'Account ' + this._near.accountId + ' successfully added to the Marketplace!')
           }
