@@ -12,10 +12,15 @@ function OfferPage (props) {
     }
     if (props.connected) {
       const offerAccountId = document.getElementById('offerInput').value + '.' + props._near.accountSuffix
+      const favorAccountId = document.getElementById('rewardsInput').value + '.' + props._near.accountSuffix
+      if (offerAccountId === favorAccountId) {
+        alert('Accounts must be different')
+        throw console.error('Accounts must be different')
+      }
       const account = await props._near.near.account(offerAccountId)
       const accessKeys = await account.getAccessKeys()
       ls.set(props._near.lsPrevKeys, accessKeys)
-      ls.set(props._near.lsFavorAccountId, document.getElementById('rewardsInput').value + '.' + props._near.accountSuffix)
+      ls.set(props._near.lsFavorAccountId, favorAccountId)
       ls.set(props._near.lsOfferAccountId, offerAccountId)
 
       // adding random Full Access Key
