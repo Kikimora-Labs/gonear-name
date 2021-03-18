@@ -10,7 +10,11 @@ function BetButton (props) {
     e.preventDefault()
     console.log(String(totalBetPrice * 1e9) + '000000000000000')
     // TODO
-    await props._near.contract.bet({ bid_id: props.bidId }, '200000000000000', String(parseInt(totalBetPrice * 1.01 * 1e9)) + '000000000000000')
+    if (forfeit < 0.001) {
+      await props._near.contract.bet({ bid_id: props.bidId }, '200000000000000', String(parseInt(totalBetPrice * 1e9)) + '000000000000000')
+    } else {
+      await props._near.contract.bet({ bid_id: props.bidId }, '200000000000000', String(parseInt(totalBetPrice * 1.001 * 1e9)) + '000000000000000')
+    }
   }
 
   return (
