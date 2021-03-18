@@ -1,5 +1,6 @@
 import React from 'react'
 import { fromNear } from './Helpers'
+import { Link } from 'react-router-dom'
 
 function BetButton (props) {
   const betPrice = props.betPrice
@@ -55,42 +56,29 @@ function ClaimButton (props) {
 
 function FinalizeButton (props) {
   async function finalizeBid (e) {
-    e.preventDefault()
-    const button = document.getElementById('finalize_button_input')
-    button.disabled = true
-    button.innerText = 'Finalizing...'
+    // e.preventDefault()
     await props._near.contract.finalize({ bid_id: props.bidId }, '200000000000000', '0')
   }
 
-  return (
-    <button
-      id='finalize_button_input'
-      className='btn btn-primary btn-lg btn-block'
-      disabled={!props.signedIn || !props.isSafe}
-      onClick={(e) => finalizeBid(e)}
-    >Finalize
-    </button>
+  const toOfferPage = props.signedIn && props.bidInfo && props.signedAccountId && (props.signedAccountId === props.bidInfo.claimedBy)
+  const disabled = !(props.signedIn && props.isSafe)
+
+  return !disabled ? (
+    <Link to={toOfferPage ? (`/acquire/${props.bidId}`) : (`/profile/${props.signedAccountId}`)} className='btn btn-primary btn-lg btn-block' onClick={(e) => finalizeBid(e)}>
+          Finalize
+    </Link>
+  ) : (
+    <button disabled className='btn btn-primary btn-lg btn-block'>Finalize</button>
   )
 }
 
 function AcquireButton (props) {
-  async function acquireBid (e) {
-    e.preventDefault()
-    const button = document.getElementById('acquire_button_input')
-    button.disabled = true
-    button.innerText = 'Acquiring...'
-    // TODO
-    // await props._near.contract.acquire({ bid_id: props.bidId, new_public_key: '' }, '200000000000000', '0')
-  }
-
   return (
-    <button
-      id='acquire_button_input'
+    <Link
       className='btn btn-success btn-lg btn-block'
-      disabled={!props.signedIn}
-      onClick={(e) => acquireBid(e)}
+      to={`/acquire/${props.bidId}`}
     >Acquire
-    </button>
+    </Link>
   )
 }
 
