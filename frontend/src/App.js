@@ -119,7 +119,8 @@ class App extends React.Component {
         'bet',
         'claim',
         'finalize',
-        'acquire'
+        'acquire',
+        'collect_rewards'
       ]
     })
 

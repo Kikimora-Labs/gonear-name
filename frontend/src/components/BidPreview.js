@@ -1,7 +1,7 @@
 import './BidPreview.scss'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AcquireButton, PriceButton, DetailsButton } from './PriceButton'
+import { AcquireButton, PriceButton, DetailsButton } from './Buttons'
 
 const mapBidInfo = (b) => {
   return b ? {

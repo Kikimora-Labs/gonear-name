@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'react-router'
 import { BidPreview } from '../components/BidPreview'
+import { RewardsButton } from '../components/Buttons'
 
 function ProfilePage (props) {
   const { profileId } = useParams()
@@ -58,6 +59,10 @@ function ProfilePage (props) {
                 <ul>
                   <li>Bets volume: {profile.betsVolume.toFixed(2)} NEAR</li>
                   <li>Available rewards: {profile.availableRewards.toFixed(2)} NEAR</li>
+                  {profile.availableRewards > 0.1 ? (<RewardsButton {...props} availableRewards={profile.availableRewards} />
+                  ) : (
+                    <div>Accumulate at least 0.1 NEAR to grab your rewards</div>
+                  )}
                   <li>TODO BUTTON TO COLLECT REWARDS</li>
                   <li>TODO PRINT OTHER LOCAL STATS</li>
                 </ul>
