@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useParams } from 'react-router'
 import { loader } from '../components/Helpers'
 import { parseSeedPhrase } from 'near-seed-phrase'
@@ -6,20 +6,26 @@ import { parseSeedPhrase } from 'near-seed-phrase'
 
 function AcquirePage (props) {
   const { bidId } = useParams()
+  const [showAcquireButtons, setShowAcquireButtons] = useState(true)
+  const [acquireSuccess, setAcquireSuccess] = useState(false)
 
   async function acquireBidSeedPhrase (e) {
     e.preventDefault()
+    setShowAcquireButtons(false)
     const seedPhrase = document.getElementById('acquireSeedPhrase').value
     const publicKey = parseSeedPhrase(seedPhrase, '').publicKey
     console.log(publicKey)
     await props._near.contract.acquire({ bid_id: bidId, new_public_key: publicKey }, '200000000000000', '0')
+    setAcquireSuccess(true)
   }
 
   async function acquireBidPublicKey (e) {
     e.preventDefault()
+    setShowAcquireButtons(false)
     const publicKey = document.getElementById('acquirePublicKey').value
     console.log(publicKey)
     await props._near.contract.acquire({ bid_id: bidId, new_public_key: publicKey }, '200000000000000', '0')
+    setAcquireSuccess(true)
   }
 
   const seedPhraseLink = props._near.config.walletUrl + '/setup-seed-phrase/' + bidId + '/phrase'
@@ -27,7 +33,7 @@ function AcquirePage (props) {
   // React bug:
   // <Link to={seedPhraseLink}>Go to the NEAR wallet and copy your seed phrase</Link> interpretes as realative path
 
-  return (
+  return !acquireSuccess ? (
     <div className='container my-auto'>
       <h1 className='text-center'>Acquire {bidId}</h1>
       <h2 className='text-center'>
@@ -47,8 +53,10 @@ function AcquirePage (props) {
                 placeholder='Example: van honey cattle trend garbage human cereal donor pipe you response gym '
               />
             </div>
-            {props.connected ? (
-              <button className='btn btn-outline-warning my-3 w-100'>Acquire using seed phrase</button>) : (loader())}
+            {props.connected && showAcquireButtons ? (
+              <button disabled={!props.signedIn} className='btn btn-outline-warning my-3 w-100'>Acquire using seed phrase</button>
+            ) : (
+              <div className='my-3 w-100'>{loader()}</div>)}
             <div>3. Restore you account at NEAR wallet using seed phrase</div>
             <a href={recoverLink}>Go to the NEAR wallet and restore your account</a>
           </div>
@@ -66,11 +74,20 @@ function AcquirePage (props) {
                 placeholder='Example: 9bk1tm45X2hBSffmD65pA2vch862jtcz75mkRR7MXNVj'
               />
             </div>
-            {props.connected ? (
-              <button className='btn btn-outline-warning mt-3 w-100'>Acquire using new public key</button>) : (loader())}
+            {props.connected && showAcquireButtons ? (
+              <button disabled={!props.signedIn} className='btn btn-outline-warning my-3 w-100'>Acquire using new public key</button>
+            ) : (
+              <div className='my-3 w-100'>{loader()}</div>)}
           </div>
         </div>
       </form>
+    </div>
+  ) : (
+    <div className='container my-auto'>
+      <h1 className='text-center'>Acquire {bidId}</h1>
+      <h2 className='alert alert-success' role='alert'>
+            Contract instruction has been sent
+      </h2>
     </div>
   )
 }
