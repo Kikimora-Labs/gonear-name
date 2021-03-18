@@ -2,7 +2,8 @@ import sys
 
 bet_mult = 1.2
 claim_mult = 2.0
-initial_price = 0.5 / bet_mult
+initial_price = 0.45
+first_bet = 0.5
 reward_decay = 1.0 / 1.44
 reward_decay_on_sell = 1.0 / 1.2
 commission = 0.05
@@ -10,7 +11,7 @@ sell_reward = 0.25
 
 num_bets = int(sys.argv[1])
 
-price = initial_price * bet_mult
+price = first_bet
 rewards = [0.0]
 bets = [initial_price]
 total_commission = initial_price

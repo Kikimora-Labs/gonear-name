@@ -38,7 +38,10 @@ function rules () {
 
       <h4>Basics</h4>
       <ul>
-        <p>Initial placement costs ~0.42 NEAR. Initial claim price is 1 NEAR. There are two operations available:</p>
+        <p>Initial placement costs 0.45 NEAR + ~1.6 NEAR to deploy a locker contract.
+          (The system expects at least 2.15 NEAR in available balance).
+          Initial claim price is 1 NEAR. There are two operations available:
+        </p>
         <li>
           <p>
             <strong>Place a bet. </strong>
@@ -94,10 +97,10 @@ function rules () {
       <h4>Commission</h4>
       <ul>
         <p>
-          Marketplace takes 5% commission for each bet plus small constant for initial placement (~0.42 NEAR).
+          Marketplace takes 5% commission for each bet plus small constant for initial placement (0.45 NEAR).
         </p>
         <p>
-          Marketplace takes 5% commission in addition, in case of betting for account which is under claiming.
+          Marketplace takes 2.5% commission in addition, in case of betting for account which is under claiming.
           This is necessary to prevent holding the account with no willing to actually claim it.
           Strategies that disturbing market in such way are not welcomed as they diverge with
           the purpose of the marketplace.
@@ -112,7 +115,7 @@ function rules () {
         <p>
           Forfeit is an additional cost for placing a bet while the account is under claiming.
           Its value grows linearly from 0% at the moment when claim requested,
-          and up to 20% at the end of 48-hours period.
+          and up to 2.5% at the end of 48-hours period.
           Forfeits are paid to claimers directly.
           The purpose of forfeit is to pay for claimers' willing to obtain an account.
         </p>
@@ -150,11 +153,12 @@ function rules () {
         </p>
       </ul>
 
-      <h4>Account claiming procedure</h4>
+      <h4>Account acquiring procedure</h4>
       <ul>
         <p>
          1. (For experts) replace public key
-         2. TBD
+         2. Put seed phrase.
+         After acquiring you can remove a contract and return it's cost (~1.6 NEAR).
         </p>
       </ul>
 
@@ -169,11 +173,11 @@ function rules () {
           <samp>
           Claim price: 15.407
             <br />
-            Sum of bets: 36.4342
+            Sum of bets + placement: 36.4676
             <br />
-            Commission: 2.2175
+            Commission: 2.2509
             <br />
-            0 bet:  0.4167,  rewards:  4.6018,   ratio:  11.0442
+            0 bet:  0.4500,  rewards:  4.6018,   ratio:  10.2261
             <br />
  1 bet:  0.5000,  rewards:  0.6250,   ratio:  1.2500
             <br />
