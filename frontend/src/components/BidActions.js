@@ -11,9 +11,9 @@ function BetButton (props) {
     console.log(String(totalBetPrice * 1e9) + '000000000000000')
     // TODO
     if (forfeit < 0.001) {
-      await props._near.contract.bet({ bid_id: props.bidId }, '200000000000000', String(parseInt(totalBetPrice * 1e9)) + '000000000000000')
+      await props._near.contract.bet({ bid_id: props.bidId }, '200000000000000', String(parseInt((totalBetPrice + 1e-5) * 1e9)) + '000000000000000')
     } else {
-      await props._near.contract.bet({ bid_id: props.bidId }, '200000000000000', String(parseInt(totalBetPrice * 1.001 * 1e9)) + '000000000000000')
+      await props._near.contract.bet({ bid_id: props.bidId }, '200000000000000', String(parseInt((totalBetPrice + 1e-5) * 1.001 * 1e9)) + '000000000000000')
     }
   }
 
@@ -34,7 +34,7 @@ function ClaimButton (props) {
     e.preventDefault()
     console.log(String(claimPrice * 1e9) + '000000000000000')
     // TODO
-    await props._near.contract.claim({ bid_id: props.bidId }, '200000000000000', String(parseInt(claimPrice * 1e9)) + '000000000000000')
+    await props._near.contract.claim({ bid_id: props.bidId }, '200000000000000', String(parseInt((claimPrice + 1e-5) * 1e9)) + '000000000000000')
   }
 
   return (
