@@ -100,7 +100,7 @@ function LandingPage (props) {
         <div className='row'>
           <div className='col-1' />
           <div className='col-lg-4'>
-            <h1 className='pt-3'>{qq} There are two basic operations you can do at the Marketplace </h1>
+            <h1 className='pt-3'>{qq} Two basic operations about account names of the Marketplace </h1>
             <div className='text-center'>
               <Link className='btn btn-lg btn-secondary mt-3' to='/rules'>Dive into rules</Link>
             </div>
@@ -111,7 +111,7 @@ function LandingPage (props) {
                 <h3>Bet:</h3>
               </div>
               <div className='col py-3'>
-                <h5 className='gray'>if you're sure the account name is undervalued and will be claimed later for higher price &mdash; grab up to 50% profit </h5>
+                <h5 className='gray'>if you guess the account name is undervalued and will be claimed for higher price &mdash; it brings you up to 50% profit </h5>
               </div>
             </div>
             <div className='row align-items-center'>
@@ -128,7 +128,7 @@ function LandingPage (props) {
       <div style={{ margin: '15%' }} />
       <div className='container text-center'>
         <h1>{qq} Interested?</h1>
-        <Link className='btn btn-lg btn-success mt-3' to='/market'>Jump to the market!</Link>
+        <Link className='btn btn-lg btn-success mt-3' to='/market'>Jump to the market</Link>
       </div>
       <div className='huge' />
     </div>
