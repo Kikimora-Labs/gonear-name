@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router'
+import { Contract } from 'near-api-js'
 import { BidActions } from '../components/BidActions'
 import { mapBidInfo } from '../components/BidPreview'
 import Moment from 'react-moment'
@@ -21,7 +22,17 @@ function BidPage (props) {
     const account = await props._near.near.account(bidId)
     const codeHash = (await account.state()).code_hash
     const accessKeysLen = (await account.getAccessKeys()).length
-    return { codeHash, accessKeysLen }
+    let lockerOwner = '(not found)'
+    try {
+      const lockerContract = await new Contract(account, bidId, {
+        viewMethods: ['get_owner'],
+        changeMethods: []
+      })
+      lockerOwner = await lockerContract.get_owner({})
+    } catch (e) {
+      console.log('check safety error', e)
+    }
+    return { codeHash, accessKeysLen, lockerOwner }
   }, [props._near, bidId])
 
   useEffect(() => {
@@ -33,7 +44,10 @@ function BidPage (props) {
 
   const isReady = !!bidInfo && !!bidSafety
 
-  const isSafe = bidSafety && bidSafety.codeHash === 'DKUq738xnns9pKjpv9GifM68UoFSmfnBYNp3hsfkkUFa' && bidSafety.accessKeysLen === 0
+  const isSafe = bidSafety &&
+  bidSafety.codeHash === 'DKUq738xnns9pKjpv9GifM68UoFSmfnBYNp3hsfkkUFa' &&
+  bidSafety.accessKeysLen === 0 &&
+  bidSafety.lockerOwner === props._near.config.contractName
 
   let claimedTime = null
   let timeLeft = null
@@ -58,7 +72,9 @@ function BidPage (props) {
                     <br />
                     expected DKUq738xnns9pKjpv9GifM68UoFSmfnBYNp3hsfkkUFa
                     <br />
-                  Amount of Full Access Keys: {bidSafety.accessKeysLen}, expected 0
+                  Amount of Access Keys: {bidSafety.accessKeysLen}, expected 0
+                    <br />
+                    Contract owner: {bidSafety.lockerOwner}, expected {props._near.config.contractName}
                     <br />
                   THE ACCOUNT IS NOT CONSIDERED SAFE, YOU ASKED NOT TO PARTICIPATE
                   </h2>

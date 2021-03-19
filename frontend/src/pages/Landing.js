@@ -12,16 +12,17 @@ function LandingPage (props) {
   var background = { backgroundSize: 'cover', backgroundRepeat: 'no-repeat', position: 'absolute', opacity: 0.4 }
   var backgroundCroco = { backgroundSize: 'cover', backgroundRepeat: 'no-repeat', position: 'absolute', opacity: 0.4, width: '25%', left: '20%', top: '33%' }
   var image = { width: '64px' }
+  var qq = '//'
   return (
     <div
       className='container my-auto'
     >
       <Image
-        style={background} responsive fluid
+        style={background} fluid
         src={BackgroundImage}
       />
       <Image
-        style={backgroundCroco} responsive fluid
+        style={backgroundCroco} fluid
         src={Croco}
       />
       <div style={{ margin: '5%' }} />
@@ -30,7 +31,7 @@ function LandingPage (props) {
           <div className='col-2' />
 
           <div className='col-6'>
-            <h0>// The easiest way to get a cool account name :)</h0>
+            <div className='huge'>{qq} The easiest way to get a cool account name :)</div>
             <div style={{ margin: '15%' }} />
           </div>
         </div>
@@ -41,19 +42,16 @@ function LandingPage (props) {
         </h3>
       </div>
       <div style={{ margin: '5%' }} />
-      <section class='features-icons text-center det-ails'>
-        <div class='container'>
-          <div class='row'>
-            <div class='col-lg-4'>
-              <div class='features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3'>
-                <div class='features-icons-icon d-flex  icon-bra-ails'>
-                  <i class='icon-screen-desktop m-auto text-primary icon-ails' />
-                </div>
+      <section className='features-icons text-center det-ails'>
+        <div className='container'>
+          <div className='row'>
+            <div className='col-lg-4'>
+              <div className='features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3'>
                 <div className='position-relative py-5'>
                   <div className='top-50 start-50  py-3 px-3 translate-middle' style={{ borderRadius: '50%', position: 'absolute', backgroundColor: '#616E5C' }}>
                     <Image
                       class='position-absolute'
-                      responsive fluid
+                      fluid
                       src={FoundersImage}
                       style={image}
                     />
@@ -63,16 +61,13 @@ function LandingPage (props) {
                 <h2 className='gray'>Find brilliant account names and place them onto the market for rewards</h2>
               </div>
             </div>
-            <div class='col-lg-4'>
-              <div class='features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3'>
-                <div class='features-icons-icon d-flex  icon-bra-ails'>
-                  <i class='icon-layers m-auto text-primary icon-ails' />
-                </div>
+            <div className='col-lg-4'>
+              <div className='features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3'>
                 <div className='position-relative py-5'>
                   <div className='top-50 start-50  py-3 px-3 translate-middle' style={{ borderRadius: '50%', position: 'absolute', backgroundColor: '#616E5C' }}>
                     <Image
                       class='position-absolute'
-                      responsive fluid
+                      fluid
                       src={BelieversImage}
                       style={image}
                     />
@@ -82,16 +77,13 @@ function LandingPage (props) {
                 <h2 className='gray'>Participate in finding fair price, earn for your faithful evaluation and wisdom</h2>
               </div>
             </div>
-            <div class='col-lg-4'>
-              <div class='features-icons-item mx-auto mb-0 mb-lg-3'>
-                <div class='features-icons-icon d-flex  icon-bra-ails'>
-                  <i class='icon-check m-auto text-primary icon-ails' />
-                </div>
+            <div className='col-lg-4'>
+              <div className='features-icons-item mx-auto mb-0 mb-lg-3'>
                 <div className='position-relative py-5'>
                   <div className='top-50 start-50  py-3 px-3 translate-middle' style={{ borderRadius: '50%', position: 'absolute', backgroundColor: '#616E5C' }}>
                     <Image
                       class='position-absolute'
-                      responsive fluid
+                      fluid
                       src={ClaimersImage}
                       style={image}
                     />
@@ -104,30 +96,29 @@ function LandingPage (props) {
           </div>
         </div>
       </section>
-      <div style={{ margin: '5%' }} />
-      <div class='container'>
-        <div class='row'>
-          <div class='col-1' />
-          <div class='col-lg-4'>
-            <h1 className='pt-3'>// There are two basic operations you can do at the Marketplace </h1>
+      <div className='container'>
+        <div className='row'>
+          <div className='col-1' />
+          <div className='col-lg-4'>
+            <h1 className='pt-3'>{qq} There are two basic operations you can do at the Marketplace </h1>
             <div className='text-center'>
               <Link className='btn btn-lg btn-secondary mt-3' to='/rules'>Dive into rules</Link>
             </div>
           </div>
-          <div class='col-lg-6'>
-            <div class='row align-items-center my-5'>
-              <div class='col-3'>
+          <div className='col-lg-6'>
+            <div className='row align-items-center my-5'>
+              <div className='col-3'>
                 <h3>Bet:</h3>
               </div>
-              <div class='col py-3'>
+              <div className='col py-3'>
                 <h5 className='gray'>if you're sure the account name is undervalued and will be claimed later for higher price &mdash; grab up to 50% profit </h5>
               </div>
             </div>
-            <div class='row align-items-center'>
-              <div class='col-3'>
+            <div className='row align-items-center'>
+              <div className='col-3'>
                 <h3>Claim:</h3>
               </div>
-              <div class='col py-3'>
+              <div className='col py-3'>
                 <h5 className='gray'>if you want to obtain the account name for yourself and no one will overbid you in the next 72 hours </h5>
               </div>
             </div>
@@ -135,11 +126,11 @@ function LandingPage (props) {
         </div>
       </div>
       <div style={{ margin: '15%' }} />
-      <div class='container text-center'>
-        <h1>// Interested?</h1>
+      <div className='container text-center'>
+        <h1>{qq} Interested?</h1>
         <Link className='btn btn-lg btn-success mt-3' to='/market'>Jump to the market!</Link>
       </div>
-      <h0 />
+      <div className='huge' />
     </div>
   )
 }

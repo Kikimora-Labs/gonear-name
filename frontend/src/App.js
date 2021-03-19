@@ -40,10 +40,6 @@ const MainNearConfig = {
   claimPeriod: 48 * 60 * 60
 }
 
-//  TODO take contract key instead of marketPublicKey?
-// const a1 = await near.account('44073182f311dfdfbb73320c10ab9c770123a3da6abdab1ed46f24c0ddd1bb0f')
-// console.log('///', await a1.getAccessKeys())
-
 const NearConfig = IsMainnet ? MainNearConfig : TestNearConfig
 
 const mapProfile = (p) => {
@@ -128,21 +124,6 @@ class App extends React.Component {
       ]
     })
 
-    /* console.log(this._near.walletConnection)
-    console.log(window.localStorage.getItem(this._near.walletConnection._authDataKey))
-    let lastKey = null
-    try {
-      lastKey = (await this._near.walletConnection._keyStore.getKey(NearConfig.networkId, this._near.accountId)).getPublicKey().toString()
-    } catch {
-    }
-    console.log(lastKey) */
-
-    // TODO use state code hash
-    /* const account = await near.account('acc.testnet')
-    const prevState = await account.state()
-    const prevCodeHash = prevState.code_hash
-    console.log('!!!', prevState, prevCodeHash) */
-
     this._near.profiles = {}
 
     this._near.getProfile = (profileId) => {
@@ -165,7 +146,7 @@ class App extends React.Component {
     }
 
     this._near.refreshAllowance = async () => {
-      // alert("You're out of access key allowance. Need sign in again to refresh it")
+      alert("You're out of access key allowance. Need sign in again to refresh it")
       await this.logOut()
       await this.requestSignIn()
     }
