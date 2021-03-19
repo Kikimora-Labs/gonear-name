@@ -299,7 +299,7 @@ class App extends React.Component {
           <nav className='navbar navbar-expand-lg navbar-dark mb-3' style={{ backgroundColor: '#2F2F2F' }}>
             <div className='container-fluid'>
               <Link className='navbar-brand' to='/' title='near.bet'>
-                <img src={Logo} alt='NEAR Accounts Marketplace' className='d-inline-block align-middle' />
+                <img src={Logo} alt='NEAR Accounts Marketplace' className='d-inline-block align-middle' style={{ opacity: 0.85 }} />
                 [BETA] Marketplace
               </Link>
               <button

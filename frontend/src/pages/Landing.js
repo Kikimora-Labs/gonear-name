@@ -2,6 +2,7 @@ import './Landing.scss'
 import React from 'react'
 import { Image } from 'react-bootstrap'
 import BackgroundImage from '../images/lines.png'
+import Croco from '../images/croco2.png'
 import FoundersImage from '../images/founders.svg'
 import BelieversImage from '../images/believers.svg'
 import ClaimersImage from '../images/claimers.svg'
@@ -9,17 +10,21 @@ import { Link } from 'react-router-dom'
 
 function LandingPage (props) {
   var background = { backgroundSize: 'cover', backgroundRepeat: 'no-repeat', position: 'absolute', opacity: 0.4 }
+  var backgroundCroco = { backgroundSize: 'cover', backgroundRepeat: 'no-repeat', position: 'absolute', opacity: 0.4, width: '25%', left: '20%', top: '33%' }
   var image = { width: '64px' }
   return (
     <div
       className='container my-auto'
     >
-
-      <div style={{ margin: '5%' }} />
       <Image
         style={background} responsive fluid
         src={BackgroundImage}
       />
+      <Image
+        style={backgroundCroco} responsive fluid
+        src={Croco}
+      />
+      <div style={{ margin: '5%' }} />
       <div className='container content'>
         <div className='row justify-content-evenly'>
           <div className='col-2' />
