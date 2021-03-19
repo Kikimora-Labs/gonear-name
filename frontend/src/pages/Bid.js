@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import { BidActions } from '../components/BidActions'
 import { mapBidInfo } from '../components/BidPreview'
+import Moment from 'react-moment'
 
 function BidPage (props) {
   const { bidId } = useParams()
@@ -34,6 +35,15 @@ function BidPage (props) {
 
   const isSafe = bidSafety && bidSafety.codeHash === 'DKUq738xnns9pKjpv9GifM68UoFSmfnBYNp3hsfkkUFa' && bidSafety.accessKeysLen === 0
 
+  let claimedTime = null
+  let timeLeft = null
+  if (bidInfo) {
+    timeLeft = parseInt(bidInfo.claimedTime / 1000000)
+    claimedTime = new Intl.DateTimeFormat('UK', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(timeLeft)
+  }
+
+  Moment.startPooledTimer(1000)
+
   return (
     <div className='container'>
       <div className='row'>
@@ -59,6 +69,16 @@ function BidPage (props) {
                     <p>
                     Claimed by {bidInfo.claimedBy}
                     </p>
+                    {!bidInfo.isOnAcquisition ? (
+                      <div>
+                        <div>
+                    Claimed time: {claimedTime}
+                        </div>
+                        <div>
+                    Time left:  <Moment date={timeLeft} format='hh:mm:ss' add={{ seconds: props._near.claimPeriod }} durationFromNow />
+                        </div>
+                      </div>
+                    ) : (<div />)}
                   </div>
                 ) : (
                   <div>

@@ -25,7 +25,8 @@ const TestNearConfig = {
   contractName: 'dev-1616094400078-8793996',
   walletUrl: 'https://wallet.testnet.near.org',
   marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA',
-  wasmCode: 'https://near.bet/bin'
+  wasmCode: 'https://near.bet/bin',
+  claimPeriod: 15 * 60
 }
 const MainNearConfig = {
   accountSuffix: 'near',
@@ -34,7 +35,8 @@ const MainNearConfig = {
   contractName: 'dev-1616094400078-8793996',
   walletUrl: 'https://wallet.near.org',
   marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA',
-  wasmCode: 'https://near.bet/bin'
+  wasmCode: 'https://near.bet/bin',
+  claimPeriod: 48 * 60 * 60
 }
 
 //  TODO take contract key instead of marketPublicKey?
@@ -81,6 +83,7 @@ class App extends React.Component {
     this._near.config = NearConfig
     this._near.marketPublicKey = NearConfig.marketPublicKey
     this._near.accountSuffix = NearConfig.accountSuffix
+    this._near.claimPeriod = NearConfig.claimPeriod
 
     this.state = {
       connected: false,
