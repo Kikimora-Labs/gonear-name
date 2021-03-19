@@ -16,6 +16,7 @@ import RulesPage from './pages/Rules'
 import ProfilePage from './pages/Profile'
 import AcquirePage from './pages/Acquire'
 import BidPage from './pages/Bid'
+import LandingPage from './pages/Landing'
 
 const IsMainnet = window.location.hostname === 'berry.cards'
 const TestNearConfig = {
@@ -293,13 +294,13 @@ class App extends React.Component {
     ))
 
     return (
-      <div className='App'>
+      <div className='App text-white' style={{ backgroundColor: '#2F2F2F' }}>
         <Router basename={process.env.PUBLIC_URL}>
-          <nav className='navbar navbar-expand-lg navbar-light bg-light mb-3'>
+          <nav className='navbar navbar-expand-lg navbar-dark mb-3' style={{ backgroundColor: '#2F2F2F' }}>
             <div className='container-fluid'>
               <Link className='navbar-brand' to='/' title='near.bet'>
                 <img src={Logo} alt='NEAR Accounts Marketplace' className='d-inline-block align-middle' />
-                [BETA] NEAR Accounts Marketplace
+                [BETA] Marketplace
               </Link>
               <button
                 className='navbar-toggler' type='button' data-bs-toggle='collapse'
@@ -311,7 +312,7 @@ class App extends React.Component {
               <div className='collapse navbar-collapse' id='navbarSupportedContent'>
                 <ul className='navbar-nav me-auto mb-2 mb-lg-0'>
                   <li className='nav-item'>
-                    <Link className='nav-link' aria-current='page' to='/'>Accounts</Link>
+                    <Link className='nav-link' aria-current='page' to='/market'>Market</Link>
                   </li>
                   {this.state.signedIn && (
                     <li className='nav-item'>
@@ -344,6 +345,9 @@ class App extends React.Component {
 
           <Switch>
             <Route exact path='/'>
+              <LandingPage {...passProps} />
+            </Route>
+            <Route exact path='/market'>
               <MarketPage {...passProps} />
             </Route>
             <Route exact path='/rules'>
