@@ -38,10 +38,10 @@ function OfferPage (props) {
         throw console.error('Account not exist - you have to create it first')
       }
       console.log(balance)
-      if (balance < 2.15) {
-        alert('Not enough balance - should be at least 2.2 NEAR available')
+      if (balance < 2.0) {
+        alert('Not enough balance - should be at least 2 NEAR available')
         setOfferButtonEnabled(true)
-        throw console.error('Not enough balance - should be at least 2.2 NEAR available')
+        throw console.error('Not enough balance - should be at least 2 NEAR available')
       }
       const accessKeys = await account.getAccessKeys()
       ls.set(props._near.lsPrevKeys, accessKeys)

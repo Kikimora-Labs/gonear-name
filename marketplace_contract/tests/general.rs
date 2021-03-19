@@ -604,8 +604,8 @@ fn rewards_converge() {
     let profile_view: Option<ProfileView> =
         view!(contract.get_profile(bob.account_id().try_into().unwrap())).unwrap_json();
     let reward: Balance = profile_view.unwrap().available_rewards.into();
-    assert!(reward < to_yocto("0.7501"));
-    assert!(reward > to_yocto("0.7499"));
+    assert!(reward < to_yocto("1.8751"));
+    assert!(reward > to_yocto("1.8749"));
 }
 
 #[test]

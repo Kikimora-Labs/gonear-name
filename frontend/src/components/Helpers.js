@@ -38,22 +38,22 @@ function rules () {
 
       <h4>Basics</h4>
       <ul>
-        <p>Initial placement costs 0.45 NEAR + ~1.6 NEAR to deploy a locker contract.
-          (The system expects at least 2.15 NEAR in available balance).
-          Initial claim price is 1 NEAR. There are two operations available:
+        <p>Initial placement costs 0.3 NEAR + ~1.6 NEAR to deploy a locker contract.
+          (The system expects at least 2 NEAR in available balance).
+          Initial claim price is 2.5 NEAR. There are two operations available:
         </p>
         <li>
           <p>
             <strong>Place a bet. </strong>
-          This costs half of the current price (starts from 0.5 NEAR at initial state).
+          This costs half of the current price (starts from 1.25 NEAR at initial state).
           The payment goes to previous believers, and the price increases for x1.2 times.
           </p>
         </li>
         <li>
           <p>
             <strong>Claim an account. </strong>
-          This costs full price. You need to wait 48 hours to make sure no one wants
-          to bet on the account. If someone will bet within 48 hours, you will receive
+          This costs full price. You need to wait 72 hours to make sure no one wants
+          to bet on the account. If someone will bet within 72 hours, you will receive
           all your funds back plus forfeits paid by believer who bets. If no one will bet,
           the account is totally yours, congratulations!
           </p>
@@ -68,9 +68,9 @@ function rules () {
         The function converges to 25% rewards for each bet.
         </p>
         <p>
-          <i>Example. Let's say, you bet 0.6 NEAR for <strong>apple.near</strong>.
+          <i>Example. Let's say, you bet 1.8 NEAR for <strong>apple.near</strong>.
           In a couple days its price has been increased by series of bets,
-          and you have been received 0.75 NEAR rewards for that bet in total.
+          and you have been received 2.25 NEAR rewards for that bet in total.
           </i>
         </p>
       </ul>
@@ -115,7 +115,7 @@ function rules () {
         <p>
           Forfeit is an additional cost for placing a bet while the account is under claiming.
           Its value grows linearly from 0% at the moment when claim requested,
-          and up to 2.5% at the end of 48-hours period.
+          and up to 2.5% at the end of 72-hours period.
           Forfeits are paid to claimers directly.
           The purpose of forfeit is to pay for claimers' willing to obtain an account.
         </p>
@@ -144,7 +144,7 @@ function rules () {
             If you are sure about fair price, you shouldn't wait until others bet.
             You can simply bet as many times as necessary to increase the price up
             to the value that makes sense to you.
-            In this case you may take up to 87.5% rewards taken from claimer directly,
+            In this case you will take at least 87.5% rewards taken from claimer directly,
             not sharing with anyone.
           </p>
         </li>
@@ -156,9 +156,9 @@ function rules () {
       <h4>Account acquiring procedure</h4>
       <ul>
         <p>
-         1. (For experts) replace public key
-         2. Put seed phrase.
-         After acquiring you can remove a contract and return it's cost (~1.6 NEAR).
+          <li>(For experts) Replace public key.</li>
+          <li>Put seed phrase.</li>
+         After acquiring you can remove a contract and return its cost back (~1.6 NEAR).
         </p>
       </ul>
 
@@ -171,45 +171,27 @@ function rules () {
         </p>
         <p>
           <samp>
-          Claim price: 15.407
-            <br />
-            Sum of bets + placement: 36.4676
-            <br />
-            Commission: 2.2509
-            <br />
-            0 bet:  0.4500,  rewards:  4.6018,   ratio:  10.2261
-            <br />
- 1 bet:  0.5000,  rewards:  0.6250,   ratio:  1.2500
-            <br />
- 2 bet:  0.6000,  rewards:  0.7500,   ratio:  1.2500
-            <br />
- 3 bet:  0.7200,  rewards:  0.9000,   ratio:  1.2500
-            <br />
- 4 bet:  0.8640,  rewards:  1.0800,   ratio:  1.2500
-            <br />
- 5 bet:  1.0368,  rewards:  1.2959,   ratio:  1.2499
-            <br />
- 6 bet:  1.2442,  rewards:  1.5550,   ratio:  1.2499
-            <br />
- 7 bet:  1.4930,  rewards:  1.8656,   ratio:  1.2496
-            <br />
- 8 bet:  1.7916,  rewards:  2.2375,   ratio:  1.2489
-            <br />
- 9 bet:  2.1499,  rewards:  2.6811,   ratio:  1.2471
-            <br />
- 10 bet:  2.5799,  rewards:  3.2047,   ratio:  1.2422
-            <br />
- 11 bet:  3.0959,  rewards:  3.8073,   ratio:  1.2298
-            <br />
- 12 bet:  3.7150,  rewards:  4.4595,   ratio:  1.2004
-            <br />
- 13 bet:  4.4581,  rewards:  5.0908,   ratio:  1.1419
-            <br />
- 14 bet:  5.3497,  rewards:  5.8400,   ratio:  1.0917
-            <br />
- 15 bet:  6.4196,  rewards:  9.6294,   ratio:  1.5000
-            <br />
- Sum of rewards: 49.6237
+          Sum of bets + placement: 90.3439
+            <br />Total paid: 128.8614
+            <br />Commission: 4.8022
+            <br />Rewards after claim:
+            <br />0 bet:  0.3000,  rewards:  11.5044,   ratio:  38.3480
+            <br />1 bet:  1.2500,  rewards:  1.5625,   ratio:  1.2500
+            <br />2 bet:  1.5000,  rewards:  1.8750,   ratio:  1.2500
+            <br />3 bet:  1.8000,  rewards:  2.2500,   ratio:  1.2500
+            <br />4 bet:  2.1600,  rewards:  2.7000,   ratio:  1.2500
+            <br />5 bet:  2.5920,  rewards:  3.2399,   ratio:  1.2499
+            <br />6 bet:  3.1104,  rewards:  3.8875,   ratio:  1.2499
+            <br />7 bet:  3.7325,  rewards:  4.6641,   ratio:  1.2496
+            <br />8 bet:  4.4790,  rewards:  5.5938,   ratio:  1.2489
+            <br />9 bet:  5.3748,  rewards:  6.7027,   ratio:  1.2471
+            <br />10 bet:  6.4497,  rewards:  8.0118,   ratio:  1.2422
+            <br />11 bet:  7.7397,  rewards:  9.5183,   ratio:  1.2298
+            <br />12 bet:  9.2876,  rewards:  11.1487,   ratio:  1.2004
+            <br />13 bet:  11.1451,  rewards:  12.7271,   ratio:  1.1419
+            <br />14 bet:  13.3742,  rewards:  14.6001,   ratio:  1.0917
+            <br />15 bet:  16.0490,  rewards:  24.0735,   ratio:  1.5000
+            <br />Sum of rewards: 124.0592
           </samp>
         </p>
       </ul>

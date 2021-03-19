@@ -18,7 +18,7 @@ use near_sdk::{
 pub type BidId = AccountId;
 pub type ProfileId = AccountId;
 
-pub const ACQUISITION_TIME: u64 = 48 * 60 * 60; // 48 hours
+pub const ACQUISITION_TIME: u64 = 72 * 60 * 60; // 72 hours
 
 near_sdk::setup_alloc!();
 

@@ -37,7 +37,7 @@ const MainNearConfig = {
   walletUrl: 'https://wallet.near.org',
   marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA',
   wasmCode: 'https://near.bet/bin',
-  claimPeriod: 48 * 60 * 60
+  claimPeriod: 72 * 60 * 60
 }
 
 const NearConfig = IsMainnet ? MainNearConfig : TestNearConfig

@@ -2,8 +2,8 @@ import sys
 
 bet_mult = 1.2
 claim_mult = 2.0
-initial_price = 0.45
-first_bet = 0.5
+initial_price = 0.3
+first_bet = 1.25
 reward_decay = 1.0 / 1.44
 reward_decay_on_sell = 1.0 / 1.2
 commission = 0.05
@@ -34,7 +34,7 @@ claim_price = price * claim_mult
 
 print('Bet price:', round(price, 4))
 print('Claim price:', round(claim_price, 4))
-print('Sum of bets:', round(sum(bets), 4))
+print('Sum of bets + placement:', round(sum(bets), 4))
 total_paid = sum(bets) + claim_price
 print('Total paid:', round(total_paid, 4))
 print('Commission:', round(total_commission, 4))
