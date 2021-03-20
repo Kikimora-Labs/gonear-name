@@ -179,7 +179,7 @@ class App extends React.Component {
             console.log('wrong account')
             this.setState({ offerFinished: true, offerSuccess: false })
           } else {
-            const offerResult = await this._near.contract.offer({ profile_id: favorAccountId }, '200000000000000', String(parseInt(0.45 * 1e9)) + '000000000000000')
+            const offerResult = await this._near.contract.offer({ profile_id: favorAccountId }, '200000000000000', String(parseInt(0.3 * 1e9)) + '000000000000000')
             console.log('offer result', offerResult)
 
             const state = await account.state()

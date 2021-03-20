@@ -38,8 +38,9 @@ function OfferPage (props) {
         throw console.error('Account not exist - you have to create it first')
       }
       console.log(balance)
-      if (balance < 2.0) {
-        alert('Not enough balance - should be at least 2 NEAR available')
+
+      if (balance < 1.97619) { // there is a bug shows improper available balance in nearAPI
+        alert('Not enough balance - should be at least 2 NEAR available (2.05 total usually works)')
         setOfferButtonEnabled(true)
         throw console.error('Not enough balance - should be at least 2 NEAR available')
       }

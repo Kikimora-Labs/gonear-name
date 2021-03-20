@@ -97,7 +97,7 @@ function rules () {
       <h4>Commission</h4>
       <ul>
         <p>
-          Marketplace takes 5% commission for each bet plus small constant for initial placement (0.45 NEAR).
+          Marketplace takes 5% commission for each bet plus small constant for initial placement (0.3 NEAR).
         </p>
         <p>
           Marketplace takes 2.5% commission in addition, in case of betting for account which is under claiming.
