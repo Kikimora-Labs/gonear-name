@@ -14,6 +14,7 @@ function OfferPage (props) {
       props._near.logOut()
     }
     if (props.connected) {
+      const dotSuffix = '.' + props._near.accountSuffix
       const offerInputValue = document.getElementById('offerInput').value
       const favorInputValue = document.getElementById('rewardsInput').value
       if (!offerInputValue || !favorInputValue) {
@@ -21,8 +22,10 @@ function OfferPage (props) {
         setOfferButtonEnabled(true)
         throw console.error('Account(s) are empty')
       }
-      const offerAccountId = offerInputValue + '.' + props._near.accountSuffix
-      const favorAccountId = favorInputValue + '.' + props._near.accountSuffix
+      const offerAccountId = offerInputValue.endsWith(dotSuffix) ? offerInputValue : offerInputValue + dotSuffix
+      const favorAccountId = favorInputValue.endsWith(dotSuffix) ? favorInputValue : favorInputValue + dotSuffix
+      console.log('offerAccountId', offerAccountId)
+      console.log('favorAccountId', favorAccountId)
       if (offerAccountId === favorAccountId) {
         alert('Accounts must be different')
         setOfferButtonEnabled(true)
