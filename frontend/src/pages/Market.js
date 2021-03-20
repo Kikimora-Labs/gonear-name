@@ -1,4 +1,3 @@
-import './Market.scss'
 import React, { useCallback, useEffect, useState } from 'react'
 import { BidPreview } from '../components/BidPreview'
 import InfiniteScroll from 'react-infinite-scroller'
