@@ -331,6 +331,9 @@ class App extends React.Component {
             <Route exact path='/market'>
               <MarketPage {...passProps} />
             </Route>
+            <Route exact path='/claims'>
+              <MarketPage {...passProps} claimsOnly />
+            </Route>
             <Route exact path='/rules'>
               <RulesPage {...passProps} />
             </Route>

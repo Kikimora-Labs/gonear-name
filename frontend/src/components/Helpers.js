@@ -12,6 +12,18 @@ function loader () {
   )
 }
 
+const mapStats = (s) => {
+  return {
+    numProfiles: s[0],
+    numBids: s[1],
+    totalCommission: fromNear(s[2]),
+    numOffers: s[3],
+    numBets: s[4],
+    numClaims: s[5],
+    numAcquisitions: s[6]
+  }
+}
+
 function rules () {
   return (
     <div>
@@ -200,4 +212,4 @@ function rules () {
   )
 }
 
-export { rules, fromNear, loader }
+export { rules, fromNear, loader, mapStats }

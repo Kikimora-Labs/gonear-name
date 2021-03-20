@@ -1,4 +1,3 @@
-import './BidPreview.scss'
 import React, { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AcquireButton, PriceButton, DetailsButton } from './Buttons'
@@ -54,19 +53,14 @@ function BidPreview (props) {
   }, [props.connected, propsBid, fetchBid])
 
   return bid ? (
-    <div className='container m-3'>
-      <div className='row'>
-        <div className='col-5'>
-          <Link className='nav-link' to={`/bid/${bidId}`}>{bidId}</Link>
-        </div>
-        <div className='col'>
-          <div className='row py-2' />
-        </div>
-        <div className='col-6'>
-          {isOnAcquisition ? (<AcquireButton {...props} bidId={bidId} />) : (bid.isOnAcquisition
-            ? (<DetailsButton {...props} bidId={bidId} />)
-            : (<PriceButton {...props} bidId={bidId} price={bid.betPrice} forfeit={bid.forfeit} />))}
-        </div>
+    <div className='row align-middle pt-3'>
+      <div className='col-4'>
+        <Link to={`/bid/${bidId}`} style={{ textDecoration: 'none', color: 'white' }}>{bidId}</Link>
+      </div>
+      <div className='col-6' style={{ maxWidth: '240px' }}>
+        {isOnAcquisition ? (<AcquireButton {...props} bidId={bidId} />) : (bid.isOnAcquisition
+          ? (<DetailsButton {...props} bidId={bidId} />)
+          : (<PriceButton {...props} bidId={bidId} price={bid.betPrice} forfeit={bid.forfeit} />))}
       </div>
     </div>
   ) : (

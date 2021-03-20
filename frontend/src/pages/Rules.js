@@ -1,42 +1,25 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { fromNear, rules } from '../components/Helpers'
-
-const mapStats = (s) => {
-  return {
-    numProfiles: s[0],
-    numBids: s[1],
-    totalCommission: fromNear(s[2]),
-    numOffers: s[3],
-    numBets: s[4],
-    numClaims: s[5],
-    numAcquisitions: s[6]
-  }
-}
+import { mapStats, rules } from '../components/Helpers'
 
 function StatsPage (props) {
   const [stats, setStats] = useState(null)
-  const [loading, setLoading] = useState(true)
 
   const fetchStats = useCallback(async () => {
-    const [stats] = await Promise.all([
-      props._near.contract.get_global_stats()
-    ])
-    return mapStats(stats)
+    return mapStats(await props._near.contract.get_global_stats())
   }, [props._near])
 
   useEffect(() => {
     if (props.connected) {
-      fetchStats().then((stats) => {
-        setStats(stats)
-        setLoading(false)
-      })
+      fetchStats().then(setStats)
     }
   }, [props.connected, fetchStats])
+
+  console.log(stats)
 
   return (
     <div className='container'>
       <div className='row'>
-        {loading ? (
+        {!stats ? (
           <div className='col'>
             <div className='d-flex justify-content-center'>
               <div className='spinner-grow' role='status'>
