@@ -54,7 +54,7 @@ function ProfilePage (props) {
                 </div>
               </div>
             ) : (
-              <div className='col col-12 col-lg-4 col-xl-4'>
+              <div>
                 <h3>Stats</h3>
                 <ul>
                   <li>Bets volume: {profile.betsVolume.toFixed(2)} NEAR</li>
@@ -63,12 +63,15 @@ function ProfilePage (props) {
                     (profile.availableRewards > 0.1
                       ? (<RewardsButton {...props} availableRewards={profile.availableRewards} isMe={profileId === props.signedAccountId} />
                       ) : (
-                        <div>Accumulate at least 0.1 NEAR to grab your rewards</div>
+                        <small className='gray'>Accumulate at least 0.1 NEAR to grab your rewards</small>
                       )
                     )
                   ) : (<div />)}
-                  <li>TODO BUTTON TO COLLECT REWARDS</li>
-                  <li>TODO PRINT OTHER LOCAL STATS</li>
+                  <li>Profit taken: {profile.profitTaken.toFixed(2)} NEAR</li>
+                  <li>Number of offers: {profile.numOffers}</li>
+                  <li>Number of bets: {profile.numBets}</li>
+                  <li>Number of claims: {profile.numClaims}</li>
+                  <li>Number of acquisitions (successful claims): {profile.numAcquisitions}</li>
                 </ul>
               </div>
             )}

@@ -127,8 +127,7 @@ function LandingPage (props) {
           </div>
         </div>
       </div>
-      <div style={{ margin: '15%' }} />
-      <div className='container text-center'>
+      <div className='container text-center' style={{ paddingTop: '10vh', paddingBottom: '50vh' }}>
         <h1>{qq} Interested?</h1>
         <div className='row justify-content-evenly align-items-center'>
           <div className='col-1' />
@@ -145,7 +144,6 @@ function LandingPage (props) {
           <div className='col-1' />
         </div>
       </div>
-      <div className='huge' />
     </div>
   )
 }
