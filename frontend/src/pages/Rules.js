@@ -14,8 +14,6 @@ function StatsPage (props) {
     }
   }, [props.connected, fetchStats])
 
-  console.log(stats)
-
   return (
     <div className='container'>
       <div className='row'>

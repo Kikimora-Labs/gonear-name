@@ -9,7 +9,6 @@ const FetchLimit = 25
 
 function MarketPage (props) {
   const claimsOnly = !!props.claimsOnly
-  console.log(claimsOnly)
 
   const [feed, setFeed] = useState([])
   const [hasMore, setHasMore] = useState(false)
@@ -53,7 +52,7 @@ function MarketPage (props) {
       fetchStats().then(setStats)
       setHasMore(true)
     }
-  }, [props.connected])
+  }, [props.connected, fetchStats])
 
   const bids = feed.map(([bidPrice, bidId]) => {
     return (

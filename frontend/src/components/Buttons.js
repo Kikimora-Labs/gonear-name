@@ -1,4 +1,3 @@
-import './Buttons.scss'
 import React, { useState } from 'react'
 import { loader, fromNear } from './Helpers'
 import { Link } from 'react-router-dom'
@@ -14,7 +13,7 @@ function RewardsButton (props) {
 
   return showRewardsButton ? (
     <button
-      className='btn btn-primary'
+      className='btn btn-warning'
       disabled={!props.signedIn}
       onClick={(e) => grabRewards(e)}
     >
@@ -30,8 +29,7 @@ function AcquireButton (props) {
     <div>
       <Link
         to={`/acquire/${props.bidId}`}
-        className='py-2 px-2 badge rounded-pill w-100 butnavigate'
-        style={{ textDecoration: 'none', color: 'white' }}
+        className='btn w-100 btn-success'
       >
 Acquire
       </Link>
@@ -42,9 +40,8 @@ Acquire
 function PriceButton (props) {
   return (
     <Link
-      className='py-2 px-2 badge rounded-pill w-100 butnavigate'
+      className='btn w-100 btn-success'
       to={`/bid/${props.bidId}`}
-      style={{ textDecoration: 'none', color: 'white' }}
     >
 Starts from {(fromNear(props.price) + fromNear(props.forfeit)).toFixed(2)} NEAR
     </Link>
@@ -55,8 +52,7 @@ function DetailsButton (props) {
   return (
     <Link
       to={`/bid/${props.bidId}`}
-      className='py-2 px-2 badge rounded-pill w-100 butnavigate'
-      style={{ textDecoration: 'none', color: 'white' }}
+      className='btn w-100 btn-success'
     >
 Details
     </Link>

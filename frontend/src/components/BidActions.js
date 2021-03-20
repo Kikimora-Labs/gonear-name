@@ -19,7 +19,7 @@ function BetButton (props) {
 
   return (
     <button
-      className='btn btn-primary btn-lg btn-block'
+      className='btn btn-success btn-lg btn-block'
       disabled={!props.signedIn || !props.isSafe}
       onClick={(e) => betBid(e)}
     >
@@ -40,7 +40,7 @@ function ClaimButton (props) {
   return (
     claimPrice ? (
       <button
-        className='btn btn-success btn-lg btn-block'
+        className='btn btn-warning btn-lg btn-block'
         disabled={!props.signedIn || !props.isSafe}
         onClick={(e) => claimBid(e)}
       >
@@ -68,11 +68,11 @@ function FinalizeButton (props) {
   const disabled = !(props.signedIn && props.isSafe)
 
   return !disabled ? (
-    <Link to={toOfferPage ? (`/acquire/${props.bidId}`) : (`/profile/${props.signedAccountId}`)} className='btn btn-primary btn-lg btn-block' onClick={(e) => finalizeBid(e)}>
+    <Link to={toOfferPage ? (`/acquire/${props.bidId}`) : (`/profile/${props.signedAccountId}`)} className='btn btn-warning btn-lg btn-block' onClick={(e) => finalizeBid(e)}>
           Finalize
     </Link>
   ) : (
-    <button disabled className='btn btn-primary btn-lg btn-block'>Finalize</button>
+    <button disabled className='btn btn-warning btn-lg btn-block'>Finalize</button>
   )
 }
 

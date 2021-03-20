@@ -267,7 +267,7 @@ class App extends React.Component {
     ) : (
       <div>
         <button
-          className='btn btn-primary'
+          className='btn btn-warning'
           onClick={(e) => this.requestSignIn(e)}
         >Sign in with NEAR Wallet
         </button>
