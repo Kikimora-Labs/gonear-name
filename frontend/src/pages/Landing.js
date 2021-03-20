@@ -2,7 +2,8 @@ import './Landing.scss'
 import React from 'react'
 import { Image } from 'react-bootstrap'
 import BackgroundImage from '../images/lines.png'
-import Croco from '../images/croco2.png'
+import Croco from '../images/croco.png'
+import Croco2 from '../images/croco2.png'
 import FoundersImage from '../images/founders.svg'
 import BelieversImage from '../images/believers.svg'
 import ClaimersImage from '../images/claimers.svg'
@@ -10,7 +11,8 @@ import { Link } from 'react-router-dom'
 
 function LandingPage (props) {
   var background = { backgroundSize: 'cover', backgroundRepeat: 'no-repeat', position: 'absolute', opacity: 0.4 }
-  var backgroundCroco = { backgroundSize: 'cover', backgroundRepeat: 'no-repeat', position: 'absolute', opacity: 0.4, width: '25%', left: '20%', top: '33%' }
+  var backgroundCroco = { opacity: 0.7 }
+  var backgroundCroco2 = { backgroundSize: 'cover', backgroundRepeat: 'no-repeat', position: 'absolute', opacity: 0.4, width: '25%', left: '20%', top: '33%' }
   var image = { width: '64px' }
   var qq = '//'
   return (
@@ -22,8 +24,8 @@ function LandingPage (props) {
         src={BackgroundImage}
       />
       <Image
-        style={backgroundCroco} fluid
-        src={Croco}
+        style={backgroundCroco2} fluid
+        src={Croco2}
       />
       <div style={{ margin: '5%' }} />
       <div className='container content'>
@@ -128,7 +130,20 @@ function LandingPage (props) {
       <div style={{ margin: '15%' }} />
       <div className='container text-center'>
         <h1>{qq} Interested?</h1>
-        <Link className='btn btn-lg btn-success mt-3' to='/market'>Jump to the market</Link>
+        <div className='row justify-content-evenly align-items-center'>
+          <div className='col-1' />
+          <div className='col-3 pt-5'>
+            <Image
+              style={backgroundCroco} fluid
+              src={Croco}
+            />
+            <h5>Gimme that account!</h5>
+          </div>
+          <div className='col-3 pb-5'>
+            <Link className='btn btn-lg btn-success mt-3' to='/market'>Jump to the market</Link>
+          </div>
+          <div className='col-1' />
+        </div>
       </div>
       <div className='huge' />
     </div>
