@@ -43,6 +43,8 @@ pub struct Contract {
 
     pub owner_id: AccountId,
     pub dao_id: AccountId,
+
+    pub contract_ext: Option<()>,
 }
 
 #[near_bindgen]
@@ -69,6 +71,7 @@ impl Contract {
             acquisition_time,
             owner_id: env::signer_account_id(),
             dao_id: dao_id.into(),
+            contract_ext: None,
         }
     }
 
@@ -88,6 +91,7 @@ impl Contract {
             acquisition_time: ACQUISITION_TIME,
             owner_id: owner_id.into(),
             dao_id: dao_id.into(),
+            contract_ext: None,
         }
     }
 
