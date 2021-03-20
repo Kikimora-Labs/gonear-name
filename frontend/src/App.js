@@ -18,7 +18,7 @@ import AcquirePage from './pages/Acquire'
 import BidPage from './pages/Bid'
 import LandingPage from './pages/Landing'
 
-const IsMainnet = window.location.hostname === 'berry.cards'
+const IsMainnet = window.location.hostname === 'near.bet'
 const TestNearConfig = {
   accountSuffix: 'testnet',
   networkId: 'testnet',
@@ -33,9 +33,9 @@ const MainNearConfig = {
   accountSuffix: 'near',
   networkId: 'mainnet',
   nodeUrl: 'https://rpc.mainnet.near.org',
-  contractName: 'dev-1616094400078-8793996',
+  contractName: 'c.nearbet.near',
   walletUrl: 'https://wallet.near.org',
-  marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA',
+  marketPublicKey: 'ed25519:5mgNVstFy67S469tG2j8MjRchPuKqJFYsydghKRteR42',
   wasmCode: 'https://near.bet/bin',
   claimPeriod: 72 * 60 * 60
 }

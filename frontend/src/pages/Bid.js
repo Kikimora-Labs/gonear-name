@@ -20,19 +20,19 @@ function BidPage (props) {
 
   const fetchBidSafety = useCallback(async () => {
     const account = await props._near.near.account(bidId)
-    const codeHash = (await account.state()).code_hash
-    const accessKeysLen = (await account.getAccessKeys()).length
-    let lockerOwner = '(not found)'
     try {
+      const codeHash = (await account.state()).code_hash
+      const accessKeysLen = (await account.getAccessKeys()).length
       const lockerContract = await new Contract(account, bidId, {
         viewMethods: ['get_owner'],
         changeMethods: []
       })
-      lockerOwner = await lockerContract.get_owner({})
+      const lockerOwner = await lockerContract.get_owner({})
+      return { codeHash, accessKeysLen, lockerOwner }
     } catch (e) {
       console.log('check safety error', e)
     }
-    return { codeHash, accessKeysLen, lockerOwner }
+    return { codeHash: null, accessKeysLen: null, lockerOwner: '(not found)' }
   }, [props._near, bidId])
 
   useEffect(() => {
@@ -66,7 +66,7 @@ function BidPage (props) {
             <div className='bid m-2'>
               <div className='bid-body text-start'>
                 <h3>{bidId}</h3>
-                {!isSafe ? (
+                {!isSafe && bidInfo.isAtMarket ? (
                   <h2>
                     Hash of the contract: {bidSafety.codeHash}
                     <br />
