@@ -107,17 +107,11 @@ function BidPage (props) {
                   <h2>
               Accounts who participate:
                   </h2>
-                  <table className='table'>
-                    <tbody>
-                      {bidInfo.bets.map((data, index) => {
-                        return (
-                          <tr key={index}>
-                            {data}
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
+                  {bidInfo.bets.map((data, index) => {
+                    return (
+                      <div key={index}>{data}</div>
+                    )
+                  })}
                 </div>
               </div>
               <div className='text-center'>
