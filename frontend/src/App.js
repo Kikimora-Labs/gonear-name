@@ -23,11 +23,11 @@ const TestNearConfig = {
   accountSuffix: 'testnet',
   networkId: 'testnet',
   nodeUrl: 'https://rpc.testnet.near.org',
-  contractName: 'dev-1616094400078-8793996',
+  contractName: 'dev-1616262444354-6389244',
   walletUrl: 'https://wallet.testnet.near.org',
   marketPublicKey: 'ed25519:EgmA4v9E2SjFVu31bmJKJtNW6cjkx2cbM3HyXprsYvrA',
   wasmCode: 'https://near.bet/bin',
-  claimPeriod: 15 * 60
+  claimPeriod: 60
 }
 const MainNearConfig = {
   accountSuffix: 'near',

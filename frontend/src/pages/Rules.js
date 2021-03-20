@@ -50,8 +50,13 @@ function StatsPage (props) {
             <div>
               <h3>Global Stats</h3>
               <ul>
-                <li>Num active profiles: {stats.numProfiles}</li>
-                <li>Num active bids: {stats.numBids}</li>
+                <li>Active profiles: {stats.numProfiles}</li>
+                <li>Active bids: {stats.numBids}</li>
+                <li>Number of offers: {stats.numOffers}</li>
+                <li>Number of bets: {stats.numBets}</li>
+                <li>Number of claims: {stats.numClaims}</li>
+                <li>Number of acquisitions (successful claims): {stats.numAcquisitions}</li>
+                <li>Total commission: {stats.totalCommission.toFixed(2)}</li>
               </ul>
             </div>
           </div>

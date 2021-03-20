@@ -60,6 +60,7 @@ impl Contract {
             &mut bid,
         );
 
+        self.num_offers += 1;
         true
     }
 
@@ -103,6 +104,7 @@ impl Contract {
         // Update top and rewards
         self.bet_and_update_leaders(&env::predecessor_account_id(), bid_id.as_ref(), &mut bid);
 
+        self.num_bets += 1;
         true
     }
 
@@ -131,6 +133,7 @@ impl Contract {
         // Update top
         self.top_claims.insert(&(claim_price, bid_id.into()), &());
 
+        self.num_claims += 1;
         true
     }
 
@@ -192,6 +195,7 @@ impl Contract {
             ON_ACQUIRE_FUNCTION_CALL_GAS,
         );
 
+        self.num_acquisitions += 1;
         true
     }
 }
