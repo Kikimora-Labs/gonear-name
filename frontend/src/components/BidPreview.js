@@ -18,7 +18,7 @@ const mapBidInfo = (b) => {
     numClaims: 0,
     claimedBy: null,
     claimedTime: null,
-    bets: [],
+    bets: null,
     betPrice: 0,
     claimPrice: 0,
     forfeit: null,

@@ -3,8 +3,8 @@ import { fromNear } from './Helpers'
 import { Link } from 'react-router-dom'
 
 function BetButton (props) {
-  const betPrice = props.betPrice
-  const forfeit = props.forfeit
+  const betPrice = props.bidInfo.betPrice
+  const forfeit = props.bidInfo.forfeit
   const totalBetPrice = fromNear(betPrice) + fromNear(forfeit)
   async function betBid (e) {
     e.preventDefault()
@@ -19,7 +19,7 @@ function BetButton (props) {
 
   return (
     <button
-      className='btn btn-success btn-lg btn-block'
+      className='btn btn-success w-100 mb-2'
       disabled={!props.signedIn || !props.isSafe}
       onClick={(e) => betBid(e)}
     >
@@ -29,7 +29,8 @@ function BetButton (props) {
 }
 
 function ClaimButton (props) {
-  const claimPrice = fromNear(props.claimPrice)
+  const claimedBy = props.bidInfo.claimedBy
+  const claimPrice = fromNear(props.bidInfo.claimPrice)
   async function claimBid (e) {
     e.preventDefault()
     console.log(String(claimPrice * 1e9) + '000000000000000')
@@ -38,9 +39,9 @@ function ClaimButton (props) {
   }
 
   return (
-    claimPrice ? (
+    !claimedBy ? (
       <button
-        className='btn btn-warning btn-lg btn-block'
+        className='btn btn-warning w-100'
         disabled={!props.signedIn || !props.isSafe}
         onClick={(e) => claimBid(e)}
       >
@@ -48,9 +49,8 @@ function ClaimButton (props) {
       </button>
     ) : (
       <button
-        className='btn btn-outline-warning btn-lg btn-block'
+        className='btn btn-outline-warning w-100'
         disabled
-        onClick={(e) => claimBid(e)}
       >
         Already claimed - you can only bet
       </button>
@@ -65,73 +65,30 @@ function FinalizeButton (props) {
   }
 
   const toOfferPage = props.signedIn && props.bidInfo && props.signedAccountId && (props.signedAccountId === props.bidInfo.claimedBy)
-  const disabled = !(props.signedIn && props.isSafe)
+  const disabled = !props.signedIn || !props.isSafe
 
   return !disabled ? (
-    <Link to={toOfferPage ? (`/acquire/${props.bidId}`) : (`/profile/${props.signedAccountId}`)} className='btn btn-warning btn-lg btn-block' onClick={(e) => finalizeBid(e)}>
+    <Link to={toOfferPage ? (`/acquire/${props.bidId}`) : (`/profile/${props.signedAccountId}`)} className='btn btn-warning w-100' onClick={(e) => finalizeBid(e)}>
           Finalize
     </Link>
   ) : (
-    <button disabled className='btn btn-warning btn-lg btn-block'>Finalize</button>
+    <button
+      className='btn btn-warning w-100'
+      disabled
+    >
+    Finalize
+    </button>
   )
 }
 
 function AcquireButton (props) {
   return (
     <Link
-      className='btn btn-success btn-lg btn-block'
+      className='btn btn-warning w-100'
       to={`/acquire/${props.bidId}`}
     >Acquire
     </Link>
   )
 }
 
-function BidActions (props) {
-  const bidInfo = props.bidInfo
-  const isAtMarket = bidInfo.isAtMarket
-  const isOnAcquisition = bidInfo.isOnAcquisition
-
-  let isMine = false
-  if (props.signedIn) {
-    props.profile.acquisitions.forEach(bidId => {
-      if (bidId === props.bidId) {
-        isMine = true
-      }
-    })
-  }
-
-  return isAtMarket ? (
-    !isOnAcquisition ? (
-      <div>
-        <div className='row py-3'>
-          <BetButton {...props} betPrice={bidInfo.betPrice} forfeit={bidInfo.forfeit} />
-          <div className='row py-1' />
-          <ClaimButton {...props} claimPrice={bidInfo.claimPrice} />
-        </div>
-      </div>
-    ) : (
-      <div>
-        <div className='row py-3'>
-          <FinalizeButton {...props} bidInfo={props.bidInfo} />
-        </div>
-      </div>
-    )
-  ) : (
-    isMine ? (
-      <div>
-        <h4>
-          Congratulations! You claimed the account successfully. Please proceed to the acquisition procedure.
-        </h4>
-        <div className='row py-3'>
-          <AcquireButton {...props} bidInfo={props.bidInfo} />
-        </div>
-      </div>
-    ) : (
-      <div>
-      Is not on market. Is it a good fit?
-      </div>
-    )
-  )
-}
-
-export { BidActions }
+export { BetButton, ClaimButton, FinalizeButton, AcquireButton }
