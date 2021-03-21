@@ -2,6 +2,8 @@ import React from 'react'
 
 const fromNear = (s) => parseFloat(s) / 1e24 || 0
 
+const qq = '//'
+
 function loader () {
   return (
     <div className='d-flex justify-content-center' key='loader'>
@@ -212,4 +214,4 @@ function rules () {
   )
 }
 
-export { rules, fromNear, loader, mapStats }
+export { rules, fromNear, loader, mapStats, qq }

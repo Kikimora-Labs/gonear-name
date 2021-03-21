@@ -8,13 +8,13 @@ import FoundersImage from '../images/founders.svg'
 import BelieversImage from '../images/believers.svg'
 import ClaimersImage from '../images/claimers.svg'
 import { Link } from 'react-router-dom'
+import { qq } from '../components/Helpers'
 
 function LandingPage (props) {
   var background = { backgroundSize: 'cover', backgroundRepeat: 'no-repeat', position: 'absolute', opacity: 0.4 }
   var backgroundCroco = { opacity: 0.7 }
   var backgroundCroco2 = { backgroundSize: 'cover', backgroundRepeat: 'no-repeat', position: 'absolute', opacity: 0.4, width: '25%', left: '20%', top: '33%' }
   var image = { width: '64px' }
-  var qq = '//'
   return (
     <div
       className='container my-auto'

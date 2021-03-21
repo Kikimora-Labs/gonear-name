@@ -1,28 +1,6 @@
-import React, { useState } from 'react'
-import { loader, fromNear } from './Helpers'
+import React from 'react'
+import { fromNear } from './Helpers'
 import { Link } from 'react-router-dom'
-
-function RewardsButton (props) {
-  const [showRewardsButton, setShowRewardsButton] = useState(true)
-  async function grabRewards (e) {
-    e.preventDefault()
-    setShowRewardsButton(false)
-    await props._near.contract.collect_rewards({}, '200000000000000', 0)
-    setShowRewardsButton(true)
-  }
-
-  return showRewardsButton ? (
-    <button
-      className='btn btn-warning'
-      disabled={!props.signedIn}
-      onClick={(e) => grabRewards(e)}
-    >
-      Grab the rewards!
-    </button>
-  ) : (
-    loader()
-  )
-}
 
 function AcquireButton (props) {
   return (
@@ -59,4 +37,4 @@ Details
   )
 }
 
-export { PriceButton, DetailsButton, AcquireButton, RewardsButton }
+export { PriceButton, DetailsButton, AcquireButton }
