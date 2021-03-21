@@ -90,6 +90,7 @@ impl Contract {
             ERR_REWARD_BALANCE_INSUFFICIENT
         );
         profile.available_rewards = 0;
+        profile.profit_taken += rewards;
         self.save_profile_or_panic(&env::predecessor_account_id(), &profile);
 
         Promise::new(env::predecessor_account_id())
@@ -118,6 +119,7 @@ impl Contract {
             // In case of failure, put the amount back
             let mut profile = self.extract_profile_or_create(&predecessor_account_id);
             profile.available_rewards = rewards;
+            profile.profit_taken -= rewards;
             self.save_profile_or_panic(&env::predecessor_account_id(), &profile);
         }
         rewards_transferred
