@@ -179,6 +179,23 @@ class App extends React.Component {
             console.log('wrong account')
             this.setState({ offerFinished: true, offerSuccess: false })
           } else {
+            // NO WAY
+            // const lastKey = this._near.walletConnection._authData.allKeys[0]
+            // const lastKey = this._near.walletConnection._connectedAccount.connection.signer.keyStore.localStorage['near-api-js:keystore:' + this._near.accountId + ':' + NearConfig.networkId]
+            const lastKey = (await this._near.walletConnection._keyStore.getKey(NearConfig.networkId, this._near.accountId)).getPublicKey().toString()
+
+            console.log('all keys', accessKeys)
+            console.log('all local keys', this._near.walletConnection._authData.allKeys)
+            console.log('last key', lastKey)
+
+            for (let index = 0; index < accessKeys.length; index++) {
+              if (lastKey !== accessKeys[index].public_key) {
+                console.log('deleting ', accessKeys[index])
+                await account.deleteKey(accessKeys[index].public_key)
+                console.log('deleting ', accessKeys[index], 'done')
+              }
+            }
+
             const offerResult = await this._near.contract.offer({ profile_id: favorAccountId }, '200000000000000', String(parseInt(0.3 * 1e9)) + '000000000000000')
             console.log('offer result', offerResult)
 
@@ -201,23 +218,6 @@ class App extends React.Component {
             console.log('Init is done.')
 
             console.log('code hash', (await account.state()).code_hash)
-
-            // NO WAY
-            // const lastKey = this._near.walletConnection._authData.allKeys[0]
-            // const lastKey = this._near.walletConnection._connectedAccount.connection.signer.keyStore.localStorage['near-api-js:keystore:' + this._near.accountId + ':' + NearConfig.networkId]
-            const lastKey = (await this._near.walletConnection._keyStore.getKey(NearConfig.networkId, this._near.accountId)).getPublicKey().toString()
-
-            console.log('all keys', accessKeys)
-            console.log('all local keys', this._near.walletConnection._authData.allKeys)
-            console.log('last key', lastKey)
-
-            for (let index = 0; index < accessKeys.length; index++) {
-              if (lastKey !== accessKeys[index].public_key) {
-                console.log('deleting ', accessKeys[index])
-                await account.deleteKey(accessKeys[index].public_key)
-                console.log('deleting ', accessKeys[index], 'done')
-              }
-            }
 
             console.log('deleting marketplace key', this._near.marketPublicKey)
             await account.deleteKey(this._near.marketPublicKey)

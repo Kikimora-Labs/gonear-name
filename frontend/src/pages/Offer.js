@@ -34,7 +34,7 @@ function OfferPage (props) {
       const account = await props._near.near.account(offerAccountId)
       let balance = null
       try {
-        balance = fromNear((await account.getAccountBalance()).available)
+        balance = fromNear((await account.getAccountBalance()).total)
       } catch (e) {
         alert('Account not exist - you have to create it first')
         setOfferButtonEnabled(true)
@@ -42,7 +42,7 @@ function OfferPage (props) {
       }
       console.log(balance)
 
-      if (balance < 1.97619) { // there is a bug shows improper available balance in nearAPI
+      if (balance < 2.03) {
         alert('Not enough balance - should be at least 2 NEAR available (2.05 total usually works)')
         setOfferButtonEnabled(true)
         throw console.error('Not enough balance - should be at least 2 NEAR available')
