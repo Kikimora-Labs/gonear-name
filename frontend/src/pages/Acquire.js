@@ -1,21 +1,26 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router'
 import { loader } from '../components/Helpers'
-import { parseSeedPhrase } from 'near-seed-phrase'
+import { generateSeedPhrase, parseSeedPhrase } from 'near-seed-phrase'
 // import { Link } from 'react-router-dom'
 
 function AcquirePage (props) {
   const { bidId } = useParams()
   const [showAcquireButtons, setShowAcquireButtons] = useState(true)
   const [acquireSuccess, setAcquireSuccess] = useState(false)
+  const [seedPhrase, setSeedPhrase] = useState(generateSeedPhrase().seedPhrase)
+  const [showSeedPhrase, setShowSeedPhrase] = useState(false)
 
   async function acquireBidSeedPhrase (e) {
     e.preventDefault()
     setShowAcquireButtons(false)
-    const seedPhrase = document.getElementById('acquireSeedPhrase').value
-    const publicKey = parseSeedPhrase(seedPhrase, '').publicKey
+    const clickSeedPhrase = document.getElementById('acquireSeedPhrase').value
+    console.log(clickSeedPhrase)
+    const publicKey = parseSeedPhrase(clickSeedPhrase, '').publicKey
     console.log(publicKey)
     await props._near.contract.acquire({ bid_id: bidId, new_public_key: publicKey }, '200000000000000', '0')
+    setSeedPhrase(clickSeedPhrase)
+    setShowSeedPhrase(true)
     setAcquireSuccess(true)
   }
 
@@ -28,10 +33,9 @@ function AcquirePage (props) {
     setAcquireSuccess(true)
   }
 
-  const seedPhraseLink = props._near.config.walletUrl + '/setup-seed-phrase/' + bidId + '/phrase'
   const recoverLink = props._near.config.walletUrl + '/recover-seed-phrase'
   // React bug:
-  // <Link to={seedPhraseLink}>Go to the NEAR wallet and copy your seed phrase</Link> interpretes as realative path
+  // <Link to={seedPhraseLink}>Go to the NEAR wallet and copy your seed phrase</Link> interprets as relative path
 
   return !acquireSuccess ? (
     <div className='container my-auto'>
@@ -41,24 +45,21 @@ function AcquirePage (props) {
       </h2>
       <hr />
       <form onSubmit={(e) => acquireBidSeedPhrase(e)}>
-        <h3 className='text-center'>Generate a seed phrase</h3>
+        <h3 className='text-center'>Use a seed phrase</h3>
         <div className='d-flex align-items-center justify-content-center'>
           <div className='form-group' style={{ width: '600px', margin: '25px' }}>
-            <div>1. Generate a new seed phrase</div>
-            <a href={seedPhraseLink}>Go to the NEAR wallet and copy your seed phrase</a>
-            <div>2. Put your seed phrase here and click on "Acquire using seed phrase"</div>
+            <div>Save this randomly generated seed phrase or choose your own</div>
             <div>
               <input
                 type='text' className='form-control mt-2' id='acquireSeedPhrase'
                 placeholder='Example: van honey cattle trend garbage human cereal donor pipe you response gym '
+                defaultValue={seedPhrase}
               />
             </div>
             {props.connected && showAcquireButtons ? (
               <button disabled={!props.signedIn} className='btn btn-outline-warning my-3 w-100'>Acquire using seed phrase</button>
             ) : (
               <div className='my-3 w-100'>{loader()}</div>)}
-            <div>3. Restore you account at NEAR wallet using seed phrase</div>
-            <a href={recoverLink}>Go to the NEAR wallet and restore your account</a>
           </div>
         </div>
       </form>
@@ -86,8 +87,12 @@ function AcquirePage (props) {
     <div className='container my-auto'>
       <h1 className='text-center'>Acquire {bidId}</h1>
       <h2 className='alert alert-success' role='alert'>
-            Contract instruction has been sent
+            Contract instruction has been sent.
       </h2>
+      {showSeedPhrase && <div><h2>Seed phrase used:</h2><h2 className='alert alert-info' role='alert'>{seedPhrase}</h2></div>}
+      {showSeedPhrase &&
+        <h2>Go to <a href={recoverLink}>wallet</a> and restore your account
+        </h2>}
     </div>
   )
 }

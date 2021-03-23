@@ -7903,7 +7903,7 @@ near-hd-key@^1.2.1:
     create-hmac "1.1.7"
     tweetnacl "1.0.3"
 
-near-seed-phrase@^0.1.0:
+near-seed-phrase@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/near-seed-phrase/-/near-seed-phrase-0.1.1.tgz#69efb34956ae6f1f1c54f73a9bf05f0d2c4395ad"
   integrity sha512-SuyazZJNbgZeracALTqwPj8sekduR6LG/V4ifDHGgSjQrLzbldXdv7gK1RUB3xphJ/EX2rsiBhbJMqqWA5DPwg==
