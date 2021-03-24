@@ -141,7 +141,7 @@ function LandingPage (props) {
             <h5>Gimme that account!</h5>
           </div>
           <div className='col-3 pb-5'>
-            <Link className='btn btn-lg btn-success mt-3' to='/market'>Jump to the market</Link>
+            <Link className='btn btn-lg btn-success mt-3' to='/bets'>Jump to the market</Link>
           </div>
           <div className='col-1' />
         </div>

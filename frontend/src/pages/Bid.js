@@ -58,7 +58,7 @@ function BidPage (props) {
     return (
       <div key={index} className='row'>
         <div className='col-2' style={{ minWidth: '200px' }}>
-          <Link className='navigate' to={`/profile/${data}`}>{data}</Link>
+          <Link className='nonavigate' to={`/profile/${data}`}>{data}</Link>
         </div>
         <div className='col-2' style={{ minWidth: '200px' }}>
           {(1.25 * Math.pow(1.2, index)).toFixed(2)} NEAR
@@ -135,7 +135,7 @@ function BidPage (props) {
             <div>
               {bidInfo.claimedBy ? (
                 <div className='mb-3 py-2'>
-                  <div>Claimed by <Link className='navigate' to={`/profile/${bidInfo.claimedBy}`}>{bidInfo.claimedBy}</Link></div>
+                  <div>Claimed by <Link className='nonavigate' to={`/profile/${bidInfo.claimedBy}`}>{bidInfo.claimedBy}</Link></div>
                   <small className='gray'>Claimed time: {claimedTime}</small>
 
                   {showBetClaim ? (
@@ -175,7 +175,7 @@ function BidPage (props) {
                   <h5>Competitors</h5>
                 </div>
                 <div className='mb-2'>
-                  <div>Founded by: <Link className='navigate' to={`/profile/${founder}`}>{founder}</Link></div>
+                  <div>Founded by: <Link className='nonavigate' to={`/profile/${founder}`}>{founder}</Link></div>
                 </div>
                 {believers}
               </div>}

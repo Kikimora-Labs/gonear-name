@@ -8,7 +8,7 @@ import * as nearAPI from 'near-api-js'
 import Logo from './images/logo.png'
 import { HashRouter as Router, Link, Route, Switch } from 'react-router-dom'
 import ls from 'local-storage'
-import MarketPage from './pages/Market'
+import { BetsPage, ClaimsPage } from './pages/Market'
 import OfferPage from './pages/Offer'
 import OfferProcessPage from './pages/OfferProcess'
 import RulesPage from './pages/Rules'
@@ -251,7 +251,7 @@ class App extends React.Component {
               <div className='collapse navbar-collapse' id='navbarSupportedContent'>
                 <ul className='navbar-nav me-auto mb-2 mb-lg-0'>
                   <li className='nav-item'>
-                    <Link className='nav-link' aria-current='page' to='/market'>Market</Link>
+                    <Link className='nav-link' aria-current='page' to='/bets'>Market</Link>
                   </li>
                   {this.state.signedIn && (
                     <li className='nav-item'>
@@ -286,11 +286,11 @@ class App extends React.Component {
             <Route exact path='/'>
               <LandingPage {...passProps} />
             </Route>
-            <Route exact path='/market'>
-              <MarketPage {...passProps} />
+            <Route exact path='/bets'>
+              <BetsPage {...passProps} />
             </Route>
             <Route exact path='/claims'>
-              <MarketPage {...passProps} claimsOnly />
+              <ClaimsPage {...passProps} />
             </Route>
             <Route exact path='/rules'>
               <RulesPage {...passProps} />

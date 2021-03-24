@@ -6,7 +6,8 @@ const qq = '//'
 
 function loader () {
   return (
-    <div className='d-flex justify-content-center' key='loader'>
+  // key='1' is needed by InfiniteScroll
+    <div className='d-flex justify-content-center' key='1'>
       <div className='spinner-grow' role='status'>
         <span className='visually-hidden'>Loading...</span>
       </div>

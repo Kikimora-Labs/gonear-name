@@ -51,9 +51,6 @@ function ProfilePage (props) {
     </div>
   )
 
-  const participationActive = claimsOnly ? 'nonavigate' : 'navigate'
-  const claimsActive = claimsOnly ? 'navigate' : 'nonavigate'
-
   let lowRewards = profile && profile.availableRewards < 0.1
   const useMyGreen = lowRewards ? '' : 'my-green-big'
 
@@ -129,19 +126,15 @@ function ProfilePage (props) {
       <div className='container g-0 px-5'>
         <div className='d-flex flex-row bd-highlight mb-3'>
           <div className='py-2 bd-highlight'>
-            <h5>
-              <Link className={` ${participationActive}`} to='#' onClick={(e) => { if (claimsOnly) { setClaimsOnly(false) } }}>
-            Participating ({profile.participation.length})
-              </Link>
-            </h5>
+            {claimsOnly
+              ? <h5><Link className='navigate' to='#' onClick={(e) => { e.preventDefault(); setClaimsOnly(false) }}>Participating ({profile.participation.length})</Link></h5>
+              : <h5 className='nonavigate'>Participating ({profile.participation.length})</h5>}
           </div>
           <div className='p-2 bd-highlight' />
           <div className='p-2 bd-highlight'>
-            <h5>
-              <Link className={` ${claimsActive}`} to='#' onClick={(e) => { if (!claimsOnly) { setClaimsOnly(true) } }}>
-            Successful claims ({profile.acquisitions.length})
-              </Link>
-            </h5>
+            {claimsOnly
+              ? <h5 className='nonavigate'>Successful claims ({profile.acquisitions.length})</h5>
+              : <h5><Link className='navigate' to='#' onClick={(e) => { e.preventDefault(); setClaimsOnly(true) }}>Successful claims ({profile.acquisitions.length})</Link></h5>}
           </div>
         </div>
       </div>
