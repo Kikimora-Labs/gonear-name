@@ -1,13 +1,15 @@
 import './Landing.scss'
+
 import React from 'react'
 import { Image } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
+
 import BackgroundImage from '../images/lines.png'
 import Croco from '../images/croco.png'
 import Croco2 from '../images/croco2.png'
 import FoundersImage from '../images/founders.svg'
 import BelieversImage from '../images/believers.svg'
 import ClaimersImage from '../images/claimers.svg'
-import { Link } from 'react-router-dom'
 import { qq } from '../components/Helpers'
 
 function LandingPage (props) {

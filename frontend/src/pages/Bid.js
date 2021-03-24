@@ -1,26 +1,24 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React from 'react'
 import { useParams } from 'react-router'
 import { Contract } from 'near-api-js'
-import { BetButton, ClaimButton, FinalizeButton, AcquireButton } from '../components/BidActions'
-import { mapBidInfo } from '../components/BidPreview'
 import Moment from 'react-moment'
 import { Link } from 'react-router-dom'
-import { qq, loader } from '../components/Helpers'
+import useSWR from 'swr'
+
+import { BetButton, ClaimButton, FinalizeButton, AcquireButton } from '../components/BidActions'
+import { qq, loader, mapBidInfo, mapProfile } from '../components/Helpers'
 
 function BidPage (props) {
   const { bidId } = useParams()
 
-  const [bidInfo, setBidInfo] = useState(null)
-  const [bidSafety, setBidSafety] = useState(null)
-
-  const fetchBidInfo = useCallback(async () => {
-    const bidInfo = mapBidInfo(await props._near.contract.get_bid({
-      bid_id: bidId
+  const fetchBid = async (...args) => {
+    return mapBidInfo(await props._near.contract.get_bid({
+      bid_id: args[1]
     }))
-    return bidInfo
-  }, [props._near, bidId])
+  }
 
-  const fetchBidSafety = useCallback(async () => {
+  const fetchBidSafety = async (...args) => {
+    const bidId = args[1]
     const account = await props._near.near.account(bidId)
     try {
       const codeHash = (await account.state()).code_hash
@@ -35,18 +33,14 @@ function BidPage (props) {
       console.log('check safety error', e)
     }
     return { codeHash: '(unknown)', accessKeysLen: '(unknown)', lockerOwner: '(not found)' }
-  }, [props._near, bidId])
+  }
 
-  useEffect(() => {
-    if (props.connected) {
-      fetchBidInfo().then(setBidInfo)
-      fetchBidSafety().then(setBidSafety)
-    }
-  }, [props.connected, fetchBidInfo, fetchBidSafety, bidId])
+  const { data: bidInfo } = useSWR(['bid_id', bidId], fetchBid, { errorRetryInterval: 250 })
+  const { data: bidSafety } = useSWR(['bid_id_safety', bidId], fetchBidSafety, { errorRetryInterval: 1000 })
 
   const isReady = !!bidInfo && !!bidSafety
 
-  const isSafe = bidSafety && bidInfo &&
+  const isSafe = isReady &&
   (!bidInfo.isAtMarket ||
   (bidSafety.codeHash === 'DKUq738xnns9pKjpv9GifM68UoFSmfnBYNp3hsfkkUFa' &&
   bidSafety.accessKeysLen === 0 &&
@@ -73,25 +67,31 @@ function BidPage (props) {
     )
   })
 
+  const fetchProfile = async (...args) => {
+    return mapProfile(await props._near.contract.get_profile({ profile_id: args[1] }))
+  }
+
+  const { data: profile } = useSWR(['profile_id', props._near.accountId], fetchProfile, { errorRetryInterval: 500 })
+
   // TESTS
   // no safe
   // if (bidInfo) { isSafe = false }
   // bet & claim
-  // if (bidInfo) { bidInfo.claimedBy = null; bidInfo.isAtMarket = true; bidInfo.isOnAcquisition = false; props.profile.acquisitions = [] }
+  // if (bidInfo) { bidInfo.claimedBy = null; bidInfo.isAtMarket = true; bidInfo.isOnAcquisition = false; profile.acquisitions = [] }
   // only bet
-  // if (bidInfo) { bidInfo.claimedBy = 'profile.near'; bidInfo.isAtMarket = true; bidInfo.isOnAcquisition = false; props.profile.acquisitions = [] }
+  // if (bidInfo) { bidInfo.claimedBy = 'profile.near'; bidInfo.isAtMarket = true; bidInfo.isOnAcquisition = false; profile.acquisitions = [] }
   // finalize
-  // if (bidInfo) { bidInfo.claimedBy = 'profile.near'; bidInfo.isAtMarket = true; bidInfo.isOnAcquisition = true; props.profile.acquisitions = [] }
+  // if (bidInfo) { bidInfo.claimedBy = 'profile.near'; bidInfo.isAtMarket = true; bidInfo.isOnAcquisition = true; profile.acquisitions = [] }
   // acquire
-  // if (bidInfo) { bidInfo.claimedBy = 'kpr.testnet'; bidInfo.isAtMarket = false; bidInfo.isOnAcquisition = true; props.profile.acquisitions = ['pasan.testnet'] }
+  // if (bidInfo) { bidInfo.claimedBy = 'kpr.testnet'; bidInfo.isAtMarket = false; bidInfo.isOnAcquisition = true; profile.acquisitions = ['blab.testnet'] }
   // claimed by someone
-  // if (bidInfo) { bidInfo.claimedBy = 'profile.near'; bidInfo.isAtMarket = false; bidInfo.isOnAcquisition = true; props.profile.acquisitions = [] }
+  // if (bidInfo) { bidInfo.claimedBy = 'profile.near'; bidInfo.isAtMarket = false; bidInfo.isOnAcquisition = true; profile.acquisitions = [] }
   // no
-  // if (bidInfo) { bidInfo.claimedBy = null; bidInfo.isAtMarket = false; bidInfo.isOnAcquisition = false; props.profile.acquisitions = [] }
+  // if (bidInfo) { bidInfo.claimedBy = null; bidInfo.isAtMarket = false; bidInfo.isOnAcquisition = false; profile.acquisitions = [] }
 
   let isMine = false
-  if (props.signedIn) {
-    props.profile.acquisitions.forEach(profileBidId => {
+  if (props.signedIn && profile) {
+    profile.acquisitions.forEach(profileBidId => {
       if (bidId === profileBidId) {
         isMine = true
       }
@@ -184,7 +184,7 @@ function BidPage (props) {
       </div>
 
     </div>
-  ) : (loader)
+  ) : (loader())
 }
 
 export default BidPage

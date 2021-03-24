@@ -1,41 +1,39 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import { useParams } from 'react-router'
-import { BidPreview } from '../components/BidPreview'
 import { Link } from 'react-router-dom'
-import { qq } from '../components/Helpers'
+import useSWR, { mutate } from 'swr'
+
+import { BidPreview } from '../components/BidPreview'
+import { qq, mapProfile } from '../components/Helpers'
 
 function ProfilePage (props) {
   const { profileId } = useParams()
-  const [profile, setProfile] = useState(null)
   const [claimsOnly, setClaimsOnly] = useState(false)
-  const [showRewardsButton] = useState(true)
+  const [showRewardsButton, setShowRewardsButton] = useState(true)
 
   async function grabRewards (e) {
     e.preventDefault()
+    setShowRewardsButton(false)
     lowRewards = true
     profile.profitTaken += profile.availableRewards
     profile.availableRewards = 0
-    await setProfile(null)
-    setProfile(profile)
+    await mutate(['profile_id', profileId], profile, false)
     props._near.contract.collect_rewards({}, '200000000000000', 0)
+    setShowRewardsButton(true)
   }
 
-  const fetchProfile = useCallback(async () => {
-    return await props._near.getProfile(profileId)
-  }, [props._near, profileId])
+  const fetchProfile = async (...args) => {
+    return mapProfile(await props._near.contract.get_profile({ profile_id: args[1] }))
+  }
 
-  useEffect(() => {
-    if (props.connected) {
-      fetchProfile().then(setProfile)
-    }
-  }, [props.connected, fetchProfile])
+  const { data: profile } = useSWR(['profile_id', profileId], fetchProfile, { errorRetryInterval: 500 })
 
   let acquisitions = null
   let participation = null
   if (props.connected && !!profile) {
     acquisitions = profile.acquisitions.map((bidId) => {
       return (
-        <BidPreview {...props} key={bidId} bidId={bidId} onAcquisition />
+        <BidPreview {...props} key={bidId} bidId={bidId} />
       )
     })
     participation = profile.participation.map((bidId) => {

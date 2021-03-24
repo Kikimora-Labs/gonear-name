@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router'
-import { loader } from '../components/Helpers'
 import { generateSeedPhrase, parseSeedPhrase } from 'near-seed-phrase'
 // import { Link } from 'react-router-dom'
+
+import { loader } from '../components/Helpers'
 
 function AcquirePage (props) {
   const { bidId } = useParams()

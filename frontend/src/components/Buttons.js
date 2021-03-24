@@ -1,6 +1,7 @@
 import React from 'react'
-import { fromNear } from './Helpers'
 import { Link } from 'react-router-dom'
+
+import { fromNear } from './Helpers'
 
 function AcquireButton (props) {
   return (

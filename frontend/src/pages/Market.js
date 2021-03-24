@@ -1,7 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react'
-import { BidPreview } from '../components/BidPreview'
-import InfiniteScroll from 'react-infinite-scroller'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import InfiniteScroll from 'react-infinite-scroller'
+import useSWR from 'swr'
+
+import { BidPreview } from '../components/BidPreview'
 import { mapStats } from '../components/Helpers'
 
 const FetchLimit = 25
@@ -11,18 +13,20 @@ function MarketPage (props) {
 
   const [feed, setFeed] = useState([])
   const [hasMore, setHasMore] = useState(false)
-  const [stats, setStats] = useState(null)
 
-  const fetchStats = useCallback(async () => {
-    const stats = mapStats(await props._near.contract.get_global_stats())
-    // TODO remove after introducing top_bets_len
-    stats.numClaims = (await props._near.contract.get_top_claims({
+  const fetchStats = async (...args) => {
+    return mapStats(await props._near.contract.get_global_stats())
+  }
+
+  const fetchBidsOnClaim = async (...args) => {
+    return (await props._near.contract.get_top_claims({
       from_key: null,
       limit: FetchLimit
     })).length
+  }
 
-    return stats
-  }, [props._near])
+  const { data: stats } = useSWR('global_stats', fetchStats, { errorRetryInterval: 500 })
+  const { data: numBidsOnClaim } = useSWR('bids_on_claim', fetchBidsOnClaim, { errorRetryInterval: 500 })
 
   const fetchMore = async () => {
     const f = [...feed]
@@ -48,10 +52,9 @@ function MarketPage (props) {
 
   useEffect(() => {
     if (props.connected) {
-      fetchStats().then(setStats)
       setHasMore(true)
     }
-  }, [props.connected, fetchStats])
+  }, [props.connected])
 
   const bids = feed.map(([bidPrice, bidId]) => {
     return (
@@ -86,7 +89,7 @@ function MarketPage (props) {
           <div className='p-2 bd-highlight'>
             <h5>
               <Link className={` ${claimsActive}`} to='/claims' onClick={(e) => { if (!claimsOnly) { setFeed([]); setHasMore(true) } }}>
-            On claim ({stats.numClaims})
+            On claim ({numBidsOnClaim || '0'})
               </Link>
             </h5>
           </div>

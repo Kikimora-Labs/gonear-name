@@ -14,6 +14,54 @@ function loader () {
   )
 }
 
+const mapBidInfo = (b) => {
+  return b ? {
+    isAtMarket: true,
+    numClaims: b.num_claims,
+    claimedBy: b.claim_status ? b.claim_status[0] : null,
+    claimedTime: b.claim_status ? b.claim_status[1] : null,
+    bets: b.bets,
+    betPrice: b.bet_price,
+    claimPrice: b.claim_price,
+    forfeit: b.forfeit,
+    isOnAcquisition: b.on_acquisition
+  } : {
+    isAtMarket: false,
+    numClaims: 0,
+    claimedBy: null,
+    claimedTime: null,
+    bets: null,
+    betPrice: 0,
+    claimPrice: 0,
+    forfeit: null,
+    isOnAcquisition: false
+  }
+}
+
+const mapProfile = (p) => {
+  return p ? ({
+    participation: p.participation,
+    acquisitions: p.acquisitions,
+    betsVolume: fromNear(p.bets_volume),
+    availableRewards: fromNear(p.available_rewards),
+    profitTaken: fromNear(p.profit_taken),
+    numOffers: p.num_offers,
+    numBets: p.num_bets,
+    numClaims: p.num_claims,
+    numAcquisitions: p.num_acquisitions
+  }) : ({
+    participation: [],
+    acquisitions: [],
+    betsVolume: fromNear(0),
+    availableRewards: fromNear(0),
+    profitTaken: fromNear(0),
+    numOffers: 0,
+    numBets: 0,
+    numClaims: 0,
+    numAcquisitions: 0
+  })
+}
+
 const mapStats = (s) => {
   return {
     numProfiles: s[0],
@@ -214,4 +262,4 @@ function rules () {
   )
 }
 
-export { rules, fromNear, loader, mapStats, qq }
+export { rules, fromNear, loader, mapBidInfo, mapStats, mapProfile, qq }

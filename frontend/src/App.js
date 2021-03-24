@@ -7,7 +7,6 @@ import './gh-fork-ribbon.css'
 import * as nearAPI from 'near-api-js'
 import Logo from './images/logo.png'
 import { HashRouter as Router, Link, Route, Switch } from 'react-router-dom'
-import { fromNear } from './components/Helpers'
 import ls from 'local-storage'
 import MarketPage from './pages/Market'
 import OfferPage from './pages/Offer'
@@ -41,30 +40,6 @@ const MainNearConfig = {
 }
 
 const NearConfig = IsMainnet ? MainNearConfig : TestNearConfig
-
-const mapProfile = (p) => {
-  return p ? ({
-    participation: p.participation,
-    acquisitions: p.acquisitions,
-    betsVolume: fromNear(p.bets_volume),
-    availableRewards: fromNear(p.available_rewards),
-    profitTaken: fromNear(p.profit_taken),
-    numOffers: p.num_offers,
-    numBets: p.num_bets,
-    numClaims: p.num_claims,
-    numAcquisitions: p.num_acquisitions
-  }) : ({
-    participation: [],
-    acquisitions: [],
-    betsVolume: fromNear(0),
-    availableRewards: fromNear(0),
-    profitTaken: fromNear(0),
-    numOffers: 0,
-    numBets: 0,
-    numClaims: 0,
-    numAcquisitions: 0
-  })
-}
 
 class App extends React.Component {
   constructor (props) {
@@ -124,18 +99,6 @@ class App extends React.Component {
       ]
     })
 
-    this._near.profiles = {}
-
-    this._near.getProfile = (profileId) => {
-      if (profileId in this._near.profiles) {
-        return this._near.profiles[profileId]
-      }
-      this._near.profiles[profileId] = Promise.resolve((async () => {
-        return mapProfile(await this._near.contract.get_profile({ profile_id: profileId }))
-      })())
-      return this._near.profiles[profileId]
-    }
-
     this._near.logOut = () => {
       this._near.walletConnection.signOut()
       this._near.accountId = null
@@ -152,11 +115,6 @@ class App extends React.Component {
     }
 
     if (this._near.accountId) {
-      const profile = await this._near.getProfile(this._near.accountId)
-      this.setState({
-        profile
-      })
-
       const accessKeys = await this._near.account.getAccessKeys()
 
       let foundMarketKey = false

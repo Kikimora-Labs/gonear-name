@@ -1,18 +1,14 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React from 'react'
+import useSWR from 'swr'
+
 import { mapStats, rules } from '../components/Helpers'
 
 function StatsPage (props) {
-  const [stats, setStats] = useState(null)
-
-  const fetchStats = useCallback(async () => {
+  const fetchStats = async (...args) => {
     return mapStats(await props._near.contract.get_global_stats())
-  }, [props._near])
+  }
 
-  useEffect(() => {
-    if (props.connected) {
-      fetchStats().then(setStats)
-    }
-  }, [props.connected, fetchStats])
+  const { data: stats } = useSWR('global_stats', fetchStats, { errorRetryInterval: 500 })
 
   return (
     <div className='container'>
