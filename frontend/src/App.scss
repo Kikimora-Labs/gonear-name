@@ -90,9 +90,13 @@ h2 {
 }
 .navigate {
   color: #8d8d8d;
+  transition: all .2s ease;
+  -webkit-transition: all .2s ease;
 }
 .navigate:hover {
    color: #616E5C;
+   transition: all .1s ease;
+   -webkit-transition: all .1s ease;
 }
 
 hr {height:1px; border:none; color:#A5C87A; text-align:center;}
