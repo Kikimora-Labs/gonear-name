@@ -95,10 +95,11 @@ impl Contract {
         }
     }
 
-    pub fn get_global_stats(&self) -> (u64, u64, WrappedBalance, u64, u64, u64, u64) {
+    pub fn get_global_stats(&self) -> (u64, u64, u64, WrappedBalance, u64, u64, u64, u64) {
         (
             self.profiles.len(),
             self.bids.len(),
+            self.top_claims.len(),
             self.total_commission.into(),
             self.num_offers,
             self.num_bets,

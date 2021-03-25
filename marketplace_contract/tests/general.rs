@@ -292,12 +292,13 @@ fn view_first_offer() {
     let (
         num_profiles,
         _num_bids,
+        _num_bids_on_claim,
         _total_commission,
         _num_offers,
         _num_bets,
         _num_claims,
         _num_acquisitions,
-    ): (u64, u64, WrappedBalance, u64, u64, u64, u64) =
+    ): (u64, u64, u64, WrappedBalance, u64, u64, u64, u64) =
         view!(contract.get_global_stats()).unwrap_json();
     assert_eq!(num_profiles, 1);
 
