@@ -28,7 +28,8 @@ function StatsPage (props) {
               <h3>Global Stats</h3>
               <ul>
                 <li>Active profiles: {stats.numProfiles}</li>
-                <li>Active bids: {stats.numBids}</li>
+                <li>Bids: {stats.numBids}</li>
+                <li>Bids on claim: {stats.numBidsOnClaim}</li>
                 <li>Number of offers: {stats.numOffers}</li>
                 <li>Number of bets: {stats.numBets}</li>
                 <li>Number of claims: {stats.numClaims}</li>

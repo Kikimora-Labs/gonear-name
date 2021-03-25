@@ -67,11 +67,12 @@ const mapStats = (s) => {
   return {
     numProfiles: s[0],
     numBids: s[1],
-    totalCommission: fromNear(s[2]),
-    numOffers: s[3],
-    numBets: s[4],
-    numClaims: s[5],
-    numAcquisitions: s[6]
+    numBidsOnClaim: s[2],
+    totalCommission: fromNear(s[3]),
+    numOffers: s[4],
+    numBets: s[5],
+    numClaims: s[6],
+    numAcquisitions: s[7]
   }
 }
 
