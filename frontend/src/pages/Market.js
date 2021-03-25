@@ -40,7 +40,7 @@ function MarketCommon (props, swrKey, swrFetcher, showBetsLink) {
   })
 
   return stats ? (
-    <div>
+    <div className='pb-3'>
       <div className='container g-0 px-5'>
         <div className='d-flex flex-row bd-highlight mb-3'>
           <div className='py-2 bd-highlight'>
