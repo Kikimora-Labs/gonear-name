@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { BetButton, ClaimButton, FinalizeButton, AcquireButton } from '../components/BidActions'
-import { qq, loader, mapBidInfo, mapProfile } from '../components/Helpers'
+import { NEAR, qq, loader, mapBidInfo, mapProfile } from '../components/Helpers'
 
 function BidPage (props) {
   const { bidId } = useParams()
@@ -61,7 +61,7 @@ function BidPage (props) {
           <Link className='nonavigate' to={`/profile/${data}`}>{data}</Link>
         </div>
         <div className='col-2' style={{ minWidth: '200px' }}>
-          {(1.25 * Math.pow(1.2, index)).toFixed(2)} NEAR
+          {NEAR}{(1.25 * Math.pow(1.2, index)).toFixed(2)}
         </div>
       </div>
     )

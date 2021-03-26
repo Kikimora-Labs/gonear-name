@@ -1,5 +1,7 @@
 import React from 'react'
 
+const NEAR = '\u24C3\u202F'
+
 const fromNear = (s) => parseFloat(s) / 1e24 || 0
 
 const qq = '//'
@@ -264,4 +266,4 @@ function rules () {
   )
 }
 
-export { rules, fromNear, loader, mapBidInfo, mapStats, mapProfile, qq }
+export { NEAR, rules, fromNear, loader, mapBidInfo, mapStats, mapProfile, qq }

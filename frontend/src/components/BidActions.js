@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { fromNear } from './Helpers'
+import { NEAR, fromNear } from './Helpers'
 
 function BetButton (props) {
   const betPrice = props.bidInfo.betPrice
@@ -24,7 +24,7 @@ function BetButton (props) {
       disabled={!props.signedIn || !props.isSafe}
       onClick={(e) => betBid(e)}
     >
-        Bet for {totalBetPrice.toFixed(6)} NEAR
+        Bet for {NEAR}{totalBetPrice.toFixed(6)}
     </button>
   )
 }
@@ -46,7 +46,7 @@ function ClaimButton (props) {
         disabled={!props.signedIn || !props.isSafe}
         onClick={(e) => claimBid(e)}
       >
-        Claim for {claimPrice.toFixed(6)} NEAR
+        Claim for {NEAR}{claimPrice.toFixed(6)}
       </button>
     ) : (
       <button

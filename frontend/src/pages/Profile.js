@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import useSWR, { mutate } from 'swr'
 
 import { BidPreview } from '../components/BidPreview'
-import { qq, mapProfile } from '../components/Helpers'
+import { NEAR, qq, mapProfile } from '../components/Helpers'
 
 function ProfilePage (props) {
   const { profileId } = useParams()
@@ -55,7 +55,7 @@ function ProfilePage (props) {
   const useMyGreen = lowRewards ? '' : 'my-green-big'
 
   return props.connected && profile ? (
-    <div>
+    <div className='pb-3'>
       <div className='container g-0 px-5'>
         <div className='d-flex flex-row bd-highlight mb-3'>
           <div className='py-2 bd-highlight my-gray'>
@@ -75,7 +75,7 @@ function ProfilePage (props) {
             Bets volume:
           </div>
           <div className='col-2' style={{ minWidth: '200px' }}>
-            {profile.betsVolume.toFixed(2)} NEAR
+            {NEAR}{profile.betsVolume.toFixed(2)}
           </div>
         </div>
         <div className='row'>
@@ -83,7 +83,7 @@ function ProfilePage (props) {
           Profit taken:
           </div>
           <div className='col-2' style={{ minWidth: '200px' }}>
-            {profile.profitTaken.toFixed(2)} NEAR
+            {NEAR}{profile.profitTaken.toFixed(2)}
           </div>
         </div>
         <div className='row justify-content-start'>
@@ -91,7 +91,7 @@ function ProfilePage (props) {
           Available rewards:
           </div>
           <div className={`col-2 ${useMyGreen}`} style={{ minWidth: '200px' }}>
-            {profile.availableRewards.toFixed(2)} NEAR
+            {NEAR}{profile.availableRewards.toFixed(2)}
           </div>
         </div>
         {profileId === props.signedAccountId ? (
@@ -104,7 +104,7 @@ function ProfilePage (props) {
               >Collect rewards
               </button>
             ) : (loader)}
-            {lowRewards && <div><small className='gray'>Accumulate at least 0.1 NEAR to collect rewards</small></div>}
+            {lowRewards && <div><small className='gray'>Accumulate at least {NEAR}0.1 to collect rewards</small></div>}
           </div>
         ) : (<div />)}
         <div style={{ marginTop: '25px' }} />

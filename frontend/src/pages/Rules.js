@@ -1,7 +1,7 @@
 import React from 'react'
 import useSWR from 'swr'
 
-import { mapStats, rules } from '../components/Helpers'
+import { NEAR, mapStats, rules } from '../components/Helpers'
 
 function StatsPage (props) {
   const fetchStats = async (...args) => {
@@ -34,7 +34,7 @@ function StatsPage (props) {
                 <li>Number of bets: {stats.numBets}</li>
                 <li>Number of claims: {stats.numClaims}</li>
                 <li>Number of acquisitions (successful claims): {stats.numAcquisitions}</li>
-                <li>Total commission: {stats.totalCommission.toFixed(2)}</li>
+                <li>Total commission: {NEAR}{stats.totalCommission.toFixed(2)}</li>
               </ul>
             </div>
           </div>

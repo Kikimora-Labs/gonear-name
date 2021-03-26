@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { fromNear } from './Helpers'
+import { NEAR, fromNear } from './Helpers'
 
 function AcquireButton (props) {
   return (
@@ -22,7 +22,7 @@ function PriceButton (props) {
       className='btn w-100 btn-success'
       to={`/bid/${props.bidId}`}
     >
-Starts from {(fromNear(props.price) + fromNear(props.forfeit)).toFixed(2)} NEAR
+Starts&nbsp;from {NEAR}{(fromNear(props.price) + fromNear(props.forfeit)).toFixed(2)}
     </Link>
   )
 }
