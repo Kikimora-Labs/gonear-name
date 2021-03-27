@@ -23,6 +23,11 @@ function OfferPage (props) {
         setOfferButtonEnabled(true)
         throw console.error('Account(s) are empty')
       }
+      if (offerInputValue.length >= 64 || favorInputValue.length >= 64) {
+        alert('Implicit accounts (64 symbols) cannot be used')
+        setOfferButtonEnabled(true)
+        throw console.error('Implicit accounts (64 symbols) cannot be used')
+      }
       const offerAccountId = offerInputValue.endsWith(dotSuffix) ? offerInputValue : offerInputValue + dotSuffix
       const favorAccountId = favorInputValue.endsWith(dotSuffix) ? favorInputValue : favorInputValue + dotSuffix
       console.log('offerAccountId', offerAccountId)
