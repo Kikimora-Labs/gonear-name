@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom'
 import useSWR from 'swr'
 
 import { BetButton, ClaimButton, FinalizeButton, AcquireButton } from '../components/BidActions'
-import { NEAR, qq, loader, mapBidInfo, mapProfile } from '../components/Helpers'
+import { NEAR, qq, loader, mapBidInfo, mapProfile, fromNear } from '../components/Helpers'
 
 function BidPage (props) {
   const { bidId } = useParams()
@@ -28,15 +28,16 @@ function BidPage (props) {
         changeMethods: []
       })
       const lockerOwner = await lockerContract.get_owner({})
-      return { codeHash, accessKeysLen, lockerOwner }
+      const balance = (await account.getAccountBalance()).total
+      return { codeHash, accessKeysLen, lockerOwner, balance }
     } catch (e) {
       console.log('check safety error', e)
     }
-    return { codeHash: '(unknown)', accessKeysLen: '(unknown)', lockerOwner: '(not found)' }
+    return { codeHash: '(unknown)', accessKeysLen: '(unknown)', lockerOwner: '(not found)', balance: 0 }
   }
 
   const { data: bidInfo } = useSWR(['bid_id', bidId], fetchBid, { errorRetryInterval: 250 })
-  const { data: bidSafety } = useSWR(['bid_id_safety', bidId], fetchBidSafety, { errorRetryInterval: 1000 })
+  const { data: bidSafety } = useSWR(['bid_id_safety', bidId], fetchBidSafety, { errorRetryInterval: 250 })
 
   const isReady = !!bidInfo && !!bidSafety
 
@@ -45,6 +46,8 @@ function BidPage (props) {
   (bidSafety.codeHash === 'DKUq738xnns9pKjpv9GifM68UoFSmfnBYNp3hsfkkUFa' &&
   bidSafety.accessKeysLen === 0 &&
   bidSafety.lockerOwner === props._near.config.contractName))
+
+  const balance = bidSafety && fromNear(bidSafety.balance)
 
   let claimedTime = null
   let timeLeft = null
@@ -97,6 +100,8 @@ function BidPage (props) {
       }
     })
   }
+
+  const isProfitable = bidInfo && bidInfo.claimPrice && balance > fromNear(bidInfo.claimPrice)
 
   const showBetClaim = bidInfo && bidInfo.isAtMarket && !bidInfo.isOnAcquisition
   const showFinalize = bidInfo && bidInfo.isAtMarket && bidInfo.isOnAcquisition
@@ -157,6 +162,13 @@ function BidPage (props) {
               {showBetClaim && <ClaimButton {...props} bidId={bidId} bidInfo={bidInfo} isSafe={isSafe} />}
               {showFinalize && <FinalizeButton {...props} bidId={bidId} bidInfo={bidInfo} isSafe={isSafe} />}
               {showAcquire && <AcquireButton {...props} bidId={bidId} bidInfo={bidInfo} isSafe={isSafe} />}
+              <div className='pt-3'>
+                Bid balance: {NEAR}{balance.toFixed(2)}
+              </div>
+              {isProfitable
+                ? <div className='my-green-big pb-2'>PROFITABLE! <span className='small'>Bid balance is higher than claim price</span></div> : <div />}
+              <div className='small gray'>You will possess all bid balance in case of successful claim</div>
+
             </div>
             <hr />
             {showBetClaim &&
