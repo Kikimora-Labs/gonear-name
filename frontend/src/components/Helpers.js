@@ -160,6 +160,13 @@ function rules () {
         </p>
       </ul>
 
+      <h4>How to claim rewards</h4>
+      <ul>
+        <p>
+        Claiming rewards and sending it to the wallet is performed by the "Collect rewards" button in the profile page.
+        </p>
+      </ul>
+
       <h4>Commission</h4>
       <ul>
         <p>
