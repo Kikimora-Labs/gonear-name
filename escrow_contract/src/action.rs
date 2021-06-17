@@ -23,7 +23,14 @@ pub const ERR_ACQUIRE_REJECTED: &str = "Do not have permission to acquire";
 #[near_bindgen]
 impl Contract {
     #[payable]
-    pub fn place(&mut self, profile_id: ValidAccountId, price: WrappedBalance) -> bool {
+    pub fn place(&mut self,
+            profile_id: ValidAccountId,
+            price: WrappedBalance,
+            description: String
+            ) -> bool {
+
+        assert!(description.len() <= 200, "Abort. Description is longer then 200 characters");
+
         let price: Balance = price.into();
         assert!(
             env::attached_deposit() >= PLACE_DEPOSIT + price / 100,
@@ -38,7 +45,7 @@ impl Contract {
         );
 
         // Create proposal
-        let proposal = Proposal::new(profile_id.into(), env::block_timestamp(), price);
+        let proposal = Proposal::new(profile_id.into(), env::block_timestamp(), price, description);
         self.save_proposal_or_panic(&env::predecessor_account_id(), &proposal);
         self.top_proposals
             .insert(&(price, env::predecessor_account_id()), &());
@@ -103,6 +110,7 @@ impl Contract {
         true
     }
 
+    // TODO payable?
     #[payable]
     pub fn acquire(
         &mut self,
@@ -133,6 +141,16 @@ impl Contract {
 
         true
     }
+
+     #[payable]
+        pub fn accept_and_acquire(&mut self, proposal_id: ValidAccountId, new_public_key: Base58PublicKey) -> bool {
+            if self.accept(proposal_id.clone()){
+                let result = self.acquire(proposal_id, new_public_key);
+                return result;
+            }
+                false
+        }
+
 }
 
 impl Contract {

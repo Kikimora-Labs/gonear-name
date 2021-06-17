@@ -11,6 +11,7 @@ use near_sdk::serde_json::json;
 use near_sdk::{env, log, near_bindgen, AccountId, Balance, PanicOnDefault, Promise, Timestamp};
 
 pub type ProposalId = AccountId;
+pub type Description = String;
 
 pub const EXPIRATION_PERIOD: u64 = 24 * 60 * 60; // 24 hours
 
