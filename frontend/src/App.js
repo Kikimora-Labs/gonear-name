@@ -276,12 +276,6 @@ class App extends React.Component {
             </div>
           </nav>
 
-          <a
-            className='github-fork-ribbon right-bottom fixed' href='https://github.com/kouprin/accounts-marketplace' data-ribbon='Fork me on GitHub'
-            title='Fork me on GitHub'
-          >Fork me on GitHub
-          </a>
-
           <Switch>
             <Route exact path='/'>
               <LandingPage {...passProps} />
