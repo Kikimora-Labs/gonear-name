@@ -101,7 +101,7 @@ function LandingPage (props) {
       </section>
       <div style={{ margin: '5%' }} />
       <div className='text-center'>
-        <h3>{qq} Account<a href='https://explorer.near.org/transactions/384XdCNfpgzSRXTFKGSkBeSf5EPNuc5GJxnaRkE89JCi'><samp className='mx-2'>near.near</samp></a>has been successfully claimed for {NEAR}138</h3>
+        <h3>{qq} Account<a className='navigate' href='https://explorer.near.org/transactions/384XdCNfpgzSRXTFKGSkBeSf5EPNuc5GJxnaRkE89JCi'><samp className='mx-2'>near.near</samp></a>has been successfully claimed for {NEAR}138</h3>
         <h6 className='gray'>How else the market can surprise us?</h6>
       </div>
       <div style={{ margin: '5%' }} />
@@ -154,14 +154,14 @@ function LandingPage (props) {
               <h3 className='pt-3'>Articles</h3>
               <div className='mb-3'>by 4NTS guild</div>
               <div className='mb-3'>
-                <a href='https://medium.com/nearprotocol/a-long-awaited-near-account-marketplace-has-arrived-9dab3ca9db17'><h6>A Long Awaited NEAR Account Marketplace Has Arrived</h6></a>
+                <a className='navigate' href='https://medium.com/nearprotocol/a-long-awaited-near-account-marketplace-has-arrived-9dab3ca9db17'><h6>A Long Awaited NEAR Account Marketplace Has Arrived</h6></a>
               </div>
               <div className='mb-3'>
-                <a href='https://medium.com/nearprotocol/near-account-marketplace-ama-with-alexander-kouprin-1c52bbf9521d'><h6>NEAR Account Marketplace AMA with Alexander Kouprin</h6></a>
+                <a className='navigate' href='https://medium.com/nearprotocol/near-account-marketplace-ama-with-alexander-kouprin-1c52bbf9521d'><h6>NEAR Account Marketplace AMA with Alexander Kouprin</h6></a>
               </div>
               <h3 className='pt-3'>Source code</h3>
               <div className='mb-3'>
-                <a href='https://github.com/kouprin/accounts-marketplace'><h6>Available at GitHub</h6></a>
+                <a className='navigate' href='https://github.com/kouprin/accounts-marketplace'><h6>Available at GitHub</h6></a>
               </div>
             </div>
           </div>
