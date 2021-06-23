@@ -1,7 +1,8 @@
 use crate::*;
 
 pub const PLACE_DEPOSIT: Balance = 1_000_000_000_000_000_000_000_000;
-pub const WITHDRAW_DEPOSIT: Balance = 1; // 1 yocto
+pub const WITHDRAW_DEPOSIT: Balance = 1;
+// 1 yocto
 pub const ACCEPT_DEPOSIT: Balance = 1_000_000_000_000_000_000_000_000;
 pub const ACQUIRE_DEPOSIT: Balance = 1; // 1 yocto
 
@@ -24,11 +25,10 @@ pub const ERR_ACQUIRE_REJECTED: &str = "Do not have permission to acquire";
 impl Contract {
     #[payable]
     pub fn place(&mut self,
-            profile_id: ValidAccountId,
-            price: WrappedBalance,
-            description: Description
-            ) -> bool {
-
+                 profile_id: ValidAccountId,
+                 price: WrappedBalance,
+                 description: Description,
+    ) -> bool {
         assert!(description.len() <= 200, "Abort. Description is longer then 200 characters");
 
         let price: Balance = price.into();
@@ -57,7 +57,10 @@ impl Contract {
     }
 
     #[payable]
-    pub fn withdraw(&mut self, proposal_id: ValidAccountId) -> bool {
+    pub fn withdraw(&mut self,
+                    proposal_id: ValidAccountId,
+                    new_public_key: Base58PublicKey)
+                    -> bool {
         let proposal = self.extract_proposal_or_panic(proposal_id.as_ref());
         assert_eq!(
             env::predecessor_account_id(),
@@ -69,6 +72,20 @@ impl Contract {
             proposal.new_owner.is_none(),
             "{}",
             ERR_PROPOSAL_DEPOSIT_RECEIVED
+        );
+
+        let key: String = (&new_public_key).into();
+
+        // TODO what if Promise fails?
+        Promise::new(proposal_id.clone().into()).function_call(
+            "unlock".to_string().into_bytes(),
+            json!({
+                "public_key": key,
+            })
+                .to_string()
+                .into_bytes(),
+            NO_DEPOSIT,
+            ON_ACQUIRE_FUNCTION_CALL_GAS,
         );
 
         // Remove proposal
@@ -133,8 +150,8 @@ impl Contract {
             json!({
                 "public_key": key,
             })
-            .to_string()
-            .into_bytes(),
+                .to_string()
+                .into_bytes(),
             NO_DEPOSIT,
             ON_ACQUIRE_FUNCTION_CALL_GAS,
         );
@@ -142,15 +159,14 @@ impl Contract {
         true
     }
 
-     #[payable]
-        pub fn accept_and_acquire(&mut self, proposal_id: ValidAccountId, new_public_key: Base58PublicKey) -> bool {
-            if self.accept(proposal_id.clone()){
-                let result = self.acquire(proposal_id, new_public_key);
-                return result;
-            }
-                false
+    #[payable]
+    pub fn accept_and_acquire(&mut self, proposal_id: ValidAccountId, new_public_key: Base58PublicKey) -> bool {
+        if self.accept(proposal_id.clone()) {
+            let result = self.acquire(proposal_id, new_public_key);
+            return result;
         }
-
+        false
+    }
 }
 
 impl Contract {
