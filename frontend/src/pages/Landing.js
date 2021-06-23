@@ -10,7 +10,7 @@ import Croco2 from '../images/croco2.png'
 import FoundersImage from '../images/founders.svg'
 import BelieversImage from '../images/believers.svg'
 import ClaimersImage from '../images/claimers.svg'
-import { qq } from '../components/Helpers'
+import { qq, NEAR } from '../components/Helpers'
 
 function LandingPage (props) {
   var background = { backgroundSize: 'cover', backgroundRepeat: 'no-repeat', position: 'absolute', opacity: 0.4 }
@@ -19,7 +19,7 @@ function LandingPage (props) {
   var image = { width: '64px' }
   return (
     <div
-      className='container my-auto'
+      className='container g-0'
     >
       <Image
         style={background} fluid
@@ -41,9 +41,8 @@ function LandingPage (props) {
         </div>
       </div>
       <div className='text-center'>
-        <h3>
-                           For whom NEAR Accounts Marketplace has been built?
-        </h3>
+        <h6 className='gray'>Non-profitable project for NEAR ecosystem</h6>
+        <h3>For whom NEAR Accounts Marketplace has been built?</h3>
       </div>
       <div style={{ margin: '5%' }} />
       <section className='features-icons text-center det-ails'>
@@ -100,13 +99,20 @@ function LandingPage (props) {
           </div>
         </div>
       </section>
+      <div style={{ margin: '5%' }} />
+      <div className='text-center'>
+        <h3>{qq} Account<a className='navigate' href='https://explorer.near.org/transactions/384XdCNfpgzSRXTFKGSkBeSf5EPNuc5GJxnaRkE89JCi'><samp className='mx-2'>near.near</samp></a>has been successfully claimed for {NEAR}138</h3>
+        <h6 className='gray'>How else the market can surprise us?</h6>
+      </div>
+      <div style={{ margin: '5%' }} />
+      <hr />
       <div className='container'>
         <div className='row'>
           <div className='col-1' />
           <div className='col-lg-4'>
-            <h1 className='pt-3'>{qq} Two basic operations about account names of the Marketplace </h1>
+            <h1>{qq} Two basic operations on the account names of the Marketplace </h1>
             <div className='text-center'>
-              <Link className='btn btn-lg btn-secondary mt-3' to='/rules'>Dive into rules</Link>
+              <Link className='btn btn-lg btn-secondary mt-4' to='/rules'>Dive into rules</Link>
             </div>
           </div>
           <div className='col-lg-6'>
@@ -129,6 +135,42 @@ function LandingPage (props) {
           </div>
         </div>
       </div>
+
+      <div style={{ margin: '5%' }} />
+      <hr />
+      <div style={{ margin: '5%' }} />
+      <section className='features-icons text-center det-ails'>
+        <div className='container'>
+          <div className='row'>
+            <div className='col-lg-6'>
+              <div className='features-icons-item mx-auto mb-5 mb-lg-0 mb-lg-3'>
+                <h3 className='py-3'>Watch live contract review</h3>
+                <div className='embed-responsive embed-responsive-16by9'>
+                  <iframe className='embed-responsive-item' allow='fullscreen;' src='https://www.youtube.com/embed/6OhkQOab-Is?rel=0' allowfullscreen />
+                </div>
+              </div>
+            </div>
+            <div className='col-lg-6'>
+              <h3 className='pt-3'>Articles</h3>
+              <div className='mb-3'>by 4NTS guild</div>
+              <div className='mb-3'>
+                <a className='navigate' href='https://medium.com/nearprotocol/a-long-awaited-near-account-marketplace-has-arrived-9dab3ca9db17'><h6>A Long Awaited NEAR Account Marketplace Has Arrived</h6></a>
+              </div>
+              <div className='mb-3'>
+                <a className='navigate' href='https://medium.com/nearprotocol/near-account-marketplace-ama-with-alexander-kouprin-1c52bbf9521d'><h6>NEAR Account Marketplace AMA with Alexander Kouprin</h6></a>
+              </div>
+              <h3 className='pt-3'>Source code</h3>
+              <div className='mb-3'>
+                <a className='navigate' href='https://github.com/kouprin/accounts-marketplace'><h6>Available at GitHub</h6></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div style={{ margin: '5%' }} />
+      <hr />
+      <div style={{ margin: '5%' }} />
       <div className='container text-center' style={{ paddingTop: '10vh', paddingBottom: '50vh' }}>
         <h1>{qq} Interested?</h1>
         <div className='row justify-content-evenly align-items-center'>
