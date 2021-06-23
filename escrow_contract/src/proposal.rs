@@ -19,7 +19,7 @@ impl Proposal {
         proposal_owner: AccountId,
         published_time: Timestamp,
         price: Balance,
-        description: String
+        description: Description
     ) -> Self {
         Self {
             proposal_owner,

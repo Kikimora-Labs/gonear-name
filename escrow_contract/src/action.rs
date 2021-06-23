@@ -26,7 +26,7 @@ impl Contract {
     pub fn place(&mut self,
             profile_id: ValidAccountId,
             price: WrappedBalance,
-            description: String
+            description: Description
             ) -> bool {
 
         assert!(description.len() <= 200, "Abort. Description is longer then 200 characters");
