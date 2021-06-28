@@ -1,4 +1,6 @@
 use crate::*;
+use std::collections::HashMap;
+use std::convert::TryFrom;
 
 #[derive(BorshDeserialize, BorshSerialize)]
 pub struct Proposal {
@@ -8,6 +10,8 @@ pub struct Proposal {
     pub published_time: Timestamp,
 
     pub price: Balance,
+
+    pub description: Description
 }
 
 impl Proposal {
@@ -15,12 +19,14 @@ impl Proposal {
         proposal_owner: AccountId,
         published_time: Timestamp,
         price: Balance,
+        description: Description
     ) -> Self {
         Self {
             proposal_owner,
             new_owner: None,
             published_time,
             price,
+            description
         }
     }
 
@@ -43,6 +49,7 @@ pub struct ProposalView {
 
     pub is_expired: bool,
     pub is_deposit_received: bool,
+    pub description: String
 }
 
 impl From<(&Proposal, Timestamp)> for ProposalView {
@@ -54,6 +61,7 @@ impl From<(&Proposal, Timestamp)> for ProposalView {
             price: p.0.price.into(),
             is_expired: p.0.is_expired(p.1),
             is_deposit_received: p.0.new_owner.is_some(),
+            description: p.0.description.clone()
         }
     }
 }
@@ -64,6 +72,19 @@ impl Contract {
         self.proposals
             .get(proposal_id.as_ref())
             .map(|a| (&a, self.expiration_period).into())
+    }
+
+    pub fn get_proposals(&self, from_index: u64, limit: u64) -> HashMap<ProposalId, ProposalView> {
+        let keys = self.proposals.keys_as_vector();
+
+        (from_index..std::cmp::min(from_index + limit, keys.len()))
+            .map(|index| {
+                let key = keys.get(index).unwrap();
+                let proposal_id = ValidAccountId::try_from(key.clone()).unwrap();
+                let proposal = self.get_proposal(proposal_id.into()).unwrap();
+                (key, proposal)
+            })
+            .collect()
     }
 
     pub fn get_top_proposals(
