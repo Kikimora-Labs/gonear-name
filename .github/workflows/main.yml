@@ -7,14 +7,13 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
+
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
 
       - name: Install and Build 🔧
+        working-directory: frontend
         run: |
           yarn install
           yarn build
@@ -23,6 +22,6 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           branch: master
-          folder: build
+          folder: frontend/build
           repository-name: Kikimora-Labs/go-near-name-public
           ssh-key: ${{ secrets.SSH_KEY_MASTER }}
