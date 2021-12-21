@@ -12,6 +12,7 @@ export interface INearConfig {
 
 export const config = getConfig()
 
+// TODO: move these data to envs
 function getConfig(): INearConfig {
   const env = process.env.REACT_APP_ENVIRONMENT || 'development';
   switch (env) {
@@ -24,7 +25,7 @@ function getConfig(): INearConfig {
         contractName: 'c.nearbet.near',
         walletUrl: 'https://wallet.near.org',
         marketPublicKey: 'ed25519:5mgNVstFy67S469tG2j8MjRchPuKqJFYsydghKRteR42',
-        wasmCode: 'https://near.bet/bin',
+        wasmCode: 'https://gonear.name/bin',
         claimPeriod: 72 * 60 * 60
       }
     case 'development':
