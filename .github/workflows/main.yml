@@ -27,5 +27,5 @@ jobs:
         with:
           branch: master
           folder: frontend/build
-          repository-name: Kikimora-Labs/go-near-name-public
+          repository-name: Kikimora-Labs/gonear-name-public
           ssh-key: ${{ secrets.SSH_KEY_MASTER }}
