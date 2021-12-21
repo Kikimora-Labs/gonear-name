@@ -2,7 +2,7 @@
   "name": "near-bet",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://kikimora-labs.github.io/go-near-name-public",
+  "homepage": "https://gonear.name",
   "dependencies": {
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
