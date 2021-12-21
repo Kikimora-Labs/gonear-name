@@ -21,6 +21,8 @@ jobs:
         run: |
           yarn install
           yarn build
+        env:
+          REACT_APP_ENVIRONMENT: ${{ secrets.REACT_APP_ENVIRONMENT_master }}
 
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.5
